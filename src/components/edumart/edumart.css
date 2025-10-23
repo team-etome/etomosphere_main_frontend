@@ -1,0 +1,657 @@
+@import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&display=swap');
+
+:root { --maxw: 1200px; }
+
+.edumart-container {
+  width: 100%;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+.edumart-main {
+  flex: 1;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  background: #fff;
+  padding: clamp(24px,3vw,40px) 20px;
+}
+
+.products-section {
+  width: 100%;
+  max-width: var(--maxw);
+  text-align: center;
+}
+
+.products-title {
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: clamp(32px,5vw,64px);
+  font-weight: 700;
+  margin: 0 0 12px;
+}
+
+.products-description {
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: clamp(14px,2.1vw,20px);
+  line-height: 1.6;
+  max-width: 900px;
+  margin: 0 auto clamp(24px,4vw,48px);
+}
+
+.alphabet-products-container {
+  width: 100%;
+  max-width: var(--maxw);
+  margin: 0 auto;
+}
+
+.gp-wrap {
+  display: flex;
+  flex-direction: column;
+  gap: clamp(16px, 3vw, 32px);
+}
+
+/* Alphabet section layout */
+.alpha-row {
+  display: grid;
+  grid-template-columns: auto 1fr; /* letter | items (default for multi) */
+  align-items: start;
+  gap: clamp(12px, 2.5vw, 24px);
+}
+
+/* For single: we want items on left, letter on right */
+.alpha-row.single {
+  grid-template-columns: 1fr auto; /* items | letter */
+}
+
+/* NEW: flip order for single */
+.alpha-row.single .alpha-letter { order: 2; }
+.alpha-row.single .alpha-items  { order: 1; }
+
+/* Keep default order for multi (letter left, items right) */
+.alpha-row.multi .alpha-letter { order: 1; }
+.alpha-row.multi .alpha-items  { order: 2; }
+
+.alpha-letter {
+  font-family: 'Space Grotesk', sans-serif;
+  font-weight: 800;
+  font-size: clamp(28px, 8vw, 96px);
+  line-height: 1;
+  color: #000;
+  padding: 4px 6px;
+}
+
+/* Product grid */
+.alpha-items {
+  display: grid;
+  flex-wrap: wrap;
+  gap: 16px;
+}
+
+.alpha-items.single {
+  grid-template-columns: minmax(240px, 520px);
+  justify-content: start;
+}
+
+.alpha-items.multi {
+  grid-template-columns: repeat(2, 1fr);
+  gap: clamp(12px, 2vw, 20px);
+}
+
+/* Product Card */
+.product-card {
+  border-radius: 16px;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  background: #fff;
+  border: 1px solid #f0f0f0;
+  transition: transform .2s ease;
+  width: 400px;
+  height: 500px;
+  perspective: 1000px;  
+
+}
+
+.product-card:hover {
+  transform: translateY(-2px);
+}
+
+.product-card:focus-visible {
+  outline: 2px solid #111;
+  outline-offset: 2px;
+}
+
+.thumb {
+  width: 100%;
+  height: 100%;
+  background: transparent;
+  overflow: hidden;
+}
+
+.thumb .front img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+  border-radius: 16px;
+}
+
+
+.product-card .thumb {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  transition: transform 0.6s;
+  transform-style: preserve-3d;       /* keep both sides visible in 3D */
+}
+
+.product-card:hover .thumb {
+  transform: rotateY(180deg);
+}
+
+.product-card .front,
+.product-card .back {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  backface-visibility: hidden;        /* hide back side when flipped */
+  border-radius: 12px;
+  overflow: hidden;
+}
+
+/* front face (image) */
+.product-card .front img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+/* back face (details) */
+.product-card .back {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  transform: rotateY(180deg);
+  display: flex;
+  flex-direction: column;
+  padding: 20px;
+  overflow-y: auto;
+  border-radius: 12px;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+}
+
+.product-header {
+  text-align: center;
+  margin-bottom: 16px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+  padding-bottom: 12px;
+}
+
+.product-header .title {
+  font-size: 18px;
+  font-weight: 700;
+  margin: 0 0 8px 0;
+  color: #ffffff;
+  font-family: 'Space Grotesk', sans-serif;
+}
+
+.product-header .category {
+  font-size: 12px;
+  color: #e0e0e0;
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  font-family: 'Space Grotesk', sans-serif;
+}
+
+.product-info {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.description {
+  font-size: 13px;
+  line-height: 1.4;
+  color: #f0f0f0;
+  margin: 0;
+  font-family: 'Space Grotesk', sans-serif;
+}
+
+.features {
+  margin: 8px 0;
+}
+
+.features h4 {
+  font-size: 12px;
+  font-weight: 600;
+  margin: 0 0 8px 0;
+  color: #ffffff;
+  font-family: 'Space Grotesk', sans-serif;
+}
+
+.features ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.features li {
+  font-size: 11px;
+  color: #e0e0e0;
+  margin-bottom: 4px;
+  padding-left: 12px;
+  position: relative;
+  font-family: 'Space Grotesk', sans-serif;
+}
+
+.features li:before {
+  content: "✓";
+  position: absolute;
+  left: 0;
+  color: #4ade80;
+  font-weight: bold;
+}
+
+.product-meta {
+  margin-top: auto;
+  padding-top: 12px;
+  border-top: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.price-section {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 8px;
+}
+
+.price {
+  font-size: 16px;
+  font-weight: 700;
+  color: #ffffff;
+  font-family: 'Space Grotesk', sans-serif;
+}
+
+.availability {
+  font-size: 10px;
+  padding: 4px 8px;
+  border-radius: 12px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  font-family: 'Space Grotesk', sans-serif;
+}
+
+.availability.in-stock {
+  background-color: #4ade80;
+  color: #000000;
+}
+
+.availability.limited {
+  background-color: #fbbf24;
+  color: #000000;
+}
+
+.rating-section {
+  margin-bottom: 12px;
+}
+
+.rating {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.stars {
+  font-size: 12px;
+}
+
+.rating-value {
+  font-size: 12px;
+  font-weight: 600;
+  color: #ffffff;
+  font-family: 'Space Grotesk', sans-serif;
+}
+
+.view-btn {
+  width: 100%;
+  background-color: #ffffff;
+  color: #667eea;
+  border: none;
+  padding: 10px 16px;
+  border-radius: 8px;
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  font-family: 'Space Grotesk', sans-serif;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.view-btn:hover {
+  background-color: #f8f9fa;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+}
+
+/* Responsive adjustments for detailed flip cards */
+@media (max-width: 768px) {
+  .product-card .back {
+    padding: 16px;
+  }
+  
+  .product-header .title {
+    font-size: 16px;
+  }
+  
+  .description {
+    font-size: 12px;
+  }
+  
+  .features h4 {
+    font-size: 11px;
+  }
+  
+  .features li {
+    font-size: 10px;
+  }
+  
+  .price {
+    font-size: 14px;
+  }
+  
+  .view-btn {
+    padding: 8px 12px;
+    font-size: 11px;
+  }
+}
+
+@media (max-width: 480px) {
+  .product-card .back {
+    padding: 12px;
+  }
+  
+  .product-header .title {
+    font-size: 14px;
+  }
+  
+  .product-header .category {
+    font-size: 10px;
+  }
+  
+  .description {
+    font-size: 11px;
+  }
+  
+  .features h4 {
+    font-size: 10px;
+  }
+  
+  .features li {
+    font-size: 9px;
+  }
+  
+  .price {
+    font-size: 12px;
+  }
+  
+  .availability {
+    font-size: 8px;
+    padding: 2px 6px;
+  }
+  
+  .view-btn {
+    padding: 6px 10px;
+    font-size: 10px;
+  }
+}
+
+.meta {
+  padding: 0;
+  display: none; /* you’re hiding meta; keep or show as you like */
+}
+
+.title {
+  margin: 0;
+  font: 600 clamp(13px, 1.6vw, 16px)/1.35 'Space Grotesk', sans-serif;
+  color: #111;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.category {
+  font: 500 clamp(11px, 1.3vw, 13px)/1.2 'Space Grotesk', sans-serif;
+  color: #555;
+}
+
+.price {
+  font: 700 clamp(12px, 1.6vw, 15px)/1.2 'Space Grotesk', sans-serif;
+  color: #0a7;
+}
+
+/* Responsive Layouts */
+@media (max-width: 1200px) {
+  .product-card {
+    width: 400px;
+    height: 400px;
+  }
+  .alpha-items.single {
+    grid-template-columns: minmax(200px, 400px);
+  }
+}
+
+/* === Mobile: keep alphabet on the LEFT for all rows === */
+@media (max-width: 768px) {
+  /* Use two columns on mobile: [letter | items] */
+  .alpha-row {
+    grid-template-columns: auto 1fr !important; /* letter | items */
+    align-items: start;
+    gap: 12px;
+  }
+
+  /* Ensure order is letter first, items second (overrides desktop single flip) */
+  .alpha-row .alpha-letter { order: 1 !important; }
+  .alpha-row .alpha-items  { order: 2 !important; }
+
+  /* Left-align the letter block */
+  .alpha-letter {
+    justify-self: start;
+    text-align: left !important;
+    padding: 0 6px 0 0; /* small right padding */
+  }
+
+  /* Reasonable mobile layout for the items */
+  .alpha-items.single { grid-template-columns: 1fr; }
+  .alpha-items.multi  { grid-template-columns: 1fr; } /* or repeat(2, minmax(0,1fr)) if you want 2-up */
+  
+  /* Card sizing on mobile */
+  .product-card { width: 100%; height: 250px; }
+  .thumb { aspect-ratio: 1 / 1; }
+}
+
+
+@media (max-width: 480px) {
+  .alpha-items.multi {
+    grid-template-columns: 1fr;
+  }
+  .product-card {
+    width: 100%;
+    height: 250px;
+  }
+  .alpha-items.single {
+    grid-template-columns: 1fr;
+  }
+}
+
+
+@media (min-width: 769px) {
+  .alpha-row.single .alpha-items.single {
+    margin-left: 50px;
+  }
+}
+
+
+@media (min-width: 769px) {
+  .alpha-row.single .alpha-items.single .product-card {
+    margin-left: 50px;
+  }
+}
+
+/* ========= Loading, Error, and Empty States ========= */
+.loading-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 60px 20px;
+  text-align: center;
+}
+
+.loading-spinner {
+  width: 40px;
+  height: 40px;
+  border: 4px solid #f3f3f3;
+  border-top: 4px solid #007bff;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+  margin-bottom: 16px;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+.loading-container p {
+  color: #6c757d;
+  font-size: 16px;
+  font-family: 'Space Grotesk', sans-serif;
+  margin: 0;
+}
+
+.error-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 60px 20px;
+  text-align: center;
+  background-color: #f8f9fa;
+  border-radius: 8px;
+  margin: 20px;
+}
+
+.error-message {
+  color: #dc3545;
+  font-size: 16px;
+  font-family: 'Space Grotesk', sans-serif;
+  margin-bottom: 16px;
+}
+
+.retry-button, .refresh-button {
+  background-color: #007bff;
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 6px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+  font-family: 'Space Grotesk', sans-serif;
+}
+
+.retry-button:hover, .refresh-button:hover {
+  background-color: #0056b3;
+}
+
+.no-products-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 60px 20px;
+  text-align: center;
+  background-color: #f8f9fa;
+  border-radius: 8px;
+  margin: 20px;
+}
+
+.no-products-container p {
+  color: #6c757d;
+  font-size: 16px;
+  font-family: 'Space Grotesk', sans-serif;
+  margin-bottom: 16px;
+}
+
+/* Responsive adjustments for states */
+@media (max-width: 768px) {
+  .loading-container, .error-container, .no-products-container {
+    padding: 40px 15px;
+  }
+  
+  .loading-spinner {
+    width: 32px;
+    height: 32px;
+    border-width: 3px;
+  }
+  
+  .loading-container p, .error-message, .no-products-container p {
+    font-size: 14px;
+  }
+}
+
+/* ========= Product Card Back Side Enhancements ========= */
+.back .price-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+  margin: 8px 0;
+}
+
+.back .price {
+  font-weight: 800;
+  color: #fff;
+  font-size: 16px;
+}
+
+.back .brand {
+  font-size: 12px;
+  color: #e0e0e0;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+/* Responsive adjustments for product details */
+@media (max-width: 768px) {
+  .back .price {
+    font-size: 14px;
+  }
+  
+  .back .brand {
+    font-size: 11px;
+  }
+}
+
+@media (max-width: 480px) {
+  .back .price-row {
+    flex-direction: column;
+    gap: 4px;
+  }
+  
+  .back .price {
+    font-size: 13px;
+  }
+  
+  .back .brand {
+    font-size: 10px;
+  }
+}

@@ -1,0 +1,398 @@
+@import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&display=swap');
+
+/* ===== EtomeDetails Container ===== */
+.etomeDetails-container {
+  width: 100%;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  font-family: 'Space Grotesk', sans-serif;
+  background-color: #ffffff;
+  overflow-x: hidden;
+ 
+}
+
+.etomeDetails-main {
+  flex: 1;
+  width: 100%;
+  padding: 40px 20px;
+  background-color: #ffffff;
+  overflow-x: hidden;
+
+}
+
+/* ===== Optional centered content block (if you add any text sections) ===== */
+.content-section {
+  max-width: 1200px;
+  margin: 0 auto;
+  text-align: center;
+ 
+}
+.content-section h1 {
+  font-size: clamp(26px, 5vw, 48px);
+  font-weight: 700;
+  color: #000000;
+  margin: 0 0 20px 0;
+}
+.content-section p {
+  font-size: clamp(14px, 2.2vw, 18px);
+  font-weight: 400;
+  color: #000000;
+  margin: 0;
+  line-height: 1.6;
+}
+
+/* ===== Full-bleed image wrapper ===== */
+.full-width-image-container {
+  width: 100vw;                         /* true edge-to-edge */
+  position: relative;
+  left: 50%;
+  transform: translateX(-50%);          /* center the 100vw box */
+  margin-top: clamp(16px, 4vw, 40px);
+  overflow: hidden;
+}
+
+/* Make the FIRST full-width image a hero (fixed aspect ratio) */
+.full-width-image-container:first-of-type {
+  aspect-ratio: 16 / 9;                 /* consistent hero height across screens */
+}
+
+/* Images (default: natural height) */
+.full-width-image {
+  width: 100%;
+  height: auto;
+  display: block;
+  object-fit: cover;
+  max-width: none;
+}
+
+/* When inside the hero, fill the aspect-ratio box */
+.full-width-image-container:first-of-type .full-width-image {
+  width: 100%;
+  height: 100%;                          /* fill the aspect-ratio container */
+  object-fit: cover;
+}
+
+/* Last image specific dimensions */
+.full-width-image-container:last-child .full-width-image {
+  height: 721px;
+  width: 1280px;
+  max-width: 100%;
+  object-fit: cover;
+}
+
+/* ===== Video Container ===== */
+.video-container {
+  width: 100vw;
+  height: 1400px;
+  position: relative;
+  left: 50%;
+  right: 50%;
+  margin-left: -50vw;
+  margin-right: -50vw;
+  margin-top: 40px;
+  margin-bottom: 40px;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.video-element {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+  border-radius: 8px;
+}
+
+/* ===== Overlay on the hero ===== */
+.image-overlay {
+  position: absolute;
+  inset: 0;                               /* cover the hero */
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-start;
+
+  /* Push overlay down a bit from the top in a fluid way */
+  /* padding-top: clamp(24px, 10vw, 120px); */
+  padding-left: 20px;
+  padding-right: 20px;
+
+  text-align: center;
+}
+
+.overlay-heading {
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: clamp(24px, 6vw, 48px);
+  font-weight: 700;
+  color: black;
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+  margin: 10px 0 clamp(8px, 2vw, 20px) 0;
+  line-height: 1.2;
+
+}
+
+.overlay-text {
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: clamp(14px, 2.5vw, 18px);
+  font-weight: 400;
+  color: black;
+  margin: 0;
+  line-height: 1.6;
+  max-width: 720px;
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+}
+
+/* ===== More About Section ===== */
+.more-about-section {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 80px 20px;
+  background-color: #ffffff;
+  max-width: 1200px;
+  margin: 0 auto;
+  gap: 60px;
+}
+
+.more-about-content {
+  text-align: center;
+  max-width: 800px;
+}
+
+.section-heading {
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: 48px;
+  font-weight: 700;
+  color: #000000;
+  margin: 0 0 40px 0;
+  line-height: 1.2;
+}
+
+.feature-tabs {
+  display: flex;
+  justify-content: center;
+  gap: 40px;
+  margin-bottom: 40px;
+  flex-wrap: wrap;
+}
+
+.tab {
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: 16px;
+  font-weight: 500;
+  color: #000000;
+  cursor: pointer;
+  padding: 8px 0;
+  position: relative;
+  transition: all 0.3s ease;
+}
+
+.tab.active {
+  position: relative;
+}
+
+.tab.active::after {
+  content: '';
+  position: absolute;
+  bottom: -4px;
+  left: 0;
+  right: 0;
+  height: 3px;
+  background-color: #ffd700;
+  border-radius: 2px;
+}
+
+.tab:hover {
+  color: #666666;
+}
+
+.section-description {
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: 18px;
+  font-weight: 400;
+  color: #000000;
+  line-height: 1.6;
+  margin: 0;
+  max-width: 600px;
+  margin: 0 auto;
+}
+
+.device-image-container {
+  width: 100%;
+  max-width: 600px;
+  height: 400px;
+  background-color: #2a2a2a;
+  border-radius: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  overflow: hidden;
+ 
+}
+
+.device-mockup {
+  width: 280px;
+  height: 360px;
+  background-color: #f5f5f5;
+  border-radius: 16px;
+  border: 2px solid #e0e0e0;
+  position: relative;
+  transform: rotate(8deg);
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+}
+
+.device-screen {
+  width: 100%;
+  height: 100%;
+  background-color: #ffffff;
+  border-radius: 14px;
+  position: relative;
+  overflow: hidden;
+}
+
+.device-branding {
+  position: absolute;
+  bottom: 20px;
+  right: 20px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+}
+
+.brand-name {
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: 16px;
+  font-weight: 600;
+  color: #000000;
+  font-style: italic;
+}
+
+.brand-logo {
+  width: 24px;
+  height: 24px;
+  background-color: #000000;
+  border-radius: 50%;
+  position: relative;
+}
+
+.brand-logo::after {
+  content: 'E';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  color: #ffffff;
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: 14px;
+  font-weight: 700;
+}
+
+/* ===== Responsive polish ===== */
+@media (max-width: 992px) {
+  .etomeDetails-main { padding: 32px 16px; }
+  
+  .more-about-section {
+    padding: 60px 20px;
+    gap: 40px;
+  }
+  
+  .section-heading {
+    font-size: 36px;
+  }
+  
+  .feature-tabs {
+    gap: 30px;
+  }
+  
+  .device-mockup {
+    width: 240px;
+    height: 300px;
+  }
+}
+
+@media (max-width: 768px) {
+  .more-about-section {
+    padding: 40px 16px;
+    gap: 30px;
+  }
+  
+  .section-heading {
+    font-size: 28px;
+    margin-bottom: 30px;
+  }
+  
+  .feature-tabs {
+    gap: 20px;
+    flex-direction: column;
+    align-items: center;
+  }
+  
+  .tab {
+    font-size: 14px;
+  }
+  
+  .section-description {
+    font-size: 16px;
+  }
+  
+  .device-image-container {
+    height: 300px;
+  }
+  
+  .device-mockup {
+    width: 200px;
+    height: 250px;
+    transform: rotate(5deg);
+  }
+}
+
+@media (max-width: 480px) {
+  .more-about-section {
+    padding: 30px 12px;
+  }
+  
+  .section-heading {
+    font-size: 24px;
+  }
+  
+  .section-description {
+    font-size: 14px;
+  }
+  
+  .device-image-container {
+    height: 250px;
+  }
+  
+  .device-mockup {
+    width: 160px;
+    height: 200px;
+    transform: rotate(3deg);
+  }
+}
+
+@media (max-width: 768px) {
+  .etomeDetails-main { padding: 28px 14px; }
+  
+  .video-container {
+    height: 400px;
+    margin-top: 30px;
+    margin-bottom: 30px;
+  }
+}
+
+@media (max-width: 480px) {
+  .video-container {
+    height: 250px;
+    margin-top: 20px;
+    margin-bottom: 20px;
+  }
+}
+
+@media (max-width: 480px) {
+  .etomeDetails-main { padding: 20px 12px; }
+}

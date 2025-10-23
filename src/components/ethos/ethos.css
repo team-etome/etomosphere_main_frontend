@@ -1,0 +1,536 @@
+.ethos-container {
+  width: 100%;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  
+ 
+
+}
+
+.image-container {
+  width: 100%;
+  height: 655px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background-color: #ffffff;
+  overflow: hidden;
+
+
+
+}
+
+.ethos-image {
+  width: 100%;
+  height: 655px;
+  object-fit: cover;
+  display: block;
+}
+
+.ethos-main {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 40px 20px;
+  background-color: #ffffff;
+}
+
+.ethos-content {
+  max-width: 1200px;
+  width: 100%;
+  text-align: center;
+}
+
+.ethos-content h1 {
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: 64px;
+  font-weight: 700;
+  color: #000;
+  margin-bottom: 30px;
+  text-transform: uppercase;
+  letter-spacing: 2px;
+}
+
+.ethos-content p {
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: 20px;
+  color: #333;
+  line-height: 1.6;
+  max-width: 800px;
+  margin: 0 auto;
+}
+
+/* Mission Section */
+.mission-section {
+  margin-top: 60px;
+  padding: 40px;
+  background-color: #f8f8f8;
+
+}
+
+.mission-title {
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: 64px;
+  font-weight: 700;
+  color: #000;
+  margin-bottom: 20px;
+  text-align: left;
+}
+
+.mission-text {
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: 30px;
+  color: #333;
+  line-height: 1.6;
+  text-align: left;
+  margin: 0;
+}
+
+/* Content Image */
+.content-image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+  
+}
+
+/* Mission Content */
+.mission-content {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  
+}
+
+.mission-content .mission-section {
+  margin-top: 0;
+  padding: 60px;
+  background-color: #ffffff;
+
+  
+}
+
+/* Image4 Container */
+.image4-container {
+  width: 100%;
+  /* max-width: 1440px; */
+  height: 951px;
+  margin: 0 auto;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  overflow: hidden;
+}
+
+.image4 {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+/* Ecosystem Section */
+.ecosystem-section {
+  width: 100%;
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 80px 40px;
+  text-align: center;
+  background-color: #ffffff;
+}
+
+.ecosystem-title {
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: 48px;
+  font-weight: 700;
+  color: #000000;
+  margin-bottom: 24px;
+  line-height: 1.2;
+}
+
+.ecosystem-text {
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: 18px;
+  font-weight: 400;
+  color: #000000;
+  line-height: 1.6;
+  max-width: 800px;
+  margin: 0 auto;
+}
+
+/* Responsive Design */
+@media (max-width: 1200px) {
+  .mission-content {
+    padding: 30px;
+  }
+  
+  .mission-content .mission-section {
+    padding: 40px;
+  }
+  
+  .mission-title {
+    font-size: 32px;
+  }
+}
+
+@media (max-width: 768px) {
+  .ethos-main {
+    padding: 20px 15px;
+  }
+  
+  .ethos-content h1 {
+    font-size: 36px;
+  }
+  
+  .ethos-content p {
+    font-size: 16px;
+  }
+  
+  /* Make split layout stack vertically on mobile */
+  .split-container {
+    flex-direction: column !important;
+    height: auto !important;
+  }
+  
+  .split-image,
+  .mission-content {
+    width: 100% !important;
+    height: 400px !important;
+    margin-left: 0 !important;
+    margin-bottom: 20px;
+  }
+  
+  .mission-content {
+    padding: 20px;
+  }
+  
+  .mission-content .mission-section {
+    padding: 30px;
+  }
+  
+  .mission-title {
+    font-size: 28px;
+  }
+  
+  .mission-text {
+    font-size: 16px;
+  }
+}
+
+@media (max-width: 480px) {
+  .ethos-content h1 {
+    font-size: 28px;
+  }
+  
+  .ethos-content p {
+    font-size: 14px;
+  }
+  
+  .split-image,
+  .mission-content {
+    height: 300px !important;
+  }
+  
+  .mission-content .mission-section {
+    padding: 20px;
+  }
+  
+  .mission-title {
+    font-size: 24px;
+  }
+  
+  .mission-text {
+    font-size: 14px;
+  }
+  
+  /* Image4 responsive */
+  .image4-container {
+    height: 600px;
+  }
+  
+  /* Ecosystem responsive */
+  .ecosystem-section {
+    padding-top: 60px 30px;
+  }
+  
+  .ecosystem-title {
+    font-size: 36px;
+  }
+  
+  .ecosystem-text {
+    font-size: 16px;
+  }
+  
+  /* Ecosystem split responsive */
+  .ecosystem-split-container {
+    flex-direction: column !important;
+    height: auto !important;
+    padding-left: 20px !important;
+    padding-right: 20px !important;
+  }
+  
+  .ecosystem-content,
+  .ecosystem-image {
+    width: 100% !important;
+    height: 500px !important;
+    margin-bottom: 20px;
+  }
+}
+
+/* New CSS Classes for Responsive Content */
+.ethos-title {
+  font-size: 40px;
+  font-family: 'Space Grotesk', sans-serif;
+  font-weight: 600;
+  color: #333;
+  margin-bottom: 20px;
+}
+
+.ethos-description {
+  font-size: 18px;
+  line-height: 1.6;
+  color: #666;
+  max-width: 800px;
+}
+
+.split-container {
+  width: 100%;
+  height: 780px;
+  display: flex;
+  padding-left: 60px;
+  padding-right: 40px;
+}
+
+.split-image {
+  width: 700px;
+  height: 700px;
+  overflow: hidden;
+}
+
+.content-image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.mission-content {
+  width: 700px;
+  height: 700px;
+ 
+}
+
+.image4-container {
+  width: 100%;
+  height: 951px;
+}
+
+.ecosystem-section {
+  padding-top: 40px;
+}
+
+.ecosystem-split-container {
+  width: 100%;
+  height: 951px;
+  display: flex;
+  padding-left: 50px;
+}
+
+.ecosystem-content {
+  height: 700px;
+  width: 708px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+}
+
+.ecosystem-main-title {
+  color: black;
+  font-size: 50px;
+  font-family: 'Space Grotesk', sans-serif;
+  font-weight: 500;
+  margin-bottom: 0;
+}
+
+.ecosystem-main-description {
+  font-size: 30px;
+  font-family: 'Space Grotesk', sans-serif;
+  font-weight: 400;
+  color: black;
+  margin-top: 40px;
+  margin-bottom: 0;
+}
+
+.ecosystem-image {
+  height: 700px;
+  width: 708px;
+}
+
+.ecosystem-main-image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+/* Responsive Design */
+@media (max-width: 1024px) {
+  .ethos-title {
+    font-size: 36px;
+  }
+  
+  .ethos-description {
+    font-size: 18px;
+  }
+  
+  .mission-title {
+    font-size: 48px;
+  }
+  
+  .mission-text {
+    font-size: 16px;
+  }
+  
+  .ecosystem-main-title {
+    font-size: 42px;
+  }
+  
+  .ecosystem-main-description {
+    font-size: 24px;
+  }
+}
+
+@media (max-width: 768px) {
+  .ethos-main {
+    padding: 20px 15px;
+  }
+  
+  .ethos-title {
+    font-size: 32px;
+    margin-bottom: 20px;
+  }
+  
+  .ethos-description {
+    font-size: 16px;
+    max-width: 100%;
+  }
+  
+  .mission-section {
+    padding: 20px 15px;
+  }
+  
+  .mission-title {
+    font-size: 36px;
+    text-align: center;
+  }
+  
+  .mission-text {
+    font-size: 14px;
+    text-align: center;
+  }
+  
+  .split-container {
+    flex-direction: column !important;
+    padding: 20px 15px;
+  }
+  
+  .split-image,
+  .mission-content {
+    width: 100% !important;
+    height: 300px !important;
+  }
+  
+  .image4-container {
+    height: 400px !important;
+  }
+  
+  .ecosystem-section {
+    padding: 20px 15px;
+  }
+  
+  .ecosystem-split-container {
+    flex-direction: column !important;
+    padding: 20px 15px;
+    height: auto !important;
+  }
+  
+  .ecosystem-content,
+  .ecosystem-image {
+    width: 100% !important;
+    height: 400px !important;
+  }
+  
+  .ecosystem-main-title {
+    font-size: 32px;
+  }
+  
+  .ecosystem-main-description {
+    font-size: 18px;
+    margin-top: 20px;
+  }
+}
+
+@media (max-width: 480px) {
+  .ethos-main {
+    padding: 15px 10px;
+  }
+  
+  .ethos-title {
+    font-size: 28px;
+    margin-bottom: 15px;
+  }
+  
+  .ethos-description {
+    font-size: 14px;
+  }
+  
+  .mission-section {
+    padding: 15px 10px;
+  }
+  
+  .mission-title {
+    font-size: 28px;
+  }
+  
+  .mission-text {
+    font-size: 13px;
+  }
+  
+  .split-container {
+    padding: 15px 10px;
+  }
+  
+  .split-image,
+  .mission-content {
+    height: 250px !important;
+  }
+  
+  .image4-container {
+    height: 300px !important;
+  }
+  
+  .ecosystem-section {
+    padding: 15px 10px;
+  }
+  
+  .ecosystem-split-container {
+    padding: 15px 10px;
+  }
+  
+  .ecosystem-content,
+  .ecosystem-image {
+    height: 300px !important;
+  }
+  
+  .ecosystem-main-title {
+    font-size: 24px;
+  }
+  
+  .ecosystem-main-description {
+    font-size: 16px;
+    margin-top: 15px;
+  }
+}
