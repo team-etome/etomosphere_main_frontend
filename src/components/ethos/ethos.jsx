@@ -1,120 +1,167 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useMemo, useRef, useState } from "react";
 import Header from '../header/header.jsx';
 import Footer from '../footer/footer.jsx';
-import image1 from '../../assets/image1.jpeg'
-import image3 from '../../assets/image3.jpg';
-import image4 from '../../assets/image4.webp';
-import image5 from '../../assets/image5.jpg';
-import './ethos.css';
+import "./ethos.css";
+import ethos1 from '../../assets/ethos1.jpg';
+import ethos2 from '../../assets/ethos2.jpg';
+import ethos3 from '../../assets/ethos3.jpg';
+const clamp = (v, min, max) => Math.max(min, Math.min(max, v));
 
-import { useSelector } from "react-redux";
+function Ethos() {
+    const cards = useMemo(
+        () => [
+            {
+                id: 1,
+                title: "Converging Horizons",
+                body: "Etomosphere is where technology, education, and community unite. We are building a future-ready ecosystem that empowers schools, institutions, and learners with solutions that inspire growth and innovation.",
+                image: ethos1
+            },
+            {
+                id: 2,
+                title: "Our Mission",
+                body: "To transform education through intelligent, connected solutions that empower teachers, engage learners, and elevate the entire learning experience beyond traditional boundaries.",
+                image: ethos2
+            },
+            {
+                id: 3,
+                title: "Shaping the Future of Learning",
+                body: "Etomosphere unites trusted products and technologies into a connected system that builds better learning environments.",
+                image: ethos3
+            },
+            {
+                id: 4,
+                title: "Future-Ready Classrooms",
+                body: "Our solutions prepare students for the future with modern classroom technology that supports remote learning, hybrid education, and innovative teaching methods.",
+                image: "https://images.unsplash.com/photo-1516321318423-f06f85e504b3?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1000&q=80"
+            },
+           
+        ], 
+        []
+    );
 
-const Ethos = () => {
-
-
-
-    const APIURL = useSelector((state) => state.APIURL.url);
-
-    console.log(APIURL, "api url ")
-
+    const sectionRef = useRef(null);
+    const [progress, setProgress] = useState(0); // 0 → 1 across section
 
     useEffect(() => {
-        console.log(APIURL, 'api url');
-    }, [APIURL]); // runs whenever APIURL changes, including first load
+        const onScroll = () => {
+            const el = sectionRef.current;
+            if (!el) return;
 
+            const rect = el.getBoundingClientRect();
+            const vh = window.innerHeight;
 
+            // Normalize scroll progress for the whole section: 0 → 1
+            const visibleRange = rect.height;
+            const scrolledIn = clamp(vh - rect.top, 0, visibleRange);
+            const p = visibleRange > 0 ? scrolledIn / visibleRange : 0;
+            setProgress(clamp(p, 0, 1));
+        };
 
+        onScroll();
+        window.addEventListener("scroll", onScroll, { passive: true });
+        window.addEventListener("resize", onScroll);
+        return () => {
+            window.removeEventListener("scroll", onScroll);
+            window.removeEventListener("resize", onScroll);
+        };
+    }, []);
 
+    // Each card gets an equal "slot" of the overall progress
+    const perCard = 1 / cards.length;
+    const activeIndex = Math.min(
+        cards.length - 1,
+        Math.floor(progress / perCard)
+    );
 
     return (
         <div className="ethos-container">
             <Header />
-            <div className="image-container">
-                <img src={image1} alt="Ethos content" className="ethos-image" />
-            </div>
-            <main className="ethos-main">
 
+            <section
+                ref={sectionRef}
+                className="stack-section"
+                style={{
+                    height: `${cards.length * 100}vh`,
 
-                <div className="ethos-content">
-                    <h1 className="ethos-title">Converging Horizons</h1>
-                    <p className="ethos-description">Etomosphere is where technology, education, and community unite. We are building a future-ready ecosystem that empowers schools, institutions, and learners with solutions that inspire growth and innovation.</p>
-                </div>
+                }} // 1 viewport per card
 
+            >
 
-            </main>
+                <div style={{
+                    display: "flex",
+                    justifyItems: "center",
+                    justifyContent: "center",
+                    // marginTop:"40px",
+                    paddingTop: "80px",
 
-            <div className="split-container">
+                }} className="stack-viewport">
+                    <div style={{
+                        borderRadius: "18px",
+                     
 
+                    }} className="stack">
+                        {cards.map((card, i) => {
+                            // Local progress for THIS card's slot (0→1 while it's active)
+                            const start = i * perCard;
+                            const end = (i + 1) * perCard;
+                            const slotT = clamp((progress - start) / (end - start), 0, 1);
 
-                <div className="split-image">
+                            // Only one card animates at a time:
+                            // - Cards BEFORE activeIndex are fully settled (t=1).
+                            // - The active card uses slotT (0→1).
+                            // - Cards AFTER activeIndex are waiting (t=0).
+                            const t =
+                                i < activeIndex ? 1 :
+                                    i === activeIndex ? slotT : 0;
 
-                    <img src={image3} alt="Etomosphere content" className="content-image" />
+                            // Motion:
+                            // - translateY: rise up from the stack into place
+                            // - scale: grow slightly as it comes to front
+                            // - opacity: fade in
+                            // - zIndex: keep the active card on top of all others
+                            const translateY = (1 - t) * 120 + (i - activeIndex) * 6; // px
+                            const scale = 0.94 + t * 0.06;
+                            const opacity = 0.35 + t * 0.65;
+                            const zIndex = i === activeIndex ? 1000 : i; // active card above all
 
-                </div>
+                            return (
+                                <article
+                                    key={card.id}
+                                    className="card"
+                                    style={{
 
+                                        zIndex,
+                                        opacity,
+                                        transform: `translateY(${translateY}px) scale(${scale})`,
+                                        boxShadow: `0 20px 40px rgba(0,0,0,${0.18 * (1 - (t * 0.7))})`,
+                                    }}
+                                >
+                                    <div style={{
 
-                <div className="mission-content">
+                                        height: "100%",
 
-                    <div className="mission-section">
-                        <h2 className="mission-title">Our Mission</h2>
-                        <p className="mission-text">To transform education <br /> through intelligent, <br /> connected solutions <br /> that empower teachers, <br /> engage learners, and <br /> elevate the entire <br /> learning experience <br /> beyond traditional <br /> boundaries.</p>
+                                    }} className="card-content">
+                                        <div style={{
+
+                                            height: "100%"
+                                        }} className="card-image">
+                                            <img src={card.image} alt={card.title} />
+                                        </div>
+                                        <div className="card-text">
+                                            <h3>{card.title}</h3>
+                                            <p>{card.body}</p>
+                                        </div>
+                                    </div>
+                                </article>
+                            );
+                        })}
                     </div>
-
                 </div>
-
-
-
-
-            </div>
-
-            <div className="image4-container">
-                <img src={image4} alt="Etomosphere content" className="image4" />
-
-            </div>
-
-            <div className="ecosystem-section">
-                <h2 className="ecosystem-title">Our Ecosystem Of Solutions</h2>
-                <p className="ecosystem-text">Etomosphere unites trusted products and technologies into a <br /> connected system that builds better learning environments.</p>
-            </div>
-
-
-            <div className="ecosystem-split-container">
-
-
-
-                <div className="ecosystem-content">
-
-
-                    <h1 className="ecosystem-main-title">Shaping the Future of Learning</h1>
-
-
-                    <p className="ecosystem-main-description">We envision a world where <br /> innovation fuels imagination <br /> and education evolves beyond <br /> boundaries. Etomosphere is at <br /> the forefront of that transformation.</p>
-
-
-                </div>
-
-
-
-                <div className="ecosystem-image">
-
-                    <img src={image5} alt="Etomosphere content" className="ecosystem-main-image" />
-
-
-                </div>
-
-
-
-
-            </div>
-
-
-
-
-
+            </section>
 
             <Footer />
         </div>
     );
-};
+}
 
 export default Ethos;

@@ -10,7 +10,17 @@ const Etomos = () => {
     <div className="etomos-container">
       <Header />
       <div className="image-container">
-        <img src={image2} alt="Etomos content" className="etomos-image" />
+        <video 
+          className="etomos-video"
+          autoPlay
+          loop
+          playsInline
+          width="100%"
+          height="100%"
+        >
+          <source src="/src/assets/etomosphere.mp4" type="video/mp4" />
+          Your browser does not support the video tag.
+        </video>
       </div>
       <Footer />
     </div>

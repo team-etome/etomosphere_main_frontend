@@ -77,7 +77,7 @@ const BrandProduct = () => {
        
 
         {/* Dynamic Cards based on brand products */}
-        <div className="brandproduct-cards-container">
+        <div className="brandproduct-cards-container" style={{ marginLeft: "40px" }}>
           {brandProducts.map((product, index) => (
             <div 
               key={product.id} 
@@ -87,11 +87,12 @@ const BrandProduct = () => {
             >
               <div className="brandproduct-card-image">
                 <img
-                  src={product.productImages && product.productImages.length > 0 
-                    ? product.productImages[0].image || product.productImages[0].image_url || product.productImages[0]
-                    : product.image}
+                  src={product.product_images && product.product_images.length > 0 
+                    ? product.product_images[0].image_url || product.product_images[0].image
+                    : product.image || 'https://via.placeholder.com/300x200'}
                   alt={product.name}
                   loading="lazy"
+                  onError={(e) => { e.currentTarget.src = 'https://via.placeholder.com/300x200'; }}
                 />
               </div>
               <div className="brandproduct-card-content">

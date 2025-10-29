@@ -6,279 +6,185 @@ import './edumart.css';
 import { useSelector } from "react-redux";
 import axios from "axios";
 
-const groupProductsByCategory = (items) => {
-  const map = {};
-  const categoryMap = {}; // Track unique categories
-  
-  items.forEach((p) => {
-    const letter = p.category?.charAt(0)?.toUpperCase() || "#";
-    const category = p.category;
-    
-    // Only add if we haven't seen this category before
-    if (!categoryMap[category]) {
-      categoryMap[category] = true;
-      map[letter] = map[letter] ? [...map[letter], p] : [p];
-    }
-  });
-  
-  return Object.keys(map)
-    .sort()
-    .map((letter) => ({ letter, items: map[letter] }));
+const pickDisplayImage = (p) => {
+  // 1) product main image
+  const main = p.product_images?.find?.(im => im?.is_main && im?.image_url)?.image_url;
+  if (main) return main;
+  // 2) first product image
+  const first = p.product_images?.find?.(im => im?.image_url)?.image_url;
+  if (first) return first;
+  // 3) first category image
+  const catFirst = p.brand?.category?.images?.find?.(im => im?.image_url)?.image_url;
+  return catFirst || "";
 };
 
-const Edumart = () => {
-  const [products, setProducts] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState('');
+const toAbsolute = (baseUrl, imageUrl) => {
+  if (!imageUrl) return 'https://via.placeholder.com/300x200';
+  if (imageUrl.startsWith('http')) return imageUrl;
+  return `${baseUrl}${imageUrl}`;
+};
+
+function Edumart() {
+  const [items, setItems] = useState([]);
+  const [allItems, setAllItems] = useState([]); // full list for filtering
+  const [loading, setLoad] = useState(true);
+  const [error, setError] = useState("");
   const navigate = useNavigate();
-  
-  const APIURL = useSelector((state) => state.APIURL?.url);
+  const APIURL = useSelector((s) => s.APIURL?.url) || "";
 
-
-  console.log(products,"products")
-
-  // Fetch products from backend
-  const fetchProducts = async () => {
-    try {
-      setLoading(true);
-      setError('');
-      console.log('Fetching products from:', `${APIURL}/api/products/`);
-      
-      const response = await axios.get(`${APIURL}/api/products/`);
-      console.log('Products fetched successfully:', response.data);
-      
-          // Transform backend data to match frontend structure
-          const transformedProducts = response.data.products.map((product, index) => ({
-            id: product.id || index + 1,
-            // Store the specific fields you requested
-            name: product.name || 'Unnamed Product',
-            category: product.brand?.category?.name || 'General',
-            image: product.brand?.category?.images && product.brand.category.images.length > 0
-              ? product.brand.category.images[0].image_url
-              : product.images && product.images.length > 0
-              ? product.images[0].image
-              : 'https://via.placeholder.com/300x200',
-            description: product.description || product.brand?.category?.description || 'No description available.',
-            // Additional pricing and display data
-            price: product.variants && product.variants.length > 0
-              ? `Rs. ${product.variants[0].price || 'N/A'}`
-              : 'Price not available',
-            rating: 4.5, // Default rating since not in backend
-            // Store additional data for detailed view
-            specs: product.spec_json || {},
-            features: product.variants && product.variants.length > 0
-              ? product.variants[0].spec_json || {}
-              : {},
-            stockStatus: product.variants && product.variants.length > 0
-              ? product.variants[0].stock_status || 'in_stock'
-              : 'in_stock',
-            // Store original backend data for reference
-            brand: product.brand?.name || 'Unknown Brand',
-            lifecycleStatus: product.lifecycle_status || 'active',
-            shortCode: product.short_code || '',
-            createdAt: product.created_at || '',
-            // Store category details
-            categorySlug: product.brand?.category?.slug || '',
-            categoryDescription: product.brand?.category?.description || '',
-            // Store product images
-            productImages: product.images || []
-          }));
-      
-      setProducts(transformedProducts);
-    } catch (error) {
-      console.error('Error fetching products:', error);
-      setError('Failed to load products. Using sample data.');
-      // Fallback to sample data if API fails
-      setProducts([
-        { id: 1, name: 'Etome Dua Business', category: 'Digital Note-taking Device', image: 'https://imgs.search.brave.com/UAoO7zfp3sAa18neVJ4ldklkL_Q4ER1CAPbtYtiRDDs/rs:fit:500:0:1:0/g:ce/aHR0cHM6Ly9jZG4t/ZnJvbnQuZnJlZXBp/ay5jb20vaG9tZS9h/bm9uLXJ2bXAvY3Jl/YXRpdml0eS91cHNj/YWxlci1tYWduaWZp/Yy1tb2RlbHMtcG9z/dGVyLXYyLndlYnA', price: 'Rs. 399', rating: 4.6, description: 'Paper-like writing with advanced palm rejection.' },
-        { id: 2, name: 'Etome Pro Max', category: 'Professional Tablet', image: 'https://imgs.search.brave.com/UAoO7zfp3sAa18neVJ4ldklkL_Q4ER1CAPbtYtiRDDs/rs:fit:500:0:1:0/g:ce/aHR0cHM6Ly9jZG4t/ZnJvbnQuZnJlZXBp/ay5jb20vaG9tZS9h/bm9uLXJ2bXAvY3Jl/YXRpdml0eS91cHNj/YWxlci1tYWduaWZp/Yy1tb2RlbHMtcG9z/dGVyLXYyLndlYnA', price: 'Rs. 599', rating: 4.6, description: 'Paper-like writing with advanced palm rejection.' },
-        { id: 3, name: 'Digital Whiteboard', category: 'Interactive Display', image: 'https://imgs.search.brave.com/UAoO7zfp3sAa18neVJ4ldklkL_Q4ER1CAPbtYtiRDDs/rs:fit:500:0:1:0/g:ce/aHR0cHM6Ly9jZG4t/ZnJvbnQuZnJlZXBp/ay5jb20vaG9tZS9h/bm9uLXJ2bXAvY3Jl/YXRpdml0eS91cHNj/YWxlci1tYWduaWZp/Yy1tb2RlbHMtcG9z/dGVyLXYyLndlYnA', price: 'Rs. 799', rating: 4.6, description: 'Paper-like writing with advanced palm rejection.' },
-        { id: 4, name: 'Smart Pen', category: 'Accessory', image: 'https://imgs.search.brave.com/UAoO7zfp3sAa18neVJ4ldklkL_Q4ER1CAPbtYtiRDDs/rs:fit:500:0:1:0/g:ce/aHR0cHM6Ly9jZG4t/ZnJvbnQuZnJlZXBp/ay5jb20vaG9tZS9h/bm9uLXJ2bXAvY3Jl/YXRpdml0eS91cHNj/YWxlci1tYWduaWZp/Yy1tb2RlbHMtcG9z/dGVyLXYyLndlYnA', price: 'Rs. 199', rating: 4.6, description: 'Paper-like writing with advanced palm rejection.' },
-        { id: 5, name: 'Study Tablet', category: 'Educational Device', image: 'https://imgs.search.brave.com/UAoO7zfp3sAa18neVJ4ldklkL_Q4ER1CAPbtYtiRDDs/rs:fit:500:0:1:0/g:ce/aHR0cHM6Ly9jZG4t/ZnJvbnQuZnJlZXBp/ay5jb20vaG9tZS9h/bm9uLXJ2bXAvY3Jl/YXRpdml0eS91cHNj/YWxlci1tYWduaWZp/Yy1tb2RlbHMtcG9z/dGVyLXYyLndlYnA', price: 'Rs. 499' },
-        { id: 6, name: 'Learning Monitor', category: 'Display', image: 'https://imgs.search.brave.com/UAoO7zfp3sAa18neVJ4ldklkL_Q4ER1CAPbtYtiRDDs/rs:fit:500:0:1:0/g:ce/aHR0cHM6Ly9jZG4t/ZnJvbnQuZnJlZXBp/ay5jb20vaG9tZS9h/bm9uLXJ2bXAvY3Jl/YXRpdml0eS91cHNj/YWxlci1tYWduaWZp/Yy1tb2RlbHMtcG9z/dGVyLXYyLndlYnA', price: 'Rs. 899' },
-        { id: 7, name: 'Note Pad Pro', category: 'Digital Writing', image: 'https://imgs.search.brave.com/UAoO7zfp3sAa18neVJ4ldklkL_Q4ER1CAPbtYtiRDDs/rs:fit:500:0:1:0/g:ce/aHR0cHM6Ly9jZG4t/ZnJvbnQuZnJlZXBp/ay5jb20vaG9tZS9h/bm9uLXJ2bXAvY3Jl/YXRpdml0eS91cHNj/YWxlci1tYWduaWZp/Yy1tb2RlbHMtcG9z/dGVyLXYyLndlYnA', price: 'Rs. 349' },
-        { id: 8, name: 'E-Ink Reader', category: 'Reading Device', image: 'https://imgs.search.brave.com/UAoO7zfp3sAa18neVJ4ldklkL_Q4ER1CAPbtYtiRDDs/rs:fit:500:0:1:0/g:ce/aHR0cHM6Ly9jZG4t/ZnJvbnQuZnJlZXBp/ay5jb20vaG9tZS9h/bm9uLXJ2bXAvY3Jl/YXRpdml0eS91cHNj/YWxlci1tYWduaWZp/Yy1tb2RlbHMtcG9z/dGVyLXYyLndlYnA', price: 'Rs. 449' },
-        { id: 9, name: 'Advanced Calculator', category: 'Accessory', image: 'https://imgs.search.brave.com/UAoO7zfp3sAa18neVJ4ldklkL_Q4ER1CAPbtYtiRDDs/rs:fit:500:0:1:0/g:ce/aHR0cHM6Ly9jZG4t/ZnJvbnQuZnJlZXBp/ay5jb20vaG9tZS9h/bm9uLXJ2bXAvY3Jl/YXRpdml0eS91cHNj/YWxlci1tYWduaWZp/Yy1tb2RlbHMtcG9z/dGVyLXYyLndlYnA', price: 'Rs. 299' },
-        { id: 10, name: 'Business Tablet', category: 'Professional Tablet', image: 'https://imgs.search.brave.com/UAoO7zfp3sAa18neVJ4ldklkL_Q4ER1CAPbtYtiRDDs/rs:fit:500:0:1:0/g:ce/aHR0cHM6Ly9jZG4t/ZnJvbnQuZnJlZXBp/ay5jb20vaG9tZS9h/bm9uLXJ2bXAvY3Jl/YXRpdml0eS91cHNj/YWxlci1tYWduaWZp/Yy1tb2RlbHMtcG9z/dGVyLXYyLndlYnA', price: 'Rs. 699' }
-      ]);
-    } finally {
-      setLoading(false);
-    }
-  };
+  console.log(items, "items");
 
   useEffect(() => {
-    fetchProducts();
+    let mounted = true;
+    (async () => {
+      try {
+        setLoad(true);
+        setError("");
+        const res = await axios.get(`${APIURL}/api/products/`);
+        if (!mounted) return;
+
+        const products = res.data?.products || [];
+        console.log(products, "products");
+        const normalized = products.map(p => {
+          const img = pickDisplayImage(p);
+          return {
+            id: p.id,
+            name: p.name || "Unnamed Product",
+            category: p.brand?.category?.name || "Uncategorized",
+            brandName: p.brand?.name || "Unknown Brand",
+            image: toAbsolute(APIURL, img),
+            raw: p,
+          };
+        });
+
+        setAllItems(normalized); // keep full list
+
+        // Group by category and take only the first product from each category for display
+        const groupedByCategory = normalized.reduce((acc, product) => {
+          const category = product.category;
+          if (!acc[category]) {
+            acc[category] = product;
+          }
+          return acc;
+        }, {});
+
+        const uniqueProducts = Object.values(groupedByCategory);
+        setItems(uniqueProducts);
+      } catch (e) {
+        setError(e?.response?.data?.detail || "Failed to load products.");
+      } finally {
+        setLoad(false);
+      }
+    })();
+    return () => { mounted = false; };
   }, [APIURL]);
 
-  // Handle product click
   const handleProductClick = (product) => {
-    // Get all products from the same category
-    const categoryProducts = products.filter(p => p.category === product.category);
-    
-    // Store all products from this category in localStorage
-    localStorage.setItem('selectedCategoryProducts', JSON.stringify(categoryProducts));
-    localStorage.setItem('selectedCategory', product.category);
-    
-    // Navigate to brandpage
-    navigate('/brandpage');
+    // Navigate to brand page with all products from the same category (use full list)
+    const categoryProducts = allItems
+      .filter(x => x.category === product.category)
+      .map(x => x.raw);
+    localStorage.setItem("selectedCategoryProducts", JSON.stringify(categoryProducts));
+    localStorage.setItem("selectedCategory", product.category);
+    navigate("/brandpage");
   };
 
-  // Group products by category
-  const productGroups = groupProductsByCategory(products);
-
+  const handleArrowClick = (e, product) => {
+    e.stopPropagation(); // Prevent triggering the card click
+    handleProductClick(product);
+  };
   return (
     <div className="edumart-container">
       <Header />
 
       <main className="edumart-main">
-        <section className="products-section">
-          <h1 className="products-title">All Products</h1>
-          <p className="products-description">
-            Explore our complete range of trusted solutions — from displays and
-            tablets<br />
-            to software and AR/VR. Find exactly what you need for smarter
-            learning and<br />
-            collaboration.
-          </p>
-        </section>
-
-        {/* Loading State */}
         {loading && (
-          <div className="loading-container">
-            <div className="loading-spinner"></div>
-            <p>Loading products...</p>
-          </div>
+          <div style={{ padding: "32px 80px" }}>Loading products…</div>
         )}
 
-        {/* Error State */}
-        {error && (
-          <div className="error-container">
-            <p className="error-message">{error}</p>
-            <button onClick={fetchProducts} className="retry-button">
-              Retry
-            </button>
-          </div>
+        {!loading && error && (
+          <div style={{ padding: "32px 80px", color: "crimson" }}>{error}</div>
         )}
 
-        {/* Products Grid */}
         {!loading && !error && (
-          <div className="alphabet-products-container gp-wrap">
-          {productGroups.map(({ letter, items }) => {
-            const isSingle = items.length === 1;
-            return (
-              <section
-                key={letter}
-                className={`alpha-row ${isSingle ? "single" : "multi"}`}
-                aria-label={`Products with category starting with ${letter}`}
+          <div
+            style={{
+
+              display: "grid",
+              gridTemplateColumns: "repeat(4, 1fr)",
+              gap: "24px",
+              padding: "32px 80px"
+            }}
+          >
+            {items.map(p => (
+              <div
+                key={p.id}
+                role="button"
+                onClick={() => handleProductClick(p)}
+                style={{
+               
+                  borderRadius: "16px",
+                  overflow: "hidden",
+                  cursor: "pointer",
+                  background: "#f4f4f4",
+                  position: "relative"
+                }}
               >
-                <div className="alpha-letter">{letter}</div>
-
-                <div className={`alpha-items ${isSingle ? "single" : "multi"}`}>
-                  {items.map((product) => (
-                    <article
-                      key={product.id}
-                      className="product-card"
-                      role="button"
-                      tabIndex={0}
-                      aria-label={`${product.category} card`}
-                      onClick={() => handleProductClick(product)}
-                      style={{ cursor: 'pointer' }}
-                    >
-                      <div className="thumb">
-                        {/* Front side — product image */}
-                        <div className="front" aria-hidden="false">
-                          <img
-                            src={product.image}
-                            alt={product.category}
-                            loading="lazy"
-                          />
-                        </div>
-
-                        {/* Back side — more details */}
-                        <div className="back" aria-hidden="true">
-                          {/* Top badge */}
-                          {product.badge && (
-                            <span className="badge">{product.badge}</span>
-                          )}
-
-                          {/* Title + price */}
-                          <h3 className="title">{product.name}</h3>
-                          <div className="price-row">
-                            <div className="price">{product.price}</div>
-                            <div className="brand">{product.brand}</div>
-                          </div>
-
-                          {/* Short description */}
-                          <p className="description">
-                            {product.description?.length > 90
-                              ? product.description.slice(0, 90) + "…"
-                              : product.description ||
-                                "No description available."}
-                          </p>
-
-                          {/* Quick specs / features */}
-                          {(product.specs && Object.keys(product.specs).length > 0) && (
-                            <div className="quick-specs">
-                              <ul className="specs">
-                                {Object.entries(product.specs)
-                                  .slice(0, 3) // Show only first 3 specs
-                                  .map(([key, value], index) => (
-                                    <li key={index}>
-                                      <strong>{key.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase())}:</strong>{" "}
-                                      {typeof value === 'boolean' ? (value ? 'Yes' : 'No') : String(value)}
-                                    </li>
-                                  ))}
-                              </ul>
-                            </div>
-                          )}
-
-                          {/* Features array */}
-                          {product.features && Array.isArray(product.features) && product.features.length > 0 && (
-                            <div className="quick-specs">
-                              <ul className="features">
-                                {product.features
-                                  .slice(0, 3)
-                                  .map((feature, index) => (
-                                    <li key={index}>{feature}</li>
-                                  ))}
-                              </ul>
-                            </div>
-                          )}
-
-                          {/* Meta row */}
-                       
-
-                          {/* Tags */}
-                          {product.tags?.length ? (
-                            <div className="tags">
-                              {product.tags.slice(0, 3).map((t, i) => (
-                                <span className="tag" key={i}>
-                                  {t}
-                                </span>
-                              ))}
-                            </div>
-                          ) : null}
-
-                          {/* Actions */}
-                        
-                        </div>
-                      </div>
-                    </article>
-                  ))}
+                <div style={{ width: "100%", aspectRatio: "1 / 1", position: "relative" }}>
+                  <img
+                    src={p.image || 'data:image/gif;base64,R0lGODlhAQABAAAAACw='}
+                    alt={p.name}
+                    onError={(e) => { e.currentTarget.style.opacity = 0; }}
+                    style={{
+                      width: "100%",
+                      height: "100%",
+                      objectFit: "cover",
+                      transition: "transform 0.6s ease",
+                    }}
+                    onMouseEnter={(e) => { e.currentTarget.style.transform = "scale(1.06)"; }}
+                    onMouseLeave={(e) => { e.currentTarget.style.transform = "scale(1)"; }}
+                  />
+                  
+                  {/* Category overlay at bottom of image */}
+                  <div style={{
+                    position: "absolute",
+                    bottom: 0,
+                    left: 0,
+                    right: 0,
+                  
+                    color: "white",
+                    padding: "8px 16px",
+                    fontSize: "24px",
+                           fontWeight: 500,
+                   
+                  }}>
+                    {p.category}
+                  </div>
                 </div>
-              </section>
-            );
-          })}
-          </div>
-        )}
 
-        {/* No Products State */}
-        {!loading && !error && products.length === 0 && (
-          <div className="no-products-container">
-            <p>No products available at the moment.</p>
-            <button onClick={fetchProducts} className="refresh-button">
-              Refresh
-            </button>
+                {/* Corner arrow */}
+                <div
+                  onClick={(e) => handleArrowClick(e, p)}
+                  style={{
+                    position: "absolute",
+                    right: 10, bottom: 7,
+                    width: 28, height: 28,
+                    borderRadius: "50%",
+                    display: "flex", alignItems: "center", justifyContent: "center",
+                    cursor: "pointer",
+
+                    
+                  
+                  }}
+                >
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none"
+                    stroke="white" strokeWidth="2"
+                    style={{ transform: "rotate(45deg)" }}>
+                    <path d="M7 17L17 7M17 7H7M17 7V17" />
+                  </svg>
+                </div>
+              </div>
+            ))}
           </div>
         )}
       </main>

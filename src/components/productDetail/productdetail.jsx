@@ -14,6 +14,7 @@ const ProductDetail = () => {
     const [loading, setLoading] = useState(true);
     const [cartLoading, setCartLoading] = useState(false);
     const [cartMessage, setCartMessage] = useState('');
+    const [showContactInfo, setShowContactInfo] = useState(false);
     const navigate = useNavigate();
     
     const APIURL = useSelector((state) => state.APIURL?.url);
@@ -41,24 +42,15 @@ const ProductDetail = () => {
         }
     }, []);
 
-    // Create product images array from product data or use default
-    const productImages = product?.productImages && product.productImages.length > 0 
-        ? product.productImages.map((img, index) => ({
+    // Create product images array strictly from product_images
+    const productImages = (product?.product_images && product.product_images.length > 0)
+        ? product.product_images.map((img, index) => ({
             id: index + 1,
-            src: img.image || img.image_url || img,
-            alt: `${product.name} - Image ${index + 1}`
-        }))
-        : product?.images && product.images.length > 0 
-        ? product.images.map((img, index) => ({
-            id: index + 1,
-            src: img.image || img.image_url || img,
+            src: img.image_url || 'https://via.placeholder.com/300x200',
             alt: `${product.name} - Image ${index + 1}`
         }))
         : [
-            { id: 1, src: product?.image || image7, alt: `${product?.name || 'Product'} - Main View` },
-            { id: 2, src: product?.image || image7, alt: `${product?.name || 'Product'} - Side View` },
-            { id: 3, src: product?.image || image7, alt: `${product?.name || 'Product'} - Back View` },
-            { id: 4, src: product?.image || image7, alt: `${product?.name || 'Product'} - Accessories` }
+            { id: 1, src: image7, alt: `${product?.name || 'Product'} - Main View` }
         ];
 
     const handleAddToCart = async () => {
@@ -91,11 +83,16 @@ const ProductDetail = () => {
             // Get user ID from stored user data
             const user = JSON.parse(userData);
             const userId = user.id;
+
+            console.log(userId, "userId")
             
             // Prepare cart data
             const cartData = {
-                product: product.id, // Product ID
-                quantity: 1 // Default quantity
+
+                product_id: product.id, 
+                quantity: 1,
+                user : userId
+                
             };
             
             console.log('Adding to cart:', cartData);
@@ -141,6 +138,15 @@ const ProductDetail = () => {
         } finally {
             setCartLoading(false);
         }
+    };
+
+
+    const handleEnquireNow = () => {
+        setShowContactInfo(true);
+    };
+
+    const closeContactInfo = () => {
+        setShowContactInfo(false);
     };
 
     const handleBuyAmazon = () => {
@@ -193,42 +199,49 @@ const ProductDetail = () => {
                     <div className="product-image-section">
                         <div className="responsive-image-container">
                             <img 
-                                src={productImages[selectedImage]?.src || product.image} 
+                                src={productImages[selectedImage]?.src || 'https://via.placeholder.com/300x200'} 
                                 alt={productImages[selectedImage]?.alt || product.name} 
                                 className="responsive-product-image"
+                                onError={(e) => { e.currentTarget.src = 'https://via.placeholder.com/300x200'; }}
                             />
                         </div>
                         
-                        {/* Image Navigation */}
-                        <div className="image-navigation">
-                            <button className="nav-arrow left">
-                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                                    <path d="M15 18l-6-6 6-6"/>
-                                </svg>
-                            </button>
-                            
-                            <div className="thumbnail-container">
-                                {productImages.map((image, index) => (
-                                    <button
-                                        key={image.id}
-                                        className={`thumbnail ${selectedImage === index ? 'active' : ''}`}
-                                        onClick={() => setSelectedImage(index)}
-                                    >
-                                        <img 
-                                            src={image.src} 
-                                            alt={image.alt}
-                                            className="thumbnail-image"
-                                        />
-                                    </button>
-                                ))}
+                        {/* Image Navigation - only show if multiple images */}
+                        {productImages.length > 1 && (
+                            <div className="image-navigation">
+                                <button className="nav-arrow left">
+                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                                        <path d="M15 18l-6-6 6-6"/>
+                                    </svg>
+                                </button>
+                                
+                                <div className="thumbnail-container">
+                                    {productImages.map((image, index) => (
+                                        <button
+                                            key={image.id}
+                                            className={`thumbnail ${selectedImage === index ? 'active' : ''}`}
+                                            onClick={() => setSelectedImage(index)}
+                                        >
+                                            <img 
+                                                src={image.src} 
+                                                alt={image.alt}
+                                                className="thumbnail-image"
+                                                onError={(e) => { e.currentTarget.src = 'https://via.placeholder.com/100x100'; }}
+                                            />
+                                        </button>
+                                    ))}
+                                </div>
+                                
+                                <button className="nav-arrow right">
+                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                                        <path d="M9 18l6-6-6-6"/>
+                                    </svg>
+                                </button>
                             </div>
-                            
-                            <button className="nav-arrow right">
-                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                                    <path d="M9 18l6-6-6-6"/>
-                                </svg>
-                            </button>
-                        </div>
+                        )}
+
+                        {/* Additional Images Below - if more than 1 image */}
+                       
                     </div>
 
                     {/* Right Column - Product Details */}
@@ -243,15 +256,15 @@ const ProductDetail = () => {
                             {/* <div className="product-price">{product.price}</div> */}
                             
                             <div className="action-buttons">
-                                <button 
+                                {/* <button 
                                     className="cart-button" 
                                     onClick={handleAddToCart}
                                     disabled={cartLoading}
                                 >
                                     {cartLoading ? 'Adding to Cart...' : 'Add To Cart'}
-                                </button>
+                                </button> */}
                                 
-                                <button className="enquiry-button" onClick={handleBuyFromUs}>
+                                <button className="enquiry-button" onClick={handleEnquireNow}>
                                     Enquire Now
                                 </button>
                             </div>
@@ -283,11 +296,11 @@ const ProductDetail = () => {
                                 {showDetails && (
                                     <div className="details-content">
                                         {/* Product Specifications */}
-                                        {product.specs && Object.keys(product.specs).length > 0 && (
+                                        {product.spec_json && Object.keys(product.spec_json).length > 0 && (
                                             <div className="specs-section">
                                                 <h3>Product Specifications</h3>
                                                 <div className="specs-grid">
-                                                    {Object.entries(product.specs).map(([key, value], index) => (
+                                                    {Object.entries(product.spec_json).map(([key, value], index) => (
                                                         <div key={index} className="spec-item">
                                                             <span className="spec-label">
                                                                 {key.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase())}:
@@ -305,23 +318,53 @@ const ProductDetail = () => {
                                             </div>
                                         )}
 
-                                        {/* Product Features */}
-                                        {product.features && Object.keys(product.features).length > 0 && (
-                                            <div className="features-section">
-                                                <h3>Features</h3>
-                                                <div className="features-grid">
-                                                    {Object.entries(product.features).map(([key, value], index) => (
-                                                        <div key={index} className="feature-item">
-                                                            <span className="feature-label">
-                                                                {key.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase())}:
-                                                            </span>
-                                                            <span className="feature-value">
-                                                                {typeof value === 'object' 
-                                                                    ? (Array.isArray(value) 
-                                                                        ? value.join(', ') 
-                                                                        : Object.entries(value).map(([k, v]) => `${k}: ${v}`).join(', '))
-                                                                    : String(value)}
-                                                            </span>
+                                        {/* Product Variants */}
+                                        {product.variants && product.variants.length > 0 && (
+                                            <div className="variants-section">
+                                                <h3>Product Variants</h3>
+                                                <div className="variants-grid">
+                                                    {product.variants.map((variant, index) => (
+                                                        <div key={index} className="variant-item">
+                                                            <h4>{variant.variant_name || `Variant ${index + 1}`}</h4>
+                                                            <div className="variant-details">
+                                                                {variant.price && (
+                                                                    <div className="variant-detail">
+                                                                        <span className="variant-label">Price:</span>
+                                                                        <span className="variant-value">Rs. {variant.price}</span>
+                                                                    </div>
+                                                                )}
+                                                                {variant.sku && (
+                                                                    <div className="variant-detail">
+                                                                        <span className="variant-label">SKU:</span>
+                                                                        <span className="variant-value">{variant.sku}</span>
+                                                                    </div>
+                                                                )}
+                                                                {variant.stock_status && (
+                                                                    <div className="variant-detail">
+                                                                        <span className="variant-label">Stock:</span>
+                                                                        <span className="variant-value">{variant.stock_status}</span>
+                                                                    </div>
+                                                                )}
+                                                                {variant.spec_json && Object.keys(variant.spec_json).length > 0 && (
+                                                                    <div className="variant-specs">
+                                                                        <h5>Variant Specifications:</h5>
+                                                                        {Object.entries(variant.spec_json).map(([key, value], specIndex) => (
+                                                                            <div key={specIndex} className="variant-spec-item">
+                                                                                <span className="variant-spec-label">
+                                                                                    {key.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase())}:
+                                                                                </span>
+                                                                                <span className="variant-spec-value">
+                                                                                    {typeof value === 'object' 
+                                                                                        ? (Array.isArray(value) 
+                                                                                            ? value.join(', ') 
+                                                                                            : Object.entries(value).map(([k, v]) => `${k}: ${v}`).join(', '))
+                                                                                        : String(value)}
+                                                                                </span>
+                                                                            </div>
+                                                                        ))}
+                                                                    </div>
+                                                                )}
+                                                            </div>
                                                         </div>
                                                     ))}
                                                 </div>
@@ -338,6 +381,42 @@ const ProductDetail = () => {
                     </div>
                 </div>
             </main>
+
+
+            {showContactInfo && (
+                <div className="contact-modal-overlay" onClick={closeContactInfo}>
+                    <div className="contact-modal" onClick={(e) => e.stopPropagation()}>
+                        <div className="contact-modal-header">
+                            <h3>Contact Information</h3>
+                            <button className="close-btn" onClick={closeContactInfo}>×</button>
+                        </div>
+                        <div className="contact-modal-content">
+                            <div className="contact-item">
+                                <div className="contact-icon">📞</div>
+                                <div className="contact-details">
+                                    <h4>Phone Number</h4>
+                                    <p className="contact-value">9061576222</p>
+                                </div>
+                            </div>
+                            <div className="contact-item">
+                                <div className="contact-icon">📧</div>
+                                <div className="contact-details">
+                                    <h4>Email Address</h4>
+                                    <p className="contact-value">info@etome.in</p>
+                                </div>
+                            </div>
+                            <div className="contact-actions">
+                                <button className="copy-btn" onClick={() => navigator.clipboard.writeText('9061576222')}>
+                                    Copy Phone
+                                </button>
+                                <button className="copy-btn" onClick={() => navigator.clipboard.writeText('info@etome.in')}>
+                                    Copy Email
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            )}
 
             <Footer />
         </div>

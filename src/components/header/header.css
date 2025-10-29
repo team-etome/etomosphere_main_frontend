@@ -26,7 +26,7 @@
 /* Brand/Logo */
 .brand {
   flex: 0 0 auto;
-  margin-left: 80px;
+  margin-left: 40px;
 }
 
 .brand-link {
@@ -35,6 +35,7 @@
 }
 
 .brand-name {
+ 
   font-family: 'Anton', sans-serif;
   font-size: 24px;
   font-weight: 400;
@@ -54,11 +55,11 @@
 .nav-container {
   display: flex;
   align-items: center;
-  background-color: #f8f8f8;
-  border: 1px solid #e0e0e0;
-  border-radius: 25px;
+  /* background-color: #f8f8f8; */
+  /* border: 1px solid #e0e0e0; */
+  /* border-radius: 25px; */
   padding: 8px 16px;
-  gap: 32px;
+  gap: 24px;
 }
 
 .nav-item {
@@ -88,6 +89,78 @@
   border-radius: 1px;
 }
 
+/* Explore button (left of menu) */
+.explore-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background-color: #015aa6;
+  color: #fff;
+  border: none;
+  padding: 10px 18px;
+  border-radius: 8px;
+  cursor: pointer;
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: 15px;
+  font-weight: 600;
+  position: relative;
+}
+.explore-btn .caret { color: #fff; }
+.explore-btn .explore-dot {
+  position: absolute;
+  top: -4px;
+  right: -4px;
+  width: 8px;
+  height: 8px;
+  background: #ff3b3b;
+  border-radius: 50%;
+}
+.explore-btn:hover { background-color: #0b63b6; }
+
+/* ========== Explore Mega Menu ========== */
+.explore-menu {
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 100%;
+  background: #fff;
+  border-top: 1px solid #e5e7eb;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.08);
+  display: grid;
+  grid-template-columns: 1.2fr 1.2fr 1fr;
+  gap: 0;
+  padding: 0;
+  z-index: 100;
+}
+
+.explore-col { border-right: 1px solid #f1f1f1; }
+.explore-col:last-child { border-right: none; }
+
+.explore-col.highlight { background: #0b63b6; color: #fff; }
+
+.explore-item {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 18px 24px;
+  background: transparent;
+  border: none;
+  border-bottom: 1px solid rgba(0,0,0,0.06);
+  cursor: pointer;
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: 15px;
+  color: inherit;
+}
+.explore-item:hover { background: rgba(0,0,0,0.04); }
+.explore-col.highlight .explore-item:hover { background: rgba(255,255,255,0.08); }
+.explore-item .arrow { opacity: .6; }
+.explore-item.active { background: rgba(255,255,255,0.12); }
+
+@media (max-width: 1024px) {
+  .explore-menu { grid-template-columns: 1fr; }
+}
+
 /* Header Icons (desktop) */
 .header-icons {
   display: flex;
@@ -111,6 +184,27 @@
 }
 .icon-btn:hover { background-color: #f0f0f0; }
 .icon { width: 24px; height: 24px; color: #000; }
+
+/* Search */
+.search-wrapper {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 12px;
+ 
+  border-radius: 999px;
+  min-width: 240px;
+  width: 227px;
+  height: 40px;
+}
+.search-icon { width: 18px; height: 18px; color: #6b6b6b; }
+.search-input {
+  border: none;
+  outline: none;
+  width: 100%;
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: 14px;
+}
 
 /* ========== Hamburger ========== */
 .hamburger-menu {

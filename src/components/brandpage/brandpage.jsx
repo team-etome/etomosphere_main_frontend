@@ -17,6 +17,11 @@ const Brandpage = () => {
     // Get products from localStorage
     const storedProducts = localStorage.getItem('selectedCategoryProducts');
     const storedCategory = localStorage.getItem('selectedCategory');
+
+
+    console.log(storedProducts, "storedProducts")
+
+  
     
     if (storedProducts) {
       try {
@@ -36,11 +41,11 @@ const Brandpage = () => {
   // Handle product click - filter products by brand
   const handleProductClick = (clickedProduct) => {
     // Get all products from the same brand
-    const brandProducts = categoryProducts.filter(p => p.brand === clickedProduct.brand);
+    const brandProducts = categoryProducts.filter(p => p.brand?.name === clickedProduct.brand?.name);
     
     // Store brand products in localStorage
     localStorage.setItem('selectedBrandProducts', JSON.stringify(brandProducts));
-    localStorage.setItem('selectedBrand', clickedProduct.brand);
+    localStorage.setItem('selectedBrand', clickedProduct.brand?.name || 'Unknown Brand');
     
     // Navigate to brandproduct
     navigate('/brandproduct');
@@ -82,15 +87,15 @@ const Brandpage = () => {
 
       <main className="brandpage-main">
         {/* Category Header */}
-        <div className="brandpage-header">
+        {/* <div className="brandpage-header">
           <h1 className="brandpage-title">{selectedCategory} Products</h1>
           <p className="brandpage-description">
             Explore all products in the {selectedCategory} category
           </p>
-        </div>
+        </div> */}
 
         {/* Dynamic Cards based on category products */}
-        <div className="brandpage-cards-container">
+        <div className="brandpage-cards-container" style={{ marginLeft: "40px" }}>
           {categoryProducts.map((product, index) => (
             <div 
               key={product.id} 
@@ -100,14 +105,15 @@ const Brandpage = () => {
             >
               <div className="brandpage-front">
                 <img
-                  src={product.productImages && product.productImages.length > 0 
-                    ? product.productImages[0].image || product.productImages[0].image_url || product.productImages[0]
-                    : product.image}
+                  src={product.product_images && product.product_images.length > 0 
+                    ? product.product_images[0].image_url || product.product_images[0].image
+                    : product.image || 'https://via.placeholder.com/300x200'}
                   alt={product.name}
                   loading="lazy"
+                  onError={(e) => { e.currentTarget.src = 'https://via.placeholder.com/300x200'; }}
                 />
               </div>
-              <div className="brandpage-brand-name">{product.brand}</div>
+              <div className="brandpage-brand-name">{product.brand?.name || 'Unknown Brand'}</div>
               {/* <div className="brandpage-product-name">{product.name}</div>
               <div className="brandpage-price">{product.price}</div> */}
             </div>

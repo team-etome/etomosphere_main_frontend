@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Manrope:wght@300;400;500;600;700&display=swap');
 
 .footer {
   background-color: #000000;
@@ -11,9 +11,8 @@
 }
 
 .footer-container {
-  width: 1600px;
+  width: 100%;
   max-width: 1600px;
-  height: 255px;
   margin: 0 auto;
   display: flex;
   align-items: center;
@@ -22,14 +21,23 @@
   box-sizing: border-box;
 }
 
-/* Left Section - Copyright */
+/* Left Section - Brand */
 .footer-left {
   flex: 0 0 auto;
 }
 
-.copyright {
+.footer-brand {
   color: #FFFFFF;
-  font-family: 'Space Grotesk', sans-serif;
+  font-family: 'Manrope', sans-serif;
+  font-size: 32px;
+  font-weight: 700;
+  margin: 0 0 8px 0;
+  line-height: 1.2;
+}
+
+.footer-tagline {
+  color: #CCCCCC;
+  font-family: 'Manrope', sans-serif;
   font-size: 14px;
   font-weight: 400;
   margin: 0;
@@ -59,7 +67,7 @@
 .nav-link {
   color: #FFFFFF;
   text-decoration: none;
-  font-family: 'Space Grotesk', sans-serif;
+  font-family: 'Manrope', sans-serif;
   font-size: 16px;
   font-weight: 500;
   transition: color 0.2s ease;
@@ -98,9 +106,21 @@
 /* Responsive Design */
 @media (max-width: 1600px) {
   .footer-container {
-    width: 100%;
-    max-width: 100%;
     padding: 40px 60px;
+  }
+}
+
+@media (max-width: 1200px) {
+  .footer-container {
+    padding: 40px 40px;
+  }
+  
+  .footer-brand {
+    font-size: 28px;
+  }
+  
+  .footer-nav {
+    gap: 40px;
   }
 }
 
@@ -119,6 +139,14 @@
   .footer-right {
     align-items: center;
     gap: 25px;
+  }
+  
+  .footer-brand {
+    font-size: 24px;
+  }
+  
+  .footer-tagline {
+    font-size: 13px;
   }
   
   .footer-nav {
@@ -141,15 +169,19 @@
     width: 20px;
     height: 20px;
   }
-  
-  .copyright {
-    font-size: 12px;
-  }
 }
 
 @media (max-width: 480px) {
   .footer-container {
     padding: 30px 15px;
+  }
+  
+  .footer-brand {
+    font-size: 20px;
+  }
+  
+  .footer-tagline {
+    font-size: 12px;
   }
   
   .footer-nav {

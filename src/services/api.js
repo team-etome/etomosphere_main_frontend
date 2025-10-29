@@ -3,7 +3,7 @@ import axios from 'axios';
 // Get the API URL from Redux store or use default
 const getApiUrl = () => {
     // You can get this from Redux store or use environment variable
-    return "http://192.168.1.68:8000";
+    return "https://api.etomosphere.com";
 };
 
 // Create axios instance with default config
