@@ -11,7 +11,7 @@ import androidonly from '../../assets/androidonly.jpg';
 import opsincluded from '../../assets/opsincluded.png';
 import auditorium from '../../assets/auditorium.png';
 import Counselling from '../../assets/Counselling.png';
-import controlroom from '../../assets/controlroom.png';
+import controlroom from '../../assets/Controlroom.png';
 
 import './educosystem.css';
 
