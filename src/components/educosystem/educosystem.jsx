@@ -28,7 +28,7 @@ const Educosystem = () => {
     const [solutions, setSolutions] = useState([
         {
           id: 1,
-          name: "Classroom Solutions",
+          name: "Classroom ",
           image: classroomImage,
           description: "End-to-end digital classroom ecosystem with display, writing, and audio solutions.",
           sections: [
@@ -143,7 +143,7 @@ const Educosystem = () => {
       
         {
           id: 2,
-          name: "Auditorium And Seminar Hall Solutions",
+          name: "Auditorium & Seminar Hall ",
           image: auditorium,
           description: "End-to-end display and AV setups for impactful meetings and events.",
           sections: [
@@ -187,7 +187,7 @@ const Educosystem = () => {
       
         {
           id: 3,
-          name: "Counselling Room Solutions",
+          name: "Counselling Room ",
           image: Counselling,
           description: "Private, reliable setups for one-to-one and hybrid counselling sessions.",
           sections: [
@@ -236,7 +236,7 @@ const Educosystem = () => {
       
         {
           id: 4,
-          name: "Control Room Solutions",
+          name: "Control Room ",
           image: controlroom,
           description: "Mission-critical monitoring and control solutions for institutions and enterprises.",
           sections: [
