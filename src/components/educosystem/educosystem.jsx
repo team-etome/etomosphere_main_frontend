@@ -5,7 +5,7 @@ import Footer from '../footer/footer.jsx';
 import classroomImage from '../../assets/classroom.png';
 import IfpsEconomical from '../../assets/IfpsEconomical.jpg';
 import education      from '../../assets/education.png';
-import branded from '../../assets/branded.jpg';
+import branded from '../../assets/Branded.jpg';
 import withcamera from '../../assets/withcamera.avif';
 import androidonly from '../../assets/androidonly.jpg';
 import opsincluded from '../../assets/opsincluded.png';
