@@ -8,7 +8,7 @@ import image8 from '../../assets/image8.png';
 import image12 from '../../assets/image12.jpg';
 import image13 from '../../assets/etomeBusiness.jpg';
 import EtomeStylus from '../../assets/EtomeStylus.jpg';
-import EtomeEcoBoard from '../../assets/EtomeEcoBoard.jpg';
+import EtomeEcoBoard from '../../assets/etomeEcoboard.jpg';
 import etomewitheco from '../../assets/etomewitheco.jpg';
 import './etome.css';
 

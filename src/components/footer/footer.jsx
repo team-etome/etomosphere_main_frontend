@@ -6,20 +6,33 @@ const Footer = () => {
     <footer className="footer">
       <div className="footer-container">
         <div className="footer-left">
-          <h1 className="footer-brand">Etomosphere</h1>
-          <p className="footer-tagline">Empowering Education Through Technology</p>
+
+
+            <h1 style={{
+                color:"white"
+            }}>Etomosphere</h1>
+
+
+
         </div>
 
         {/* Right Section - Navigation and Social Media */}
         <div className="footer-right">
           {/* Navigation Links */}
-          <div className="footer-nav">
-            <div className="nav-column">
+          <div   className="footer-nav">
+
+            <div  className="nav-column">
               <a href="#about" className="nav-link">About Us</a>
               <a href="#values" className="nav-link">Our Values</a>
               <a href="#product" className="nav-link">Product</a>
               <a href="#faqs" className="nav-link">FAQs</a>
             </div>
+
+
+    
+
+
+
           </div>
 
           {/* Social Media Icons */}
