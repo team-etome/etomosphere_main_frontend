@@ -5,6 +5,7 @@ import "./ethos.css";
 import ethos1 from '../../assets/ethos1.jpg';
 import ethos2 from '../../assets/ethos2.jpg';
 import ethos3 from '../../assets/ethos3.jpg';
+import ethos4 from '../../assets/ethos4.png'
 const clamp = (v, min, max) => Math.max(min, Math.min(max, v));
 
 function Ethos() {
@@ -32,7 +33,7 @@ function Ethos() {
                 id: 4,
                 title: "Future-Ready Classrooms",
                 body: "Our solutions prepare students for the future with modern classroom technology that supports remote learning, hybrid education, and innovative teaching methods.",
-                image: "https://images.unsplash.com/photo-1516321318423-f06f85e504b3?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1000&q=80"
+                image: ethos4
             },
            
         ], 
