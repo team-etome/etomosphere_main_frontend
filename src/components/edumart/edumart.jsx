@@ -13,8 +13,8 @@ const pickDisplayImage = (p) => {
   // 2) first product image
   const first = p.product_images?.find?.(im => im?.image_url)?.image_url;
   if (first) return first;
-  // 3) first category image
-  const catFirst = p.brand?.category?.images?.find?.(im => im?.image_url)?.image_url;
+  // 3) first category image from brand.category.images[0]
+  const catFirst = p.brand?.category?.images?.[0]?.image_url;
   return catFirst || "";
 };
 
