@@ -102,15 +102,46 @@ function Edumart() {
         )}
 
         {!loading && !error && (
-          <div
-            style={{
+          <>
+            {/* All Products Header */}
+            <div style={{
+              textAlign: "center",
+              padding: "0px 80px 40px 80px",
+              maxWidth: "800px",
+              margin: "0 auto",
+              border:"2px solid bla"
+            }}>
+              <h1 style={{
+                fontSize: "48px",
+                fontWeight: "700",
+                color: "#000",
+                margin: "0 0 24px 0",
+                fontFamily: "'Space Grotesk', sans-serif"
+              }}>
+                All Products
+              </h1>
+              <p style={{
+                fontSize: "18px",
+                color: "#000",
+                lineHeight: "1.6",
+                margin: "0",
+                fontFamily: "'Space Grotesk', sans-serif"
+              }}>
+                Shop from a wide range of educational and lifestyle products designed to enhance
+                learning experiences. From smart devices to accessories, explore top brands and
+                trusted solutions, <strong>all in one place.</strong>
+              </p>
+            </div>
 
-              display: "grid",
-              gridTemplateColumns: "repeat(4, 1fr)",
-              gap: "24px",
-              padding: "32px 80px"
-            }}
-          >
+            <div
+              style={{
+
+                display: "grid",
+                gridTemplateColumns: "repeat(4, 1fr)",
+                gap: "33px",
+                padding: "0 80px 32px 80px"
+              }}
+            >
             {items.map(p => (
               <div
                 key={p.id}
@@ -180,7 +211,8 @@ function Edumart() {
                 </div>
               </div>
             ))}
-          </div>
+            </div>
+          </>
         )}
       </main>
 
