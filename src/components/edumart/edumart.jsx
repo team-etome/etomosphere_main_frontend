@@ -7,12 +7,7 @@ import { useSelector } from "react-redux";
 import axios from "axios";
 
 const pickDisplayImage = (p) => {
-  // 1) product main image
-  const main = p.product_images?.find?.(im => im?.is_main && im?.image_url)?.image_url;
-  if (main) return main;
-  // 2) first product image
-  const first = p.product_images?.find?.(im => im?.image_url)?.image_url;
-  if (first) return first;
+ 
   // 3) first category image from brand.category.images[0]
   const catFirst = p.brand?.category?.images?.[0]?.image_url;
   return catFirst || "";
