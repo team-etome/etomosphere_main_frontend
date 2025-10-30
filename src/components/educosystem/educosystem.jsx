@@ -12,6 +12,7 @@ import opsincluded from '../../assets/opsincluded.png';
 import auditorium from '../../assets/auditorium.png';
 import Counselling from '../../assets/Counselling.png';
 import controlroom from '../../assets/Controlroom.png';
+import educosystem from '../../assets/educosystem.mp4'
 
 import './educosystem.css';
 
@@ -314,7 +315,7 @@ const Educosystem = () => {
                             width="100%"
                             height="100%"
                         >
-                            <source src="/src/assets/educosystem.mp4" type="video/mp4" />
+                            <source src={educosystem} type="video/mp4" />
                             Your browser does not support the video tag.
                         </video>
                     </div>

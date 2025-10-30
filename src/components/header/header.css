@@ -361,9 +361,10 @@
     
   }
 
-  /* Hide desktop nav & icons on mobile */
+  /* Hide desktop nav, icons, and explore button on mobile */
   .navigation { display: none !important; }
   .header-right { display: none !important; }
+  .explore-btn { display: none !important; }
 
   /* Show hamburger */
   .hamburger-menu {
