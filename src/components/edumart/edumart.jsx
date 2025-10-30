@@ -104,13 +104,7 @@ function Edumart() {
         {!loading && !error && (
           <>
             {/* All Products Header */}
-            <div style={{
-              textAlign: "center",
-              padding: "0px 80px 40px 80px",
-              maxWidth: "800px",
-              margin: "0 auto",
-              border:"2px solid bla"
-            }}>
+            <div className="product-header-section">
               <h1 style={{
                 fontSize: "48px",
                 fontWeight: "700",
@@ -133,28 +127,13 @@ function Edumart() {
               </p>
             </div>
 
-            <div
-              style={{
-
-                display: "grid",
-                gridTemplateColumns: "repeat(4, 1fr)",
-                gap: "33px",
-                padding: "0 80px 32px 80px"
-              }}
-            >
+            <div className="product-grid-container">
             {items.map(p => (
               <div
                 key={p.id}
                 role="button"
                 onClick={() => handleProductClick(p)}
-                style={{
-               
-                  borderRadius: "16px",
-                  overflow: "hidden",
-                  cursor: "pointer",
-                  background: "#f4f4f4",
-                  position: "relative"
-                }}
+                className="product-grid-card"
               >
                 <div style={{ width: "100%", aspectRatio: "1 / 1", position: "relative" }}>
                   <img

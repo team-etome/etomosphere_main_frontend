@@ -94,30 +94,41 @@ const Brandpage = () => {
           </p>
         </div> */}
 
-        {/* Dynamic Cards based on category products */}
-        <div className="brandpage-cards-container" style={{ marginLeft: "40px" }}>
-          {categoryProducts.map((product, index) => (
-            <div 
-              key={product.id} 
-              className="brandpage-product-card"
-              onClick={() => handleProductClick(product)}
-              style={{ cursor: 'pointer' }}
-            >
-              <div className="brandpage-front">
-                <img
-                  src={product.product_images && product.product_images.length > 0 
-                    ? product.product_images[0].image_url || product.product_images[0].image
-                    : product.image || 'https://via.placeholder.com/300x200'}
-                  alt={product.name}
-                  loading="lazy"
-                  onError={(e) => { e.currentTarget.src = 'https://via.placeholder.com/300x200'; }}
-                />
+        {/* Dynamic Cards based on category products - Group by brand to show only one per brand */}
+        <div className="brandpage-cards-container">
+          {(() => {
+            // Group products by brand name
+            const groupedByBrand = categoryProducts.reduce((acc, product) => {
+              const brandName = product.brand?.name || 'Unknown Brand';
+              if (!acc[brandName]) {
+                acc[brandName] = product;
+              }
+              return acc;
+            }, {});
+            
+            const uniqueBrands = Object.values(groupedByBrand);
+            
+            return uniqueBrands.map((product, index) => (
+              <div 
+                key={product.id} 
+                className="brandpage-product-card"
+                onClick={() => handleProductClick(product)}
+                style={{ cursor: 'pointer' }}
+              >
+                <div className="brandpage-front">
+                  <img
+                    src={product.product_images && product.product_images.length > 0 
+                      ? product.product_images[0].image_url || product.product_images[0].image
+                      : product.image || 'https://via.placeholder.com/300x200'}
+                    alt={product.name}
+                    loading="lazy"
+                    onError={(e) => { e.currentTarget.src = 'https://via.placeholder.com/300x200'; }}
+                  />
+                </div>
+                <div className="brandpage-brand-name">{product.brand?.name || 'Unknown Brand'}</div>
               </div>
-              <div className="brandpage-brand-name">{product.brand?.name || 'Unknown Brand'}</div>
-              {/* <div className="brandpage-product-name">{product.name}</div>
-              <div className="brandpage-price">{product.price}</div> */}
-            </div>
-          ))}
+            ));
+          })()}
         </div>
       </main>
 
