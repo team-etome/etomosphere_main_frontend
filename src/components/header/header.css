@@ -488,7 +488,7 @@
     z-index: 1000;
     grid-template-columns: 1fr !important;
     padding-top: 60px;
-    background: transparent !important;
+    background: #fff !important;
   }
   
   .explore-close-btn {
@@ -514,6 +514,7 @@
   
   .explore-close-btn:hover {
     background-color: #f0f0f0;
+    color: #000;
   }
   
   /* Show back button on mobile */

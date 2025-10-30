@@ -120,7 +120,7 @@ const Header = () => {
         {/* Brand */}
         <div className="brand">
           <Link to="/" className="brand-link">
-            <h1 style={{ fontSize: "30px" }} className="brand-name">ETOMOSPHERE</h1>
+            <h1 style={{ fontSize: "30px", fontFamily: "'Anton', sans-serif", fontWeight: "400" }} className="brand-name">ETOMOSPHERE</h1>
           </Link>
         </div>
 
@@ -189,10 +189,7 @@ const Header = () => {
 
       {/* Explore Mega Menu */}
       {isExploreOpen  && (
-        <div  style={{
-         
-          background:"none"
-        }}  className="explore-menu" ref={exploreRef} role="menu" aria-label="Explore">
+        <div className="explore-menu" ref={exploreRef} role="menu" aria-label="Explore">
           <button 
             className="explore-close-btn"
             onClick={closeExplore}
