@@ -329,8 +329,8 @@ const ProductDetail = () => {
                                                             <div className="variant-details">
                                                                 {variant.price && (
                                                                     <div className="variant-detail">
-                                                                        <span className="variant-label">Price:</span>
-                                                                        <span className="variant-value">Rs. {variant.price}</span>
+                                                                        {/* <span className="variant-label">Price:</span> */}
+                                                                        {/* <span className="variant-value">Rs. {variant.price}</span> */}
                                                                     </div>
                                                                 )}
                                                                 {variant.sku && (
