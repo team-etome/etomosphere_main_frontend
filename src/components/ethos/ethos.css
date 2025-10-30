@@ -131,18 +131,38 @@ body {
 
 /* ====== Mobile (<= 768px) ====== */
 @media (max-width: 768px) {
+  .stack-section {
+    height: auto !important;
+  }
+
+  .stack-viewport {
+    position: static !important;
+    height: auto !important;
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+    padding: 40px 16px;
+  }
+
   .stack {
-    width: min(94vw, 640px);
-    aspect-ratio: auto;            /* allow height expansion */
+    position: static !important;
+    width: 100%;
+    aspect-ratio: auto;
     max-height: none;
-    min-height: 460px;
+    min-height: auto;
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
   }
 
   .card {
+    position: static !important;
     flex-direction: column;
     align-items: center;
     justify-content: flex-start;
     padding: clamp(12px, 4vw, 20px);
+    transform: none !important;
+    opacity: 1 !important;
   }
 
   .card-content {
@@ -166,16 +186,25 @@ body {
 
 /* ====== Small phones (<= 480px) ====== */
 @media (max-width: 480px) {
-  .stack {
-    width: 92vw;
-    min-height: 380px;
+  .stack-viewport {
+    gap: 20px;
+    padding: 30px 12px;
   }
+  
+  .stack {
+    width: 100%;
+    gap: 20px;
+    min-height: auto;
+  }
+  
   .card {
     padding: clamp(10px, 4vw, 16px);
   }
+  
   .card-image {
     height: clamp(170px, 34vh, 240px);
   }
+  
   .card-text {
     gap: 10px;
   }

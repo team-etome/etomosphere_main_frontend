@@ -64,7 +64,11 @@ function Edumart() {
         }, {});
 
         const uniqueProducts = Object.values(groupedByCategory);
-        setItems(uniqueProducts);
+        // Sort products alphabetically by category name
+        const sortedProducts = uniqueProducts.sort((a, b) => 
+          a.category.localeCompare(b.category)
+        );
+        setItems(sortedProducts);
       } catch (e) {
         setError(e?.response?.data?.detail || "Failed to load products.");
       } finally {

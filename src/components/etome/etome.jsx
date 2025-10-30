@@ -113,7 +113,7 @@ const Etome = () => {
                         }} className="section-paragraph">
                             Etome DUA Business empowers <br /> institutions with an integrated <br /> digital ecosystem that simplifies <br /> operations, enhances <br /> collaboration, and drives smarter <br /> decision-making for educational <br /> and business excellence.                        </p>
                         <div className="button-group">
-                            <button className="buy-now-btn">Buy Now</button>
+                            {/* <button className="buy-now-btn">Buy Now</button> */}
                             <Link to="/etomedetails" className="learn-more-btn">Learn More</Link>
                         </div>
                     </div>
