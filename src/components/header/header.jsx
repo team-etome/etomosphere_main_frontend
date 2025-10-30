@@ -11,8 +11,21 @@ const Header = () => {
 
   const toggleMenu = () => setIsMenuOpen(v => !v);
   const closeMenu = () => setIsMenuOpen(false);
-  const toggleExplore = () => setIsExploreOpen(v => !v);
-  const closeExplore = () => setIsExploreOpen(false);
+  const toggleExplore = () => {
+    if (!isExploreOpen) {
+      // Opening - reset to initial state
+      setActiveLeft(null);
+      setActiveMiddle(null);
+    }
+    setIsExploreOpen(v => !v);
+  };
+  
+  const closeExplore = () => {
+    setIsExploreOpen(false);
+    // Reset state when closing
+    setActiveLeft(null);
+    setActiveMiddle(null);
+  };
 
   const handleEcademyClick = (e) => {
     e.preventDefault();
@@ -117,7 +130,6 @@ const Header = () => {
           aria-haspopup="menu"
           aria-expanded={isExploreOpen}
           onClick={toggleExplore}
-          style={{ marginLeft: "40px" }}
         >
           <span>Explore</span>
           <svg className="caret" viewBox="0 0 24 24" width="16" height="16" aria-hidden="true">
@@ -136,8 +148,8 @@ const Header = () => {
         </nav>
 
         {/* Desktop Right: search + icons */}
-        <div className="header-right" aria-label="Quick actions">
-          <div className="search-wrapper" role="search">
+        <div  className="header-right" aria-label="Quick actions">
+          <div  className="search-wrapper" role="search">
             <input
               className="search-input"
               type="text"
@@ -170,10 +182,26 @@ const Header = () => {
         </button>
       </div>
 
+      {/* Explore Backdrop for mobile */}
+      {isExploreOpen && (
+        <div  className="explore-backdrop" onClick={closeExplore} />
+      )}
+
       {/* Explore Mega Menu */}
       {isExploreOpen && (
         <div className="explore-menu" ref={exploreRef} role="menu" aria-label="Explore">
-          <div className="explore-col">
+          <button 
+            className="explore-close-btn"
+            onClick={closeExplore}
+            aria-label="Close Explore Menu"
+          >
+            ×
+          </button>
+          
+          {/* Desktop view - progressive columns on hover */}
+          <div style={{
+            background:"white"
+          }} className="explore-col desktop-explore">
             {leftCol.map((t) => (
               <button
                 key={t}
@@ -181,8 +209,7 @@ const Header = () => {
                 type="button"
                 onMouseEnter={() => {
                   setActiveLeft(t);
-                  const nextMiddle = (middleByLeft[t] || middleCol);
-                  setActiveMiddle(nextMiddle[0] || null);
+                  setActiveMiddle(null); // Reset middle when hovering left
                 }}
               >
                 <span>{t}</span>
@@ -191,7 +218,9 @@ const Header = () => {
             ))}
           </div>
           {activeLeft && (
-            <div className="explore-col highlight">
+            <div style={{
+              background:"white"
+            }}  className="explore-col desktop-explore">
               {derivedMiddle.map((t) => (
                 <button
                   key={t}
@@ -206,7 +235,69 @@ const Header = () => {
             </div>
           )}
           {activeMiddle && (
-            <div className="explore-col">
+            <div style={{
+              background:"white"
+            }}  className="explore-col desktop-explore">
+              {derivedRight.map((t) => (
+                <button key={t} className="explore-item" type="button">
+                  <span>{t}</span>
+                </button>
+              ))}
+            </div>
+          )}
+          
+          {/* Mobile view - progressive disclosure */}
+          {!activeLeft && (
+            <div className="explore-col mobile-explore">
+              {leftCol.map((t) => (
+                <button
+                  key={t}
+                  className={`explore-item ${activeLeft === t ? 'active' : ''}`}
+                  type="button"
+                  onClick={() => {
+                    setActiveLeft(t);
+                    setActiveMiddle(null);
+                  }}
+                >
+                  <span>{t}</span>
+                  <span className="arrow">›</span>
+                </button>
+              ))}
+            </div>
+          )}
+          
+          {activeLeft && !activeMiddle && (
+            <div className="explore-col mobile-explore">
+              <button 
+                className="explore-back-btn"
+                onClick={() => setActiveLeft(null)}
+                type="button"
+              >
+                ← Back
+              </button>
+              {derivedMiddle.map((t) => (
+                <button
+                  key={t}
+                  className={`explore-item ${activeMiddle === t ? 'active' : ''}`}
+                  type="button"
+                  onClick={() => setActiveMiddle(t)}
+                >
+                  <span>{t}</span>
+                  <span className="arrow">›</span>
+                </button>
+              ))}
+            </div>
+          )}
+          
+          {activeMiddle && (
+            <div className="explore-col mobile-explore">
+              <button 
+                className="explore-back-btn"
+                onClick={() => setActiveMiddle(null)}
+                type="button"
+              >
+                ← Back
+              </button>
               {derivedRight.map((t) => (
                 <button key={t} className="explore-item" type="button">
                   <span>{t}</span>
@@ -229,11 +320,11 @@ const Header = () => {
         aria-modal="true"
         aria-label="Mobile navigation"
       >
-        <Link to="/ethos" className={`mobile-nav-item ${location.pathname === '/ethos' ? 'active' : ''}`} onClick={closeMenu}>Ethos</Link>
         <Link to="/edumart" className={`mobile-nav-item ${location.pathname === '/edumart' ? 'active' : ''}`} onClick={closeMenu}>Edumart</Link>
         <a href="/educosystem" className="mobile-nav-item" onClick={closeMenu}>Educosystem</a>
-        {/* <a href="#ecademy" className="mobile-nav-item" onClick={(e) => { handleEcademyClick(e); closeMenu(); }}>Ecademy</a> */}
         <Link to="/etome" className={`mobile-nav-item ${location.pathname === '/etome' ? 'active' : ''}`} onClick={closeMenu}>Etome</Link>
+        <Link to="/ethos" className={`mobile-nav-item ${location.pathname === '/ethos' ? 'active' : ''}`} onClick={closeMenu}>Ethos</Link>
+        {/* <a href="#ecademy" className="mobile-nav-item" onClick={(e) => { handleEcademyClick(e); closeMenu(); }}>Ecademy</a> */}
 
         
       </div>

@@ -104,6 +104,12 @@
   font-size: 15px;
   font-weight: 600;
   position: relative;
+  margin-left: 40px;
+  outline: none;
+}
+.explore-btn:focus {
+  outline: none;
+  box-shadow: none;
 }
 .explore-btn .caret { color: #fff; }
 .explore-btn .explore-dot {
@@ -118,6 +124,10 @@
 .explore-btn:hover { background-color: #0b63b6; }
 
 /* ========== Explore Mega Menu ========== */
+.explore-backdrop {
+  display: none;
+}
+
 .explore-menu {
   position: absolute;
   left: 0;
@@ -133,7 +143,28 @@
   z-index: 100;
 }
 
-.explore-col { border-right: 1px solid #f1f1f1; }
+.explore-close-btn {
+  display: none;
+}
+
+.explore-back-btn {
+  display: none;
+}
+
+/* Desktop explore columns */
+.desktop-explore {
+  display: none;
+}
+
+/* Mobile explore columns - hidden by default */
+.mobile-explore {
+  display: none;
+}
+
+.explore-col { 
+  border-right: none; 
+  background: transparent;
+}
 .explore-col:last-child { border-right: none; }
 
 .explore-col.highlight { background: #0b63b6; color: #fff; }
@@ -146,16 +177,42 @@
   padding: 18px 24px;
   background: transparent;
   border: none;
-  border-bottom: 1px solid rgba(0,0,0,0.06);
+  border-bottom: none;
   cursor: pointer;
   font-family: 'Space Grotesk', sans-serif;
   font-size: 15px;
   color: inherit;
+  transition: background-color 0.2s ease, color 0.2s ease;
+  border-radius: 0;
 }
-.explore-item:hover { background: rgba(0,0,0,0.04); }
-.explore-col.highlight .explore-item:hover { background: rgba(255,255,255,0.08); }
+.explore-item:hover { 
+  background: #015aa6; 
+  color: #fff;
+}
+.explore-item:hover .arrow {
+  color: #fff;
+}
+.explore-col.highlight .explore-item:hover { background: #015aa6; color: #fff; }
 .explore-item .arrow { opacity: .6; }
-.explore-item.active { background: rgba(255,255,255,0.12); }
+.explore-item.active { 
+  background: #015aa6; 
+  color: #fff;
+  border-radius: 0;
+}
+.explore-item.active .arrow {
+  color: #fff;
+}
+.explore-item:focus {
+  outline: none;
+  border: none;
+}
+
+/* Show desktop explore on larger screens */
+@media (min-width: 769px) {
+  .desktop-explore {
+    display: block !important;
+  }
+}
 
 @media (max-width: 1024px) {
   .explore-menu { grid-template-columns: 1fr; }
@@ -361,18 +418,120 @@
     
   }
 
-  /* Hide desktop nav, icons, and explore button on mobile */
+  /* Hide desktop nav and icons on mobile */
   .navigation { display: none !important; }
   .header-right { display: none !important; }
-  .explore-btn { display: none !important; }
+  
+  /* Keep explore button on mobile, reposition it on the left */
+  .explore-btn {
+    position: absolute;
+    left: 16px;
+    top: 50%;
+    transform: translateY(-50%);
+    font-size: 14px;
+    padding: 8px 14px;
+    margin-left: 0 !important;
+    z-index: 102;
+  }
 
-  /* Show hamburger */
+  /* Show hamburger on the right */
   .hamburger-menu {
     display: flex !important;
     position: absolute;
     right: 16px;
     top: 50%;
     transform: translateY(-50%);
+  }
+  
+  /* Hide desktop explore on mobile */
+  .desktop-explore {
+    display: none !important;
+  }
+  
+  /* Show mobile explore on mobile */
+  .mobile-explore {
+    display: block !important;
+  }
+  
+  /* Adjust explore mega menu for mobile */
+  .explore-backdrop {
+    display: block;
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(0, 0, 0, 0.3);
+    z-index: 999;
+  }
+  
+  .explore-menu {
+    position: fixed !important;
+    top: 0 !important;
+    left: 0 !important;
+    right: 0 !important;
+    bottom: 0 !important;
+    height: 100vh;
+    overflow-y: auto;
+    z-index: 1000;
+    grid-template-columns: 1fr !important;
+    padding-top: 60px;
+    background: #fff;
+  }
+  
+  .explore-close-btn {
+    display: block !important;
+    position: absolute;
+    top: 20px;
+    right: 20px;
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background-color: transparent;
+    border: none;
+    font-size: 28px;
+    line-height: 1;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1001;
+    color: #000;
+    padding: 0;
+  }
+  
+  .explore-close-btn:hover {
+    background-color: #f0f0f0;
+  }
+  
+  /* Show back button on mobile */
+  .explore-back-btn {
+    display: block !important;
+    width: 100%;
+    padding: 16px 24px;
+    background-color: #f8f8f8;
+    border: none;
+    border-bottom: 2px solid #e0e0e0;
+    cursor: pointer;
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: 16px;
+    font-weight: 600;
+    color: #015aa6;
+    text-align: left;
+  }
+  
+  .explore-back-btn:hover {
+    background-color: #f0f0f0;
+  }
+  
+  /* Progressive disclosure for mobile */
+  .mobile-explore .explore-item {
+    border-bottom: none;
+    outline: none;
+  }
+  .mobile-explore .explore-item:focus {
+    outline: none;
+    border: none;
   }
 
   /* Enable the mobile panel */
