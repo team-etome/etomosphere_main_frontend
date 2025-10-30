@@ -114,7 +114,7 @@ function Edumart() {
                 fontWeight: "700",
                 color: "#000",
                 margin: "0 0 24px 0",
-                fontFamily: "'Space Grotesk', sans-serif"
+                fontFamily: "'Manrope', sans-serif"
               }}>
                 All Products
               </h1>
@@ -123,7 +123,7 @@ function Edumart() {
                 color: "#000",
                 lineHeight: "1.6",
                 margin: "0",
-                fontFamily: "'Space Grotesk', sans-serif"
+                fontFamily: "'Manrope', sans-serif",  
               }}>
                 Shop from a wide range of educational and lifestyle products designed to enhance
                 learning experiences. From smart devices to accessories, explore top brands and

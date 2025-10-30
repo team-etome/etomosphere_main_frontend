@@ -188,8 +188,11 @@ const Header = () => {
       )}
 
       {/* Explore Mega Menu */}
-      {isExploreOpen && (
-        <div className="explore-menu" ref={exploreRef} role="menu" aria-label="Explore">
+      {isExploreOpen  && (
+        <div  style={{
+         
+          background:"none"
+        }}  className="explore-menu" ref={exploreRef} role="menu" aria-label="Explore">
           <button 
             className="explore-close-btn"
             onClick={closeExplore}

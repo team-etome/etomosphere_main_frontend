@@ -1,5 +1,17 @@
 @import url('https://fonts.googleapis.com/css2?family=Anton:wght@400&display=swap');
 @import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&display=swap');
+
+/* Apply Manrope font to all h and p tags in header */
+.header h1,
+.header h2,
+.header h3,
+.header h4,
+.header h5,
+.header h6,
+.header p {
+  font-family: 'Manrope', sans-serif;
+}
 
 /* ========== Base Header ========== */
 .header {
@@ -162,7 +174,7 @@
 }
 
 .explore-col { 
-  border-right: none; 
+  border-right: 1px solid #e5e7eb; 
   background: transparent;
 }
 .explore-col:last-child { border-right: none; }
@@ -214,7 +226,7 @@
   }
 }
 
-@media (max-width: 1024px) {
+@media (max-width: 900px) {
   .explore-menu { grid-template-columns: 1fr; }
 }
 
@@ -476,7 +488,7 @@
     z-index: 1000;
     grid-template-columns: 1fr !important;
     padding-top: 60px;
-    background: #fff;
+    background: transparent !important;
   }
   
   .explore-close-btn {
