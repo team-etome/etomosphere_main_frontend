@@ -1,0 +1,161 @@
+.employee-container {
+  padding: 24px;
+  display: grid;
+  place-items: center;
+  min-height: 100vh;
+}
+
+.employee-card {
+  max-width: 560px;
+  width: 100%;
+  border: 1px solid #ddd;
+  border-radius: 12px;
+  padding: 20px;
+  background: #fff;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.employee-header {
+  display: flex;
+  gap: 16px;
+  align-items: flex-start;
+}
+
+.employee-photo,
+.employee-photo-placeholder {
+  width: 120px;
+  height: 120px;
+  border-radius: 12px;
+  border: 1px solid #eee;
+  flex-shrink: 0;
+}
+
+.employee-photo {
+  object-fit: cover;
+}
+
+.employee-photo-placeholder {
+  display: grid;
+  place-items: center;
+  background: #fafafa;
+  font-size: 42px;
+  font-weight: 700;
+  color: #666;
+}
+
+.employee-info {
+  flex: 1;
+  min-width: 0;
+}
+
+.employee-name {
+  margin: 6px 0;
+  font-size: 24px;
+  font-weight: 600;
+  color: #333;
+}
+
+.employee-detail {
+  margin: 8px 0;
+  font-size: 14px;
+  color: #555;
+  word-wrap: break-word;
+}
+
+.employee-detail a {
+  color: #015aa6;
+  text-decoration: none;
+}
+
+.employee-detail a:hover {
+  text-decoration: underline;
+}
+
+.employee-qr {
+  margin-top: 16px;
+  text-align: center;
+}
+
+.qr-code {
+  width: 160px;
+  height: 160px;
+  border: 1px solid #eee;
+  border-radius: 8px;
+}
+
+.employee-loading,
+.employee-error {
+  padding: 24px;
+  text-align: center;
+  font-size: 16px;
+}
+
+.employee-error {
+  color: #dc3545;
+}
+
+/* Responsive Styles */
+@media (max-width: 768px) {
+  .employee-container {
+    padding: 16px;
+  }
+
+  .employee-card {
+    padding: 16px;
+  }
+
+  .employee-header {
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+  }
+
+  .employee-photo,
+  .employee-photo-placeholder {
+    width: 100px;
+    height: 100px;
+  }
+
+  .employee-name {
+    font-size: 20px;
+    margin-top: 12px;
+  }
+
+  .employee-detail {
+    font-size: 13px;
+  }
+}
+
+@media (max-width: 480px) {
+  .employee-container {
+    padding: 12px;
+  }
+
+  .employee-card {
+    padding: 12px;
+  }
+
+  .employee-photo,
+  .employee-photo-placeholder {
+    width: 80px;
+    height: 80px;
+  }
+
+  .employee-photo-placeholder {
+    font-size: 36px;
+  }
+
+  .employee-name {
+    font-size: 18px;
+  }
+
+  .employee-detail {
+    font-size: 12px;
+  }
+
+  .qr-code {
+    width: 140px;
+    height: 140px;
+  }
+}
+
