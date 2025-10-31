@@ -7,8 +7,8 @@ const EducosDetails = () => {
     const [selectedSolution, setSelectedSolution] = useState(null);
     const [loading, setLoading] = useState(true);
     const [expandedSections, setExpandedSections] = useState({});
-    const [selectedProduct, setSelectedProduct] = useState(null);
-    const [showContactInfo, setShowContactInfo] = useState(false);
+    const [selectedProduct, setSelectedProduct]   = useState(null);
+    const [showContactInfo, setShowContactInfo]   = useState(false);
     const [selectedProducts, setSelectedProducts] = useState([]);
 
     const toggleSection = (sectionIndex) => {
@@ -34,9 +34,9 @@ const EducosDetails = () => {
         setShowContactInfo(true);
     };
 
- 
-    
-
+    const closeContactInfo = () => {
+        setShowContactInfo(false);
+    };
     
 
     const removeProduct = (productTitle) => {
