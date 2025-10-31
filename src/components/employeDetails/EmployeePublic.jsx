@@ -72,7 +72,7 @@ export default function EmployeePublic() {
           </div>
         </div>
 
-        {emp.qr_url && (
+        {/* {emp.qr_url && (
           <div className="employee-qr">
             <img
               src={emp.qr_url}
@@ -80,7 +80,8 @@ export default function EmployeePublic() {
               className="qr-code"
             />
           </div>
-        )}
+        )} */}
+        
       </div>
     </div>
   );
