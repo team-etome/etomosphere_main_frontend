@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
+import './EmployeePublic.css';
 
 const API_BASE = import.meta.env.VITE_API_BASE || "https://api.etomosphere.com";
 
@@ -22,88 +23,61 @@ export default function EmployeePublic() {
       .finally(() => setLoading(false));
   }, [slug]);
 
-  if (loading) return <div style={{ padding: 24 }}>Loading…</div>;
-  if (err || !emp) return <div style={{ padding: 24 }}>Error: {err}</div>;
+  if (loading) return <div className="employee-loading">Loading…</div>;
+  if (err || !emp) return <div className="employee-error">Error: {err}</div>;
 
   return (
-    <div style={{ padding: 24, display: "grid", placeItems: "center" }}>
-      <div
-        style={{
-          maxWidth: 560,
-          border: "1px solid #ddd",
-          borderRadius: 12,
-          padding: 20,
-          background: "#fff",
-        }}
-      >
-        <div style={{ display: "flex", gap: 16 }}>
+    <div className="employee-container">
+      <div className="employee-card">
+        <div className="employee-header">
           {emp.photo_url ? (
             <img
               src={emp.photo_url}
               alt={emp.name}
-              style={{
-                width: 120,
-                height: 120,
-                objectFit: "cover",
-                borderRadius: 12,
-                border: "1px solid #eee",
-              }}
+              className="employee-photo"
             />
           ) : (
-            <div
-              style={{
-                width: 120,
-                height: 120,
-                borderRadius: 12,
-                border: "1px solid #eee",
-                display: "grid",
-                placeItems: "center",
-                background: "#fafafa",
-                fontSize: 42,
-                fontWeight: 700,
-                color: "#666",
-              }}
-            >
+            <div className="employee-photo-placeholder">
               {(emp.name || "?").slice(0, 1)}
             </div>
           )}
 
-          <div>
-            <h2 style={{ margin: "6px 0" }}>{emp.name}</h2>
+          <div className="employee-info">
+            <h2 className="employee-name">{emp.name}</h2>
             {emp.designation && (
-              <div>
+              <div className="employee-detail">
                 <b>Designation:</b> {emp.designation}
               </div>
             )}
             {emp.region && (
-              <div>
+              <div className="employee-detail">
                 <b>Region:</b> {emp.region}
               </div>
             )}
             {emp.phone && (
-              <div>
+              <div className="employee-detail">
                 <b>Phone:</b>{" "}
                 <a href={`tel:${emp.phone}`}>{emp.phone}</a>
               </div>
             )}
-            <div>
+            <div className="employee-detail">
               <b>Email:</b>{" "}
               <a href={`mailto:${emp.email}`}>{emp.email}</a>
             </div>
+            {emp.address && (
+              <div className="employee-detail">
+                <b>Address:</b> {emp.address}
+              </div>
+            )}
           </div>
         </div>
 
         {emp.qr_url && (
-          <div style={{ marginTop: 16 }}>
+          <div className="employee-qr">
             <img
               src={emp.qr_url}
               alt="QR Code"
-              style={{
-                width: 160,
-                height: 160,
-                border: "1px solid #eee",
-                borderRadius: 8,
-              }}
+              className="qr-code"
             />
           </div>
         )}
