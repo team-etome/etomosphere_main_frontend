@@ -14,6 +14,7 @@ import Brandpage from './components/brandpage/brandpage.jsx'
 import BrandProduct from './components/brandProduct/brandProduct.jsx'
 import EducosDetails from './components/educosDetails/educosDetails.jsx'
 import EnquiryModal from './components/enquiry/EnquiryModal.jsx'
+import EmployeePublic from './components/employeDetails/EmployeePublic.jsx'
 import './App.css'
 
 function App() {
@@ -40,6 +41,7 @@ function App() {
           <Route path="/brandpage" element={<Brandpage />} />
           <Route path="/brandproduct" element={<BrandProduct />} />
           <Route path="/educosdetails" element={<EducosDetails />} />
+          <Route path="/employee/:slug" element={<EmployeePublic />} />
           <Route path="/enquiry" element={<EnquiryModal isOpen onClose={() => {}} />} />   
         </Routes>
 
