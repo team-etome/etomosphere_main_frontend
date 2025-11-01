@@ -93,21 +93,49 @@ const Header = () => {
     School: ["Digital Classroom", "Learning Ecosystem ,Administration","Security & Infrastructure","Skill Development"],
     College: ["Digital Learning Devices", "Productivity Tools", "Support Systems"],
     "Competitive Exams": ["Learning Tools", "Digital Classroom"],
-    Professionals: ["Interactive Learning", "Digital Classroom"],
-    Corporates: ["School Management", "Digital Classroom"],
-    Students: ["Interactive Learning", "Learning Tools"],
-    Educators: ["Interactive Learning", "School Management"],
-    Enterprises: ["School Management", "Digital Classroom"],
-    "Public Sector": ["School Management", "Digital Classroom"],
+    Professionals: ["Productivity Devices", "Collaboration Tools","Wellness & Utilities"],
+    Corporates: ["Presentation & Meeting", "Collaboration & Control","Office Automation"],
+    Students: ["Learning Devices", "Creativity & Skills","Daily Use & Support"],
+    Educators: ["Teaching Tools", "Management Tools","Professional Growth"],
+    Enterprises: ["Display & Communication", "Workforce Management","Safety & Utilities"],
+    "Public Sector": ["Public Education", "Infrastructure & Monitoring","Admin & Safety"],
   };
 
   // Mapping: which right items to show for a given middle item
   const rightByMiddle = {
-    "Interactive Learning": ["Early Edge", "AR/VR"],
-    "Learning Tools": ["Education Toys", "STEM Kits"],
-    "School Management": ["Early Edge", "Education Toys"],
-    "Digital Classroom": ["AR/VR", "STEM Kits"],
-  };
+    "Interactive Learning": ["Active Floor", "Ecoboard", "IFP (Interactive Flat Panel)"],
+    "Learning Tools": ["Early Edge", "Rhyming Toys", "Jingle Bells", "AR/VR Learning Kits"],
+    "School Management": ["Entab (ERP)", "Attendance & Visitor Management"],
+    "Digital Classroom": ["IFP", "Digital Podium", "Ecoboard", "Projector"],
+    "Learning Ecosystem": ["Etome eNote", "Etome Educosystem", "Digital Library", "LMS Integration"],
+    "Administration": ["Entab ERP for Education", "Attendance & Visitor Management"],
+    "Security & Infrastructure": ["CCTV & Surveillance", "Access Control"],
+    "Skill Development": ["After School", "Robotics & STEM Kits", "AR/VR Labs"],
+    "Smart Classrooms": ["IFP", "Digital Podium", "Projector", "LED Wall"],
+    "Academic Tools": ["Etome eNote", "Etome Educosystem", "ERP", "LMS"],
+    "Digital Learning Devices": ["Etome eNote", "Version Eka", "LMS & Test Platforms"],
+    "Productivity Tools": ["Smart Pens", "Reusable Notebooks", "Tablets"],
+    "Support Systems": ["Digital Library", "Study Companion Apps"],
+    "Productivity Devices": ["Etome eNote", "Laptops", "Tablets"],
+    "Collaboration Tools": ["Cloud Storage", "CRM", "Task Management Systems"],
+    "Wellness & Utilities": ["Coffee Machines", "Sanitary Pad Dispensers", "Smart Vending Solutions"],
+    "Presentation & Meeting": ["IFP", "Digital Podium", "Projector", "LED Wall"],
+    "Collaboration & Control": ["AV Control & Scheduling", "Video Conferencing Systems", "Device Management"],
+    "Office Automation": ["CRM", "Access Control", "Smart Utilities"],
+    "Learning Devices": ["Etome eNote", "Version Eka", "After School", "Digital Library"],
+    "Creativity & Skills": ["Nirmana (Sketch & Notes App)", "AR/VR Learning", "STEM & Robotics Kits"],
+    "Daily Use & Support": ["Smart Pens", "Stationery", "Backpacks", "Reusable Notebooks"],
+    "Teaching Tools": ["Etome eNote", "Projector", "IFP", "Ecoboard"],
+    "Management Tools": ["Entab", "LMS Integration", "Lesson Planner Tools", "ERP"],
+    "Professional Growth": ["Training & Certification Programs", "Early Edge"],
+    "Display & Communication": ["LED Wall", "Kiosk Systems", "Digital Signage"],
+    "Workforce Management": ["ERP Integration", "Attendance & Visitor Management", "CRM"],
+    "Safety & Utilities": ["CCTV", "Energy Management", "Smart Lighting", "Access Control"],
+    "Public Education": ["Etome eNote", "Version Eka", "IFP", "Ecoboard"],
+    "Infrastructure & Monitoring": ["ERP for Education", "Smart Classroom Solutions", "Digital Library"],
+    "Admin & Safety": ["Access Control", "CCTV Surveillance", "Scheduling & Reporting Systems"]
+};
+
 
   const [activeLeft, setActiveLeft] = useState(null);
   const [activeMiddle, setActiveMiddle] = useState(null);
