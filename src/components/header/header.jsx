@@ -90,7 +90,7 @@ const Header = () => {
   // Mapping: which middle items to show for a given left item
   const middleByLeft = {
     Montessori: ["Interactive Learning", "Learning Tools","School Management"],
-    School: ["Digital Classroom", "Learning Ecosystem ,Administration","Security & Infrastructure","Skill Development"],
+    School: ["Digital Classroom", "Learning Ecosystem" ,"Administration","Security & Infrastructure","Skill Development"],
     College: ["Digital Learning Devices", "Productivity Tools", "Support Systems"],
     "Competitive Exams": ["Learning Tools", "Digital Classroom"],
     Professionals: ["Productivity Devices", "Collaboration Tools","Wellness & Utilities"],
