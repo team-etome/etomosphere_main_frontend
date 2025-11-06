@@ -69,7 +69,7 @@ const Etome = () => {
 
                 marginTop: "40px"
             }} className="etome-main">
-                <div className="content-section">
+                <div  className="content-section">
                     <h1 className="content-heading">The Smarter Learning Device</h1>
 
                     <p style={{
@@ -85,20 +85,17 @@ const Etome = () => {
 
                 </div>
 
-                <div style={{
+                {/* <div style={{
 
                     marginTop: "20px",
 
                 }} className="content-image-container">
-                    <img style={{
-
-
-                    }}
+                    <img 
                         src={etomewitheco}
                         alt="Etome content"
                         className="content-image"
                     />
-                </div>
+                </div> */}
 
 
 
@@ -132,18 +129,29 @@ const Etome = () => {
 
 
                 {/* Products Section */}
-                <div className="products-section">
+                <div  className="products-section">
                     <div className="products-container">
                         {productCards.map((p) => (
-                            <div  key={p.id} className="product-card">
+                            <div style={{
+                               
+                                borderRadius:"0px",
+                                backgroundColor:"#FEF2E2",
+                            }}   key={p.id} className="product-card">
                                 <div className="product-image-container">
                                     <img src={p.image} alt={p.title} className="product-card-image" />
                                 </div>
 
                                 <div className="product-info">
+                                    <div>
                                     <h3 className="product-title">{p.title}</h3>
+                                    </div>
+
+                                    {/* <div>
                                     <p className="product-description">{p.description}</p>
-                                    <div className="product-price">{p.price}</div>
+                                    </div>   */}
+                                  
+                                    
+                                    {/* <div className="product-price">{p.price}</div> */}
 
                                     <div className="product-buttons">
                                         {p.buttons.map((b, i) =>

@@ -77,7 +77,7 @@ const BrandProduct = () => {
        
 
         {/* Dynamic Cards based on brand products */}
-        <div className="brandproduct-cards-container" style={{ marginLeft: "40px" }}>
+        <div className="brandproduct-cards-container">
           {brandProducts.map((product, index) => (
             <div 
               key={product.id} 

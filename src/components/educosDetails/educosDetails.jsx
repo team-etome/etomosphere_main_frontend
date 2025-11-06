@@ -7,8 +7,8 @@ const EducosDetails = () => {
     const [selectedSolution, setSelectedSolution] = useState(null);
     const [loading, setLoading] = useState(true);
     const [expandedSections, setExpandedSections] = useState({});
-    const [selectedProduct, setSelectedProduct]   = useState(null);
-    const [showContactInfo, setShowContactInfo]   = useState(false);
+    const [selectedProduct, setSelectedProduct] = useState(null);
+    const [showContactInfo, setShowContactInfo] = useState(false);
     const [selectedProducts, setSelectedProducts] = useState([]);
 
     const toggleSection = (sectionIndex) => {
@@ -37,7 +37,7 @@ const EducosDetails = () => {
     const closeContactInfo = () => {
         setShowContactInfo(false);
     };
-    
+
 
     const removeProduct = (productTitle) => {
         setSelectedProducts(prev => prev.filter(p => p.title !== productTitle));
@@ -46,6 +46,9 @@ const EducosDetails = () => {
     console.log(selectedSolution, "solution")
 
     useEffect(() => {
+        // Scroll to top when component mounts
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+
         // Get the selected solution from localStorage
         const solutionData = localStorage.getItem('selectedSolution');
         if (solutionData) {
@@ -110,7 +113,7 @@ const EducosDetails = () => {
                         {/* Configuration Section */}
 
                         <div className="configuration-section">
-                           
+
 
 
                             {/* Configuration Summary */}
@@ -216,6 +219,7 @@ const EducosDetails = () => {
                             ))}
                         </div>
                     </div>
+
                 </div>
             </main>
 

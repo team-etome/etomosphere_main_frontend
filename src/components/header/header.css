@@ -135,6 +135,16 @@
 }
 .explore-btn:hover { background-color: #0b63b6; }
 
+.explore-text {
+  display: inline;
+}
+
+@media (max-width: 400px) {
+  .explore-text {
+    display: none;
+  }
+}
+
 /* ========== Explore Mega Menu ========== */
 .explore-backdrop {
   display: none;
@@ -153,6 +163,8 @@
   gap: 0;
   padding: 0;
   z-index: 100;
+  max-height: 80vh;
+  overflow-y: auto;
 }
 
 .explore-close-btn {
@@ -186,16 +198,18 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 18px 24px;
+  padding: clamp(14px, 2vw, 18px) clamp(18px, 3vw, 24px);
   background: transparent;
   border: none;
   border-bottom: none;
   cursor: pointer;
   font-family: 'Space Grotesk', sans-serif;
-  font-size: 15px;
+  font-size: clamp(13px, 1.8vw, 15px);
   color: inherit;
   transition: background-color 0.2s ease, color 0.2s ease;
   border-radius: 0;
+  word-wrap: break-word;
+  overflow-wrap: break-word;
 }
 .explore-item:hover { 
   background: #015aa6; 
@@ -226,8 +240,25 @@
   }
 }
 
-@media (max-width: 900px) {
-  .explore-menu { grid-template-columns: 1fr; }
+/* Tablet and smaller desktop - 2 columns */
+@media (max-width: 1200px) and (min-width: 769px) {
+  .explore-menu {
+    grid-template-columns: 1fr 1fr;
+    max-height: 70vh;
+  }
+}
+
+/* Smaller tablets - 1 column */
+@media (max-width: 900px) and (min-width: 769px) {
+  .explore-menu {
+    grid-template-columns: 1fr;
+    max-height: 60vh;
+  }
+  
+  .explore-item {
+    padding: 14px 20px;
+    font-size: 14px;
+  }
 }
 
 /* Header Icons (desktop) */
@@ -440,10 +471,11 @@
     left: 16px;
     top: 50%;
     transform: translateY(-50%);
-    font-size: 14px;
-    padding: 8px 14px;
+    font-size: clamp(12px, 3vw, 14px);
+    padding: clamp(6px, 2vw, 8px) clamp(10px, 3vw, 14px);
     margin-left: 0 !important;
     z-index: 102;
+    white-space: nowrap;
   }
 
   /* Show hamburger on the right */
@@ -487,21 +519,23 @@
     overflow-y: auto;
     z-index: 1000;
     grid-template-columns: 1fr !important;
-    padding-top: 60px;
+    padding-top: clamp(50px, 8vw, 70px);
+    padding-bottom: 20px;
     background: #fff !important;
+    -webkit-overflow-scrolling: touch;
   }
   
   .explore-close-btn {
     display: block !important;
     position: absolute;
-    top: 20px;
-    right: 20px;
-    width: 40px;
-    height: 40px;
+    top: clamp(15px, 4vw, 20px);
+    right: clamp(15px, 4vw, 20px);
+    width: clamp(36px, 9vw, 44px);
+    height: clamp(36px, 9vw, 44px);
     border-radius: 50%;
     background-color: transparent;
     border: none;
-    font-size: 28px;
+    font-size: clamp(24px, 6vw, 32px);
     line-height: 1;
     cursor: pointer;
     display: flex;
@@ -510,6 +544,8 @@
     z-index: 1001;
     color: #000;
     padding: 0;
+    min-width: 44px;
+    min-height: 44px;
   }
   
   .explore-close-btn:hover {
@@ -517,34 +553,54 @@
     color: #000;
   }
   
+  .explore-close-btn:active {
+    background-color: #e0e0e0;
+  }
+  
   /* Show back button on mobile */
   .explore-back-btn {
     display: block !important;
     width: 100%;
-    padding: 16px 24px;
+    padding: clamp(14px, 3.5vw, 18px) clamp(20px, 5vw, 24px);
     background-color: #f8f8f8;
     border: none;
     border-bottom: 2px solid #e0e0e0;
     cursor: pointer;
     font-family: 'Space Grotesk', sans-serif;
-    font-size: 16px;
+    font-size: clamp(14px, 3.5vw, 16px);
     font-weight: 600;
     color: #015aa6;
     text-align: left;
+    min-height: 48px;
+    display: flex;
+    align-items: center;
   }
   
   .explore-back-btn:hover {
     background-color: #f0f0f0;
   }
   
+  .explore-back-btn:active {
+    background-color: #e8e8e8;
+  }
+  
   /* Progressive disclosure for mobile */
   .mobile-explore .explore-item {
-    border-bottom: none;
+    border-bottom: 1px solid #f0f0f0;
     outline: none;
+    padding: clamp(16px, 4vw, 20px) clamp(20px, 5vw, 24px);
+    font-size: clamp(14px, 3.5vw, 16px);
+    min-height: 48px;
+    display: flex;
+    align-items: center;
   }
   .mobile-explore .explore-item:focus {
     outline: none;
-    border: none;
+    border-bottom: 1px solid #f0f0f0;
+    background-color: #f8f8f8;
+  }
+  .mobile-explore .explore-item:active {
+    background-color: #e8e8e8;
   }
 
   /* Enable the mobile panel */
@@ -557,12 +613,38 @@
   .icon { width: 20px; height: 20px; }
 }
 
+/* ========== Medium tablets ========== */
+@media (max-width: 768px) and (min-width: 481px) {
+  .explore-menu {
+    padding-top: clamp(60px, 10vw, 80px);
+  }
+  
+  .explore-item {
+    padding: 18px 24px;
+    font-size: 15px;
+  }
+}
+
 /* ========== Extra small screens ========== */
 @media (max-width: 480px) {
   .header-container { padding: 12px; }
   .brand-name { font-size: 18px; }
   .mobile-nav { padding: 16px; }
   .mobile-nav-item { font-size: 16px; }
+  
+  .explore-menu {
+    padding-top: clamp(50px, 12vw, 60px);
+  }
+  
+  .explore-item {
+    padding: 14px 18px;
+    font-size: 14px;
+  }
+  
+  .explore-back-btn {
+    padding: 12px 18px;
+    font-size: 14px;
+  }
 }
 
 
