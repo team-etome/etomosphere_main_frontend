@@ -3,7 +3,7 @@ const initialState = {
 
 
 
-    // url :"http://192.168.1.11:8000"
+    // url :"http://192.168.1.10:8000"
 
     url :"https://api.etomosphere.com"
 

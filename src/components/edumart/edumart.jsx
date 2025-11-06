@@ -108,30 +108,27 @@ function Edumart() {
         {!loading && !error && (
           <>
             {/* All Products Header */}
-            <div className="product-header-section">
-              <h1 style={{
-                fontSize: "48px",
-                fontWeight: "700",
-                color: "#000",
-                margin: "0 0 24px 0",
-                fontFamily: "'Manrope', sans-serif"
-              }}>
-                All Products
-              </h1>
+            <div  className="content-section">
+              <h1 className="content-heading">All Products</h1>
+
               <p style={{
-                fontSize: "18px",
-                color: "#000",
-                lineHeight: "1.6",
-                margin: "0",
-                fontFamily: "'Manrope', sans-serif",
-              }}>
-                Shop from a wide range of educational and lifestyle products designed to enhance
-                learning experiences. From smart devices to accessories, explore top brands and
-                trusted solutions, <strong>all in one place.</strong>
+                 fontSize: "32px",
+                 width: "100%",
+                 maxWidth: "none",
+                 margin: 0,
+                 display: "block",
+                 boxSizing: "border-box",
+                 textAlign: "center"
+              }} className="content-paragraph">
+                Shop  from a wide range of educational and lifestyle products designed to <br /> enhance
+                learning experiences. From smart devices to accessories, explore <br />  top brands and
+                trusted solutions,  all in one place.
               </p>
             </div>
 
-            <div className="product-grid-container">
+
+
+            <div className="product-grid-container">  
               {items.map(p => (
                 <div
                   key={p.id}
