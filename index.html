@@ -8,28 +8,33 @@
 
     <!-- Google Tag Manager (GTM-P9CK8DK8) -->
     <script>
-      (function(w,d,s,l,i){
-        w[l]=w[l]||[];
-        w[l].push({'gtm.start': new Date().getTime(), event:'gtm.js'});
-        var f=d.getElementsByTagName(s)[0],
-        j=d.createElement(s), dl=l!='dataLayer'?'&l='+l:'';
-        j.async=true;
-        j.src='https://www.googletagmanager.com/gtm.js?id='+i+dl;
-        f.parentNode.insertBefore(j,f);
-      })(window,document,'script','dataLayer','GTM-P9CK8DK8');
+      try {
+        (function(w,d,s,l,i){
+          w[l]=w[l]||[];
+          w[l].push({'gtm.start': new Date().getTime(), event:'gtm.js'});
+          var f=d.getElementsByTagName(s)[0],
+          j=d.createElement(s), dl=l!='dataLayer'?'&l='+l:'';
+          j.async=true;
+          j.src='https://www.googletagmanager.com/gtm.js?id='+i+dl;
+          j.onerror = function() { console.log('GTM blocked'); };
+          f.parentNode.insertBefore(j,f);
+        })(window,document,'script','dataLayer','GTM-P9CK8DK8');
+      } catch(e) { console.log('GTM error:', e); }
     </script>
     <!-- End Google Tag Manager -->
 
     <!-- Zoho PageSense -->
-    <script src="https://cdn.pagesense.io/js/902060001/b698a3c10ca745cf89b0552607f19a97.js"></script>
+    <script src="https://cdn.pagesense.io/js/902060001/b698a3c10ca745cf89b0552607f19a97.js" onerror="console.log('PageSense blocked')"></script>
 
     <!-- Google Analytics -->
-    <script async src="https://www.googletagmanager.com/gtag/js?id=G-ZZCKQGGW5G"></script>
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-ZZCKQGGW5G" onerror="console.log('GA blocked')"></script>
     <script>
-      window.dataLayer = window.dataLayer || [];
-      function gtag(){dataLayer.push(arguments);}
-      gtag('js', new Date());
-      gtag('config', 'G-ZZCKQGGW5G');
+      try {
+        window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        gtag('js', new Date());
+        gtag('config', 'G-ZZCKQGGW5G');
+      } catch(e) { console.log('GA error:', e); }
     </script>
   </head>
 
@@ -44,5 +49,18 @@
 
     <div id="root"></div>
     <script type="module" src="/src/main.jsx"></script>
+
+
+    <script>
+      try {
+        window.$zoho=window.$zoho || {};
+        $zoho.salesiq=$zoho.salesiq||{ready:function(){}};
+      } catch(e) { console.log('Zoho init error:', e); }
+    </script>
+    <script id="zsiqscript" src="https://salesiq.zohopublic.com/widget?wc=siqb1524f58c33a87989866aa80d8e100cd53ae1cf32d16c3b21e730e855da8963b" defer onerror="console.log('Zoho SalesIQ blocked')"></script>
+
+
+
+
   </body>
 </html>
