@@ -15,6 +15,9 @@ import BrandProduct from './components/brandProduct/brandProduct.jsx'
 import EducosDetails from './components/educosDetails/educosDetails.jsx'
 import EnquiryModal from './components/enquiry/EnquiryModal.jsx'
 import EmployeePublic from './components/employeDetails/EmployeePublic.jsx'
+import PrivacyPolicy from './components/privacy/PolicyPage.jsx'
+import RefundPolicy from './components/refund/RefundPolicy.jsx'
+import TermsConditions from './components/terms/TermsConditions.jsx'
 import './App.css'
 
 
@@ -46,7 +49,10 @@ function AppContent() {
         <Route path="/brandproduct" element={<BrandProduct />} />
         <Route path="/educosdetails" element={<EducosDetails />} />
         <Route path="/employee/:slug" element={<EmployeePublic />} />
-        <Route path="/enquiry" element={<EnquiryModal isOpen onClose={() => {}} />} />   
+        <Route path="/enquiry" element={<EnquiryModal isOpen onClose={() => {}} />} />
+        <Route path="/privacy-policy" element={<PrivacyPolicy />} />
+        <Route path="/refund-policy" element={<RefundPolicy />} />
+        <Route path="/terms-conditions" element={<TermsConditions />} />   
       </Routes>
 
       {/* ✅ Only show enquiry components if NOT on employee page */}

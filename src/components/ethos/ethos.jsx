@@ -8,6 +8,7 @@ import ethos3 from '../../assets/ethos3.jpg';
 import ethos4 from '../../assets/ethos4.png'
 const clamp = (v, min, max) => Math.max(min, Math.min(max, v));
 
+
 function Ethos() {
     const cards = useMemo(
         () => [
@@ -118,11 +119,9 @@ function Ethos() {
                             // Motion:
                             // - translateY: rise up from the stack into place
                             // - scale: grow slightly as it comes to front
-                            // - opacity: fade in
                             // - zIndex: keep the active card on top of all others
                             const translateY = (1 - t) * 120 + (i - activeIndex) * 6; // px
                             const scale = 0.94 + t * 0.06;
-                            const opacity = 0.35 + t * 0.65;
                             const zIndex = i === activeIndex ? 1000 : i; // active card above all
 
                             return (
@@ -132,7 +131,6 @@ function Ethos() {
                                     style={{
 
                                         zIndex,
-                                        opacity,
                                         transform: `translateY(${translateY}px) scale(${scale})`,
                                         boxShadow: `0 20px 40px rgba(0,0,0,${0.18 * (1 - (t * 0.7))})`,
                                     }}

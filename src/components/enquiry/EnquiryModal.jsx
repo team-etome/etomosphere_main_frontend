@@ -1,5 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from "react-router-dom";
+import axios from 'axios';
+import { useSelector } from 'react-redux';
 /**
  * EnquiryModal - reusable enquiry/contact form modal
  * Props:
@@ -7,19 +9,24 @@ import { Link } from "react-router-dom";
  * - onClose: () => void - called when closing
  * - onSubmit?: (payload) => Promise<void> | void - optional submit handler
  */
+const initialFormState = {
+  name: '',
+  organisation: '',
+  designation: '',
+  phone: '',
+  email: '',
+  location: '',
+  comment: ''
+};
+
 function EnquiryModal({ isOpen, onClose, onSubmit }) {
-  const [formData, setFormData] = useState({
-    name: '',
-    organisation: '',
-    designation: '',
-    phone: '',
-    email: '',
-    location: '',
-    comment: ''
-  });
+  const APIURL = useSelector((state) => state.APIURL?.url) || 'https://api.etomosphere.com';
+  const [formData, setFormData] = useState(initialFormState);
 
   const [submitting, setSubmitting] = useState(false);
   const [errors, setErrors] = useState({});
+  const [submitError, setSubmitError] = useState('');
+  const [submitSuccess, setSubmitSuccess] = useState(false);
 
   useEffect(() => {
     if (isOpen) {
@@ -50,15 +57,39 @@ function EnquiryModal({ isOpen, onClose, onSubmit }) {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    setSubmitError('');
+    setSubmitSuccess(false);
     const v = validate();
     setErrors(v);
     if (Object.keys(v).length > 0) return;
     try {
       setSubmitting(true);
+
+      const payload = {
+        name: formData.name.trim(),
+        organisation: formData.organisation.trim(),
+        designation: formData.designation.trim(),
+        phone: formData.phone.trim(),
+        email: formData.email.trim(),
+        location: formData.location.trim(),
+        comment: formData.comment.trim()
+      };
+
+      await axios.post(`${APIURL}/api/enquiry/`, payload);
+      setSubmitSuccess(true);
+      setFormData(initialFormState);
+      setErrors({});
+
       if (onSubmit) {
-        await onSubmit(formData);
+        await onSubmit(payload);
       }
       onClose?.();
+    } catch (error) {
+      const message =
+        error.response?.data?.detail ||
+        error.response?.data?.message ||
+        'Unable to submit your enquiry right now. Please try again later.';
+      setSubmitError(message);
     } finally {
       setSubmitting(false);
     }
@@ -177,6 +208,13 @@ function EnquiryModal({ isOpen, onClose, onSubmit }) {
             />
           </div>
 
+          {submitError && (
+            <p style={styles.errorText}>{submitError}</p>
+          )}
+          {submitSuccess && (
+            <p style={styles.successText}>Thanks! Our team will reach out shortly.</p>
+          )}
+
           <div style={styles.actions}>
          
             <button type="submit" disabled={submitting} style={styles.primaryBtn} className="enquiry-btn">
@@ -236,6 +274,16 @@ const styles = {
   },
   primaryBtn: {
     padding: '10px 14px', borderRadius: 8, border: '1px solid #1d4ed8', background: '#1d4ed8', color: '#fff', cursor: 'pointer'
+  },
+  errorText: {
+    color: '#b91c1c',
+    margin: '8px 0 0 0',
+    fontSize: 14
+  },
+  successText: {
+    color: '#065f46',
+    margin: '8px 0 0 0',
+    fontSize: 14
   }
 };
 
