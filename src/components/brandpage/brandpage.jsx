@@ -21,8 +21,8 @@ const Brandpage = () => {
 
     console.log(storedProducts, "storedProducts")
 
-  
-    
+
+
     if (storedProducts) {
       try {
         const products = JSON.parse(storedProducts);
@@ -42,11 +42,11 @@ const Brandpage = () => {
   const handleProductClick = (clickedProduct) => {
     // Get all products from the same brand
     const brandProducts = categoryProducts.filter(p => p.brand?.name === clickedProduct.brand?.name);
-    
+
     // Store brand products in localStorage
     localStorage.setItem('selectedBrandProducts', JSON.stringify(brandProducts));
     localStorage.setItem('selectedBrand', clickedProduct.brand?.name || 'Unknown Brand');
-    
+
     // Navigate to brandproduct
     navigate('/brandproduct');
   };
@@ -105,25 +105,41 @@ const Brandpage = () => {
               }
               return acc;
             }, {});
-            
+
             const uniqueBrands = Object.values(groupedByBrand);
-            
+
             return uniqueBrands.map((product, index) => (
-              <div 
-                key={product.id} 
+              <div
+                key={product.id}
                 className="brandpage-product-card"
                 onClick={() => handleProductClick(product)}
                 style={{ cursor: 'pointer' }}
               >
                 <div className="brandpage-front">
-                  <img
+                  {/* <img style={{
+                    width:"424px",
+                    height:"517px"
+                  }}
                     src={product.product_images && product.product_images.length > 0 
                       ? product.product_images[0].image_url || product.product_images[0].image
                       : product.image || 'https://via.placeholder.com/300x200'}
                     alt={product.name}
                     loading="lazy"
                     onError={(e) => { e.currentTarget.src = 'https://via.placeholder.com/300x200'; }}
+                  /> */}
+                  <img
+                    src={
+                      product.brand?.category?.images?.[0]?.image_url
+                      || "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='300' height='200'%3E%3Crect width='300' height='200' fill='%23e5e7eb'/%3E%3C/svg%3E"
+                    }
+                    alt={product.name}
+                    loading="lazy"
+                    onError={(e) => {
+                      e.currentTarget.src =
+                        "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='300' height='200'%3E%3Crect width='300' height='200' fill='%23e5e7eb'/%3E%3C/svg%3E";
+                    }}
                   />
+
                 </div>
                 <div className="brandpage-brand-name">{product.brand?.name || 'Unknown Brand'}</div>
               </div>
