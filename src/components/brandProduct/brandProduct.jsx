@@ -14,7 +14,7 @@ const BrandProduct = () => {
     // Get products from localStorage
     const storedProducts = localStorage.getItem('selectedBrandProducts');
     const storedBrand = localStorage.getItem('selectedBrand');
-    
+
     if (storedProducts) {
       try {
         const products = JSON.parse(storedProducts);
@@ -34,7 +34,7 @@ const BrandProduct = () => {
   const handleProductClick = (product) => {
     // Store the specific product data in localStorage
     localStorage.setItem('selectedProduct', JSON.stringify(product));
-    
+
     // Navigate to ProductDetail
     navigate('/productdetail');
   };
@@ -74,30 +74,43 @@ const BrandProduct = () => {
 
       <main className="brandproduct-main">
         {/* Brand Header Section */}
-       
+
 
         {/* Dynamic Cards based on brand products */}
         <div className="brandproduct-cards-container">
           {brandProducts.map((product, index) => (
-            <div 
-              key={product.id} 
+            <div
+              key={product.id}
               className="brandproduct-card"
               onClick={() => handleProductClick(product)}
               style={{ cursor: 'pointer' }}
             >
               <div className="brandproduct-card-image">
-                <img
+                {/* <img
                   src={product.product_images && product.product_images.length > 0 
                     ? product.product_images[0].image_url || product.product_images[0].image
                     : product.image || 'https://via.placeholder.com/300x200'}
                   alt={product.name}
                   loading="lazy"
                   onError={(e) => { e.currentTarget.src = 'https://via.placeholder.com/300x200'; }}
+                /> */}
+                <img
+                  src={
+                    product.brand?.category?.images?.[0]?.image_url
+                    || "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='300' height='200'%3E%3Crect width='300' height='200' fill='%23e5e7eb'/%3E%3C/svg%3E"
+                  }
+                  alt={product.name}
+                  loading="lazy"
+                  onError={(e) => {
+                    e.currentTarget.src =
+                      "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='300' height='200'%3E%3Crect width='300' height='200' fill='%23e5e7eb'/%3E%3C/svg%3E";
+                  }}
                 />
+
               </div>
               <div className="brandproduct-card-content">
                 <h3 className="brandproduct-card-name">{product.name}</h3>
-              
+
               </div>
             </div>
           ))}

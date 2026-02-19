@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState,useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useSelector } from 'react-redux';
 import axios from 'axios';
@@ -13,6 +13,14 @@ import etomewitheco from '../../assets/etomewitheco.jpg';
 import './etome.css';
 
 const Etome = () => {
+    const navigate = useNavigate();
+    useEffect(() => {
+    const savedScroll = sessionStorage.getItem("etomeScroll");
+    if (savedScroll) {
+        window.scrollTo(0, parseInt(savedScroll));
+    }
+}, []);
+
     const [showContactInfo, setShowContactInfo] = useState(false);
 
     const handleEnquireNow = () => {
@@ -21,6 +29,24 @@ const Etome = () => {
 
     const closeContactInfo = () => {
         setShowContactInfo(false);
+    };
+
+    
+
+    const handleProductClick = (product) => {
+        // Store product data in localStorage for EtomeProductDetail component
+        const productData = {
+            id: product.id,
+            title: product.title,
+            name: product.title,
+            description: product.description,
+            price: product.price,
+            image: product.image,
+            sizes: product.sizes || []
+        };
+
+        localStorage.setItem('selectedEtomeProduct', JSON.stringify(productData));
+        navigate('/etome-product-detail');
     };
 
     const productCards = [
@@ -32,9 +58,10 @@ const Etome = () => {
             price: "Rs.38500",
             image: image13,
             buttons: [
-             
-                { kind: "secondary", label: "Enquiry Now", onClick: handleEnquireNow },
-            ],        },
+
+                { kind: "secondary", label: "Enquire Now", onClick: handleEnquireNow },
+            ],
+        },
         {
             id: "etome-stylus",
             title: "Etome Stylus",
@@ -43,9 +70,10 @@ const Etome = () => {
             price: "Rs.2000",
             image: EtomeStylus,
             buttons: [
-             
-                { kind: "secondary", label: "Enquiry Now", onClick: handleEnquireNow },
-            ],        },
+
+                { kind: "secondary", label: "Enquire Now", onClick: handleEnquireNow },
+            ],
+        },
         {
             id: "etome-ecoboard",
             title: "Etome EcoBoard",
@@ -53,9 +81,10 @@ const Etome = () => {
                 "Empowering digital learning through smart, connected technology.",
             price: "Rs.40000",
             image: EtomeEcoBoard,
+            sizes: ['B55P', 'B60P', 'LE60P', 'LE65P', 'LE90P'],
             buttons: [
-             
-                { kind: "secondary", label: "Enquiry Now", onClick: handleEnquireNow },
+
+                { kind: "secondary", label: "Enquire Now", onClick: handleEnquireNow },
             ],
         },
     ];
@@ -69,7 +98,7 @@ const Etome = () => {
 
                 marginTop: "40px"
             }} className="etome-main">
-                <div  className="content-section">
+                <div className="content-section">
                     <h1 className="content-heading">The Smarter Learning Device</h1>
 
                     <p style={{
@@ -110,8 +139,15 @@ const Etome = () => {
                         }} className="section-paragraph">
                             Etome DUA Business empowers <br /> institutions with an integrated <br /> digital ecosystem that simplifies <br /> operations, enhances <br /> collaboration, and drives smarter <br /> decision-making for educational <br /> and business excellence.                        </p>
                         <div className="button-group">
-                            {/* <button className="buy-now-btn">Buy Now</button> */}
-                            <Link to="/etomedetails" className="learn-more-btn">Learn More</Link>
+                            <a
+                                href="https://www.etome.in/"
+                                className="learn-more-btn"
+                                onClick={() => {
+                                    sessionStorage.setItem("etomeScroll", window.scrollY);
+                                }}
+                            >
+                                Learn More
+                            </a>
                         </div>
                     </div>
 
@@ -129,38 +165,57 @@ const Etome = () => {
 
 
                 {/* Products Section */}
-                <div  className="products-section">
+                <div className="products-section">
                     <div className="products-container">
                         {productCards.map((p) => (
-                            <div style={{
-                               
-                                borderRadius:"0px",
-                                backgroundColor:"#FEF2E2",
-                            }}   key={p.id} className="product-card">
+                            <div
+                                style={{
+                                    borderRadius: "0px",
+                                    backgroundColor: "#FEF2E2",
+                                    cursor: "pointer"
+                                }}
+                                key={p.id}
+                                className="product-card"
+                                onClick={() => handleProductClick(p)}
+                            >
                                 <div className="product-image-container">
                                     <img src={p.image} alt={p.title} className="product-card-image" />
                                 </div>
 
                                 <div className="product-info">
                                     <div>
-                                    <h3 className="product-title">{p.title}</h3>
+                                        <h3 className="product-title">{p.title}</h3>
                                     </div>
 
                                     {/* <div>
                                     <p className="product-description">{p.description}</p>
                                     </div>   */}
-                                  
-                                    
+
+
                                     {/* <div className="product-price">{p.price}</div> */}
 
                                     <div className="product-buttons">
                                         {p.buttons.map((b, i) =>
                                             b.kind === "primary" ? (
-                                                <button key={i} className="add-to-cart-btn" onClick={b.onClick}>
+                                                <button
+                                                    key={i}
+                                                    className="add-to-cart-btn"
+                                                    onClick={(e) => {
+                                                        e.stopPropagation();
+                                                        b.onClick();
+                                                    }}
+                                                >
                                                     {b.label}
                                                 </button>
                                             ) : (
-                                                <button key={i} className="learn-more-card-btn" onClick={b.onClick}>
+                                                <button
+                                                    key={i}
+                                                    className="learn-more-card-btn"
+                                                    onClick={(e) => {
+                                                        e.stopPropagation();
+                                                        b.onClick();
+                                                    }}
+                                                >
                                                     {b.label}
                                                 </button>
                                             )
