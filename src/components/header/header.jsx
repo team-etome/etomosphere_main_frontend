@@ -550,7 +550,6 @@ const Header = () => {
           )}
         </div>
       )}
-
       {/* Backdrop */}
       <div className={`backdrop ${isMenuOpen ? "show" : ""}`} onClick={closeMenu} />
 
