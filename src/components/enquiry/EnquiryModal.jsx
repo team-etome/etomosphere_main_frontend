@@ -20,7 +20,11 @@ const initialFormState = {
 };
 
 function EnquiryModal({ isOpen, onClose, onSubmit }) {
-  const APIURL = useSelector((state) => state.APIURL?.url) || 'https://api.etomosphere.com';
+  // const APIURL = useSelector((state) => state.APIURL?.url) || 'https://api.etomosphere.com';
+  const APIURL = import.meta.env.VITE_API_URL || "http://192.168.1.6:8000";
+  console.log("VITE_API_URL:", import.meta.env.VITE_API_URL);
+  console.log("APIURL USED:", APIURL);
+
   const [formData, setFormData] = useState(initialFormState);
 
   const [submitting, setSubmitting] = useState(false);

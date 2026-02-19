@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate ,useSearchParams } from 'react-router-dom';
 import Header from '../header/header.jsx';
 import Footer from '../footer/footer.jsx';
 import './edumart.css';
@@ -25,7 +25,12 @@ function Edumart() {
   const [loading, setLoad] = useState(true);
   const [error, setError] = useState("");
   const navigate = useNavigate();
-  const APIURL = useSelector((s) => s.APIURL?.url) || "";
+  const [searchParams] = useSearchParams();
+  const selectedCategory = searchParams.get('category');
+  // const APIURL = useSelector((s) => s.APIURL?.url) || "";
+  const APIURL = import.meta.env.VITE_API_URL;
+  console.log("🔥 APIURL USED:", APIURL);
+
 
   console.log(items, "items");
 

@@ -88,7 +88,7 @@ function AppContent() {
             }}
             aria-label="Enquire Sales"
           >
-            Enquire Sales
+            Enquire Now
           </button>
         </>
       )}

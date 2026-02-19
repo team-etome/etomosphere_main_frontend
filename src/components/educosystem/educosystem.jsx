@@ -13,7 +13,26 @@ import auditorium from '../../assets/auditorium.png';
 import Counselling from '../../assets/Counselling.png';
 import controlroom from '../../assets/Controlroom.png';
 import educosystem from '../../assets/educosystem.mp4'
-
+import Wideangledcoverage from'../../assets/Wideangledcoverage.webp';
+import PTZ from'../../assets/PTZ.webp';
+import plugAndplay from'../../assets/plugAndplay.webp';
+import amplifier from '../../assets/amplifier.jpg'
+import analogSeilingSpeaker from '../../assets/analogSeilingSpeaker.jpg'
+import CEILINGMICETOMOSPHERE from '../../assets/CEILINGMICETOMOSPHERE.webp'
+import enote from '../../assets/enote.jpeg'
+import eboardETOMOSPHERE  from '../../assets/eboardETOMOSPHERE.png'
+import LEDWall from '../../assets/LEDWall.jpg'
+import Verticalcamera from '../../assets/Verticalcamera.webp'
+import Digitalnoisereductioncamera from'../../assets/Digitalnoisereductioncamera.webp'
+import VdcSmps from'../../assets/VdcSmps.png'
+import StbSurvelliance from'../../assets/StbSurvelliance.png'
+import InchMoniter from'../../assets/InchMoniter.png'
+import VisitorModule from'../../assets/VisitorModule.png'
+import OneChanelVideoLisence from'../../assets/OneChanelVideoLisence.png'
+import AccessControlBase from'../../assets/AccessControlBase.png'
+import ipspeakericense from '../../assets/ipspeakericense.png'
+import DigitalSignage from'../../assets/DigitalSignage.jpeg'
+import LcdMoniter from'../../assets/LcdMoniter.avif'
 import './educosystem.css';
 
 const Educosystem = () => {
@@ -103,17 +122,20 @@ const Educosystem = () => {
             {
               title: "PTZ",
               details:
-                "Stay in focus effortlessly with smart AI tracking that follows the teacher’s movement, keeping lessons smooth and professional."
+                "Stay in focus effortlessly with smart AI tracking that follows the teacher’s movement, keeping lessons smooth and professional.",
+              image:PTZ,  
             },
             {
               title: "Wide-Angle Coverage",
               details:
-                "Capture the entire classroom with ultra-wide lenses, ensuring every student and detail is visible during live or recorded sessions."
+                "Capture the entire classroom with ultra-wide lenses, ensuring every student and detail is visible during live or recorded sessions.",
+              image:Wideangledcoverage,  
             },
             {
               title: "Plug-and-Play Simplicity",
               details:
-                "Set up in seconds — no complicated installation. Just connect and start streaming or recording with ease."
+                "Set up in seconds — no complicated installation. Just connect and start streaming or recording with ease.",
+              image:plugAndplay,  
             }
           ]
         },
@@ -123,17 +145,20 @@ const Educosystem = () => {
             {
               title: "Analog Ceiling Speaker",
               details:
-                "Deliver clear, balanced audio throughout the classroom with high-quality analog ceiling speakers — designed for even sound distribution and easy installation."
+                "Deliver clear, balanced audio throughout the classroom with high-quality analog ceiling speakers — designed for even sound distribution and easy installation.",
+              image:analogSeilingSpeaker,  
             },
             {
               title: "Zone Network Amplifier",
               details:
-                "Control and power multiple audio zones with a reliable network amplifier — ensuring consistent sound performance across classrooms or halls."
+                "Control and power multiple audio zones with a reliable network amplifier — ensuring consistent sound performance across classrooms or halls.",
+              image:amplifier,  
             },
             {
               title: "Ceiling Microphone",
               details:
-                "Capture crystal-clear voice from any direction with discreet ceiling microphones — perfect for classrooms, lectures, and conference setups."
+                "Capture crystal-clear voice from any direction with discreet ceiling microphones — perfect for classrooms, lectures, and conference setups.",
+              image:CEILINGMICETOMOSPHERE,  
             }
           ]
         },
@@ -143,7 +168,8 @@ const Educosystem = () => {
             {
               title: "Etome",
               details:
-                "A paper-like digital writing device designed for reading, note-taking, and sketching — offering eye comfort, long battery life, and smooth pen input."
+                "A paper-like digital writing device designed for reading, note-taking, and sketching — offering eye comfort, long battery life, and smooth pen input.",
+              image:enote,  
             }
           ]
         },
@@ -153,7 +179,8 @@ const Educosystem = () => {
             {
               title: "Etome Ecoboard",
               details:
-                "A sustainable digital board ideal for classrooms and offices, combining traditional writing with smart, eco-friendly methods."
+                "A sustainable digital board ideal for classrooms and offices, combining traditional writing with smart, eco-friendly methods.",
+              image:eboardETOMOSPHERE,  
             }
           ]
         }
@@ -172,7 +199,8 @@ const Educosystem = () => {
             {
               title: "LED Wall",
               details:
-                "Seamless large-format LED displays built for stunning visuals, ideal for auditoriums, events, and advertising spaces."
+                "Seamless large-format LED displays built for stunning visuals, ideal for auditoriums, events, and advertising spaces.",
+              image:LEDWall,  
             }
           ]
         },
@@ -216,12 +244,14 @@ const Educosystem = () => {
             {
               title: "Vertical Noise Reduction",
               details:
-                "Minimizes vertical streaks or banding in images, enhancing clarity and detail in low-light or high-contrast scenes."
+                "Minimizes vertical streaks or banding in images, enhancing clarity and detail in low-light or high-contrast scenes.",
+              image:Verticalcamera,  
             },
             {
               title: "Digital Noise Reduction (DNR)",
               details:
-                "Image processing algorithms reduce grainy visual noise for smoother, cleaner video output, especially in dark environments."
+                "Image processing algorithms reduce grainy visual noise for smoother, cleaner video output, especially in dark environments.",
+              image:Digitalnoisereductioncamera,  
             }
           ]
         },
@@ -231,12 +261,14 @@ const Educosystem = () => {
             {
               title: "5A VDC SMPS",
               details:
-                "A switched-mode power supply delivering a stable 5-amp DC output with high efficiency and low heat generation."
+                "A switched-mode power supply delivering a stable 5-amp DC output with high efficiency and low heat generation.",
+              image:VdcSmps,  
             },
             {
               title: "STB Surveillance",
               details:
-                "Set-top box–based surveillance system that integrates CCTV feeds for monitoring directly on a TV screen."
+                "Set-top box–based surveillance system that integrates CCTV feeds for monitoring directly on a TV screen.",
+              image:StbSurvelliance,  
             }
           ]
         },
@@ -246,7 +278,8 @@ const Educosystem = () => {
             {
               title: "22-Inch Monitor",
               details:
-                "A medium-sized display offering clear visuals and ample space for multitasking or surveillance monitoring."
+                "A medium-sized display offering clear visuals and ample space for multitasking or surveillance monitoring.",
+              image:InchMoniter,  
             }
           ]
         }
@@ -270,22 +303,26 @@ const Educosystem = () => {
             {
               title: "One Channel Video License",
               details:
-                "Adds support for one additional video channel, allowing live viewing and recording from a single camera."
+                "Adds support for one additional video channel, allowing live viewing and recording from a single camera.",
+              image:OneChanelVideoLisence,  
             },
             {
               title: "Access Control Base (4-Door)",
               details:
-                "Provides access control management capabilities for up to four doors, including monitoring and event logging."
+                "Provides access control management capabilities for up to four doors, including monitoring and event logging.",
+              image:AccessControlBase,  
             },
             {
               title: "Visitor Module",
               details:
-                "Software module for registering, tracking, and managing visitor access within the control room security system."
+                "Software module for registering, tracking, and managing visitor access within the control room security system.",
+              image:VisitorModule,  
             },
             {
               title: "IIP Speaker License",
               details:
-                "Enables integration and control of IP-based (network) speakers for two-way audio communication and public announcements."
+                "Enables integration and control of IP-based (network) speakers for two-way audio communication and public announcements.",
+              image:ipspeakericense,  
             }
           ]
         },
@@ -295,12 +332,15 @@ const Educosystem = () => {
             {
               title: "Digital Signage",
               details:
-                "Dynamic display systems that deliver announcements, advertisements, and information with eye-catching visuals and easy content control."
+                "Dynamic display systems that deliver announcements, advertisements, and information with eye-catching visuals and easy content control.",
+              image:DigitalSignage,  
             },
             {
               title: "32” Monitor with Bracket",
               details:
-                "High-resolution 32-inch display for clear video monitoring, supplied with a sturdy wall/desk mounting bracket for secure installation in the control room."
+                "High-resolution 32-inch display for clear video monitoring, supplied with a sturdy wall/desk mounting bracket for secure installation in the control room.",
+              image:LcdMoniter,  
+            
             }
           ]
         }
