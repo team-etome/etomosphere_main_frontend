@@ -23,7 +23,7 @@
 }
 
 .brandproduct-title {
-  font-family: 'Space Grotesk', sans-serif;
+  font-family: 'Manrope', sans-serif;
   font-size: 48px;
   font-weight: 700;
   margin: 0 0 20px 0;
@@ -31,7 +31,7 @@
 }
 
 .brandproduct-description {
-  font-family: 'Space Grotesk', sans-serif;
+  font-family: 'Manrope', sans-serif;
   font-size: 20px;
   font-weight: 400;
   margin: 0;
@@ -98,7 +98,7 @@
 }
 
 .brandproduct-placeholder-text {
-  font-family: 'Space Grotesk', sans-serif;
+  font-family: 'Manrope', sans-serif;
   font-size: 16px;
   font-weight: 500;
   opacity: 0.8;
@@ -117,7 +117,7 @@
 }
 
 .brandproduct-card-name {
-  font-family: 'Space Grotesk', sans-serif;
+  font-family: 'Manrope', sans-serif;
   font-size: 18px;
   font-weight: 600;
   color: black;
@@ -127,7 +127,7 @@
 }
 
 .brandproduct-card-description {
-  font-family: 'Space Grotesk', sans-serif;
+  font-family: 'Manrope', sans-serif;
   font-size: 14px;
   font-weight: 400;
   color: #666;
@@ -137,7 +137,7 @@
 }
 
 .brandproduct-card-price {
-  font-family: 'Space Grotesk', sans-serif;
+  font-family: 'Manrope', sans-serif;
   font-size: 18px;
   font-weight: 700;
   color: #2c5aa0;
@@ -178,14 +178,14 @@
 }
 
 .no-products-container h2 {
-  font-family: 'Space Grotesk', sans-serif;
+  font-family: 'Manrope', sans-serif;
   font-size: 24px;
   color: #333;
   margin-bottom: 8px;
 }
 
 .no-products-container p {
-  font-family: 'Space Grotesk', sans-serif;
+  font-family: 'Manrope', sans-serif;
   font-size: 16px;
   color: #666;
 }

@@ -121,14 +121,14 @@
 }
 
 .products-title {
-  font-family: 'Space Grotesk', sans-serif;
+  font-family: 'Manrope', sans-serif;
   font-size: clamp(32px,5vw,64px);
   font-weight: 700;
   margin: 0 0 12px;
 }
 
 .products-description {
-  font-family: 'Space Grotesk', sans-serif;
+  font-family: 'Manrope', sans-serif;
   font-size: clamp(14px,2.1vw,20px);
   line-height: 1.6;
   max-width: 900px;
@@ -169,7 +169,7 @@
 .alpha-row.multi .alpha-items  { order: 2; }
 
 .alpha-letter {
-  font-family: 'Space Grotesk', sans-serif;
+  font-family: 'Manrope', sans-serif;
   font-weight: 800;
   font-size: clamp(28px, 8vw, 96px);
   line-height: 1;
@@ -289,7 +289,7 @@
   font-weight: 700;
   margin: 0 0 8px 0;
   color: #ffffff;
-  font-family: 'Space Grotesk', sans-serif;
+  font-family: 'Manrope', sans-serif;
 }
 
 .product-header .category {
@@ -298,7 +298,7 @@
   font-weight: 500;
   text-transform: uppercase;
   letter-spacing: 0.5px;
-  font-family: 'Space Grotesk', sans-serif;
+  font-family: 'Manrope', sans-serif;
 }
 
 .product-info {
@@ -313,7 +313,7 @@
   line-height: 1.4;
   color: #f0f0f0;
   margin: 0;
-  font-family: 'Space Grotesk', sans-serif;
+  font-family: 'Manrope', sans-serif;
 }
 
 .features {
@@ -325,7 +325,7 @@
   font-weight: 600;
   margin: 0 0 8px 0;
   color: #ffffff;
-  font-family: 'Space Grotesk', sans-serif;
+  font-family: 'Manrope', sans-serif;
 }
 
 .features ul {
@@ -340,7 +340,7 @@
   margin-bottom: 4px;
   padding-left: 12px;
   position: relative;
-  font-family: 'Space Grotesk', sans-serif;
+  font-family: 'Manrope', sans-serif;
 }
 
 .features li:before {
@@ -368,7 +368,7 @@
   font-size: 16px;
   font-weight: 700;
   color: #ffffff;
-  font-family: 'Space Grotesk', sans-serif;
+  font-family: 'Manrope', sans-serif;
 }
 
 .availability {
@@ -378,7 +378,7 @@
   font-weight: 600;
   text-transform: uppercase;
   letter-spacing: 0.5px;
-  font-family: 'Space Grotesk', sans-serif;
+  font-family: 'Manrope', sans-serif;
 }
 
 .availability.in-stock {
@@ -409,7 +409,7 @@
   font-size: 12px;
   font-weight: 600;
   color: #ffffff;
-  font-family: 'Space Grotesk', sans-serif;
+  font-family: 'Manrope', sans-serif;
 }
 
 .view-btn {
@@ -423,7 +423,7 @@
   font-weight: 600;
   cursor: pointer;
   transition: all 0.3s ease;
-  font-family: 'Space Grotesk', sans-serif;
+  font-family: 'Manrope', sans-serif;
   text-transform: uppercase;
   letter-spacing: 0.5px;
 }
@@ -513,7 +513,7 @@
 
 .title {
   margin: 0;
-  font: 600 clamp(13px, 1.6vw, 16px)/1.35 'Space Grotesk', sans-serif;
+  font: 600 clamp(13px, 1.6vw, 16px)/1.35 'Manrope', sans-serif;
   color: #111;
   white-space: nowrap;
   overflow: hidden;
@@ -521,12 +521,12 @@
 }
 
 .category {
-  font: 500 clamp(11px, 1.3vw, 13px)/1.2 'Space Grotesk', sans-serif;
+  font: 500 clamp(11px, 1.3vw, 13px)/1.2 'Manrope', sans-serif;
   color: #555;
 }
 
 .price {
-  font: 700 clamp(12px, 1.6vw, 15px)/1.2 'Space Grotesk', sans-serif;
+  font: 700 clamp(12px, 1.6vw, 15px)/1.2 'Manrope', sans-serif;
   color: #0a7;
 }
 
@@ -626,7 +626,7 @@
 .loading-container p {
   color: #6c757d;
   font-size: 16px;
-  font-family: 'Space Grotesk', sans-serif;
+  font-family: 'Manrope', sans-serif;
   margin: 0;
 }
 
@@ -645,7 +645,7 @@
 .error-message {
   color: #dc3545;
   font-size: 16px;
-  font-family: 'Space Grotesk', sans-serif;
+  font-family: 'Manrope', sans-serif;
   margin-bottom: 16px;
 }
 
@@ -659,7 +659,7 @@
   font-weight: 600;
   cursor: pointer;
   transition: background-color 0.2s ease;
-  font-family: 'Space Grotesk', sans-serif;
+  font-family: 'Manrope', sans-serif;
 }
 
 .retry-button:hover, .refresh-button:hover {
@@ -681,7 +681,7 @@
 .no-products-container p {
   color: #6c757d;
   font-size: 16px;
-  font-family: 'Space Grotesk', sans-serif;
+  font-family: 'Manrope', sans-serif;
   margin-bottom: 16px;
 }
 
@@ -773,3 +773,8 @@
 .btn { padding: 8px 12px; border-radius: 8px; border: 1px solid #111; background: #111; color: #fff; cursor: pointer; }
 .btn-ghost { background: transparent; color: #111; }
 .btn-primary { background: #111; color: #fff; }
+
+body.filters-open .zsiq_float,
+body.filters-open .zsiq_float * {
+  display: none !important;
+}

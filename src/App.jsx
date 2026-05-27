@@ -65,31 +65,31 @@ function AppContent() {
           />
 
           <button
-            onClick={() => setShowEnquiry(true)}
-            style={{
-              position: 'fixed',
-              right: 0,
-              top: '50%',
-              transform: 'translateY(-50%)',
-              width: '60px',
-              height: '200px',
-              backgroundColor: '#ffa000',
-              color: '#000',
-              border: 'none',
-              borderRadius: '12px 0 0 12px',
-              cursor: 'pointer',
-              fontSize: '14px',
-              fontWeight: 600,
-              writingMode: 'vertical-rl',
-              textOrientation: 'mixed',
-              zIndex: 999,
-              boxShadow: '0 4px 12px rgba(0,0,0,0.15)',
-              letterSpacing: '0.5px'
-            }}
-            aria-label="Enquire Sales"
-          >
-            Enquire Now
-          </button>
+  onClick={() => setShowEnquiry(true)}
+  style={{
+    position: 'fixed',
+    right: 0,
+    top: '50%',
+    transform: 'translateY(-50%)',
+    width: '32px',
+    height: '120px',
+    backgroundColor: '#ffa000',
+    color: '#000',
+    border: 'none',
+    borderRadius: '8px 0 0 8px',
+    cursor: 'pointer',
+    fontSize: '11px',
+    fontWeight: 600,
+    writingMode: 'vertical-rl',
+    textOrientation: 'mixed',
+    zIndex: 999,
+    boxShadow: '0 4px 12px rgba(0,0,0,0.15)',
+    letterSpacing: '0.5px'
+  }}
+  aria-label="Enquire Sales"
+>
+  Enquire Now
+</button>
         </>
       )}
     </div>

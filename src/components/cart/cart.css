@@ -6,7 +6,7 @@
   min-height: 100vh;
   display: flex;
   flex-direction: column;
-  font-family: 'Space Grotesk', sans-serif;
+  font-family: 'Manrope', sans-serif;
   background-color: #fff;
 }
 
@@ -151,7 +151,7 @@
   border-radius: 20px;
   padding: 8px 16px;
   gap: 16px;
-  font-family: 'Space Grotesk', sans-serif;
+  font-family: 'Manrope', sans-serif;
 }
 
 .quantity-btn {
@@ -176,7 +176,7 @@
   font-size: 14px;
   font-weight: 500;
   color: #000;
-  font-family: 'Space Grotesk', sans-serif;
+  font-family: 'Manrope', sans-serif;
 }
 
 /* Price cell */

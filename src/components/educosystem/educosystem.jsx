@@ -356,30 +356,16 @@ const Educosystem = () => {
 
       <main >
 
-        <div  className="content-section">
-          <h1 className="content-heading">Configure Your Perfect Solution</h1>
+        <div className="content-section">
+  <h1 className="content-heading">Configure Your Perfect Solution</h1>
+  <p className="content-paragraph">
+  Build your own ecosystem with ease. Select devices, software, and integrations<br />
+  that suit your institution or individual needs. Watch your configuration<br />
+  come to life with real-time updates on features and pricing.
+</p>
+</div>
 
-          <p style={{
-            fontSize: "32px",
-            width: "100%",
-            maxWidth: "none",
-            margin: 0,
-            display: "block",
-            boxSizing: "border-box",
-            textAlign: "center"
-          }} className="content-paragraph">
-            Build your own ecosystem with ease. Select devices, software, and integrations <br />
-            that suit your institution or individual needs. Watch your <br />
-            configuration come to life with real-time updates on features and pricing.</p>
-
-        </div>
-
-        <div className="video-section" style={{
-          marginLeft: "clamp(0px, 2.5vw, 40px)",
-          backgroundColor: "#F4F4F4",
-          width: "min(1360px, 100%)",
-
-        }}>
+        <div className="video-section" >
           <div className="video-container">
             <video
 
@@ -399,41 +385,37 @@ const Educosystem = () => {
 
             <h2 className="content-title">Configure Your <br /> Solution, Simplified</h2>
             <p className="content-description">
-              A short walkthrough <br /> designed to help you  <br /> understand and set up each <br /> solutions quickly and <br /> efficiently.
-            </p>
+  A short walkthrough designed to help you understand and set up each solutions quickly and efficiently.
+</p>
 
 
             <button className="try-button" onClick={scrollToSolutions}>Try it Now</button>
           </div>
         </div>
 
-        <div id="solutions-section" style={{
-
-          marginLeft: "clamp(0px, 2.5vw, 40px)",
-          width: "min(1360px, 100%)",
-        }} className="solutions-section">
-          <h2 id="solutions-heading" className="solutions-title">Configure Your Solution</h2>
+        <div id="solutions-section" className="solutions-section">
+        <h2 id="solutions-heading" className="solutions-title">
+  Configure your Solutions
+  <span className="solutions-title-underline"></span>
+</h2>
           <div className="solutions-grid">
             {solutions.map((solution) => (
               <div key={solution.id} className="solution-card">
-                <div className="solution-image">
-                  <img
-                    src={solution.image}
-                    alt={solution.name}
-                    style={{ width: '100%', height: '100%', objectFit: 'cover' }}
-                  />
-                </div>
-                <div className="solution-header">
-                  <h3 className="solution-label">{solution.name}</h3>
-                  <button
-                    className="configure-button"
-                    onClick={() => handleConfigureClick(solution)}
-                  >
-                    Configure
-                  </button>
-                </div>
-                {/* <p className="solution-description">{solution.description}</p> */}
-              </div>
+  <div className="solution-image">
+    <img
+      src={solution.image}
+      alt={solution.name}
+      style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+    />
+  </div>
+  <h3 className="solution-label">{solution.name}</h3>
+  <button
+    className="configure-button"
+    onClick={() => handleConfigureClick(solution)}
+  >
+    Configure
+  </button>
+</div>
             ))}
           </div>
         </div>

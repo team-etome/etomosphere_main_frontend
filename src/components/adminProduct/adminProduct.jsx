@@ -508,7 +508,7 @@ const AdminProduct = () => {
                                     borderRadius: "8px",
                                     padding: "12px 16px",
                                     color: "#333",
-                                    fontFamily: "'Space Grotesk', sans-serif"
+                                    fontFamily: "'Manrope', sans-serif"
                                 }}
                             >
                                 <h4 style={{ margin: "0 0 8px", fontWeight: "600", fontSize: "15px" }}>

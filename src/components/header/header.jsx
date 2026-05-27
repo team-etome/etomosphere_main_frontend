@@ -413,7 +413,7 @@ const Header = () => {
         {/* Desktop Right: search + icons */}
         <div className="header-right" aria-label="Quick actions">
           <div className="search-wrapper" role="search">
-            <input
+            {/* <input
               className="search-input"
               type="text"
               placeholder="Search"
@@ -425,7 +425,7 @@ const Header = () => {
                 height: "40px",
                 color: "black",
               }}
-            />
+            /> */}
           </div>
         </div>
 

@@ -101,17 +101,11 @@ const Etome = () => {
                 <div className="content-section">
                     <h1 className="content-heading">The Smarter Learning Device</h1>
 
-                    <p style={{
-                        fontSize: "32px",
-                        width: "100%",
-                        maxWidth: "none",      // ⬅️ cancels the 800px cap
-                        margin: 0,             // ⬅️ avoid auto-centering width cap
-                        display: "block",
-                        boxSizing: "border-box",
-                        textAlign: "center"
-                    }} className="content-paragraph">
-                        Powerful. Intuitive. Purpose-built for education. Etome tablets combine <br /> performance and versatility to bring classrooms to life. Explore features   <br /> and choose the perfect one for your learning environment. </p>
-
+                    <p className="content-paragraph">
+  Powerful. Intuitive. Purpose-built for education. Etome tablets combine
+  performance and versatility to bring classrooms to life. Explore features
+  and choose the perfect one for your learning environment.
+</p>
                 </div>
 
                 {/* <div style={{

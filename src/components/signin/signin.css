@@ -7,7 +7,7 @@
   background-color: #ffffff;
   display: flex;
   flex-direction: column;
-  font-family: 'Space Grotesk', sans-serif;
+  font-family: 'Manrope', sans-serif;
 }
 
 /* Brand Header */
@@ -75,7 +75,7 @@
   font-weight: 700;
   color: #000000;
   margin: 0 0 8px 0;
-  font-family: 'Space Grotesk', sans-serif;
+  font-family: 'Manrope', sans-serif;
 }
 
 .login-subtitle {
@@ -83,7 +83,7 @@
   font-weight: 400;
   color: #000000;
   margin: 0 0 32px 0;
-  font-family: 'Space Grotesk', sans-serif;
+  font-family: 'Manrope', sans-serif;
 }
 
 /* Form Styles */
@@ -105,7 +105,7 @@
   font-size: 14px;
   font-weight: 500;
   color: #000000;
-  font-family: 'Space Grotesk', sans-serif;
+  font-family: 'Manrope', sans-serif;
 }
 
 .form-input {
@@ -113,7 +113,7 @@
   border: 1px solid #e0e0e0;
   border-radius: 8px;
   font-size: 16px;
-  font-family: 'Space Grotesk', sans-serif;
+  font-family: 'Manrope', sans-serif;
   background-color: #ffffff;
   transition: border-color 0.2s ease;
 }
@@ -126,7 +126,7 @@
 
 .form-input::placeholder {
   color: #999999;
-  font-family: 'Space Grotesk', sans-serif;
+  font-family: 'Manrope', sans-serif;
 }
 
 /* Forgot Password */
@@ -139,7 +139,7 @@
   font-size: 14px;
   color: #000000;
   text-decoration: none;
-  font-family: 'Space Grotesk', sans-serif;
+  font-family: 'Manrope', sans-serif;
 }
 
 .forgot-link:hover {
@@ -155,7 +155,7 @@
   padding: 14px 20px;
   font-size: 16px;
   font-weight: 600;
-  font-family: 'Space Grotesk', sans-serif;
+  font-family: 'Manrope', sans-serif;
   cursor: pointer;
   transition: background-color 0.2s ease;
   margin-top: 8px;
@@ -180,14 +180,14 @@
   font-size: 14px;
   color: #000000;
   margin: 0;
-  font-family: 'Space Grotesk', sans-serif;
+  font-family: 'Manrope', sans-serif;
 }
 
 .account-link {
   color: #dc3545;
   text-decoration: none;
   font-weight: 600;
-  font-family: 'Space Grotesk', sans-serif;
+  font-family: 'Manrope', sans-serif;
 }
 
 .account-link:hover {
@@ -201,7 +201,7 @@
   right: 20px;
   font-size: 12px;
   color: #999999;
-  font-family: 'Space Grotesk', sans-serif;
+  font-family: 'Manrope', sans-serif;
 }
 
 /* Responsive Design */
@@ -364,7 +364,7 @@
   font-size: 14px;
   font-weight: 500;
   margin: 0;
-  font-family: 'Space Grotesk', sans-serif;
+  font-family: 'Manrope', sans-serif;
 }
 
 .success-message-container {
@@ -380,7 +380,7 @@
   font-size: 14px;
   font-weight: 500;
   margin: 0;
-  font-family: 'Space Grotesk', sans-serif;
+  font-family: 'Manrope', sans-serif;
 }
 
 /* Loading state for button */
