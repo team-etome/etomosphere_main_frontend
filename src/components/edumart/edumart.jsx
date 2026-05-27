@@ -628,10 +628,47 @@ export default function Edumart() {
       {/* ── Grid ── */}
       <main style={{ padding: 'clamp(16px, 3vw, 32px) clamp(16px, 4vw, 60px) clamp(40px, 5vw, 60px)' }}>
         {loading && (
-          <div style={{ textAlign: 'center', padding: '80px 0', color: '#94a3b8', fontSize: 16 }}>
-            Loading products…
-          </div>
-        )}
+  <div style={{
+    display: 'grid',
+    gridTemplateColumns: 'repeat(auto-fill, minmax(min(220px, 100%), 1fr))',
+    gap: 'clamp(20px, 3vw, 40px) clamp(12px, 2vw, 24px)',
+    width: '100%',
+  }}>
+    {Array.from({ length: 12 }).map((_, i) => (
+      <div key={i} style={{ display: 'flex', flexDirection: 'column' }}>
+        <div style={{
+          width: '100%', aspectRatio: '1/1',
+          borderRadius: '12px', border: '1.5px solid #e2e8f0',
+          background: 'linear-gradient(90deg, #f1f5f9 25%, #e2e8f0 50%, #f1f5f9 75%)',
+          backgroundSize: '200% 100%',
+          animation: `shimmer 1.5s infinite ${i * 0.1}s`,
+        }} />
+        <div style={{ padding: '16px 4px' }}>
+          <div style={{
+            height: 16, borderRadius: 6, marginBottom: 8,
+            background: 'linear-gradient(90deg, #f1f5f9 25%, #e2e8f0 50%, #f1f5f9 75%)',
+            backgroundSize: '200% 100%',
+            animation: `shimmer 1.5s infinite ${i * 0.1}s`,
+            width: '70%',
+          }} />
+          <div style={{
+            height: 13, borderRadius: 6,
+            background: 'linear-gradient(90deg, #f1f5f9 25%, #e2e8f0 50%, #f1f5f9 75%)',
+            backgroundSize: '200% 100%',
+            animation: `shimmer 1.5s infinite ${i * 0.1}s`,
+            width: '40%',
+          }} />
+        </div>
+      </div>
+    ))}
+    <style>{`
+      @keyframes shimmer {
+        0% { background-position: 200% 0; }
+        100% { background-position: -200% 0; }
+      }
+    `}</style>
+  </div>
+)}
         {!loading && error && (
           <div style={{ textAlign: 'center', padding: '80px 0', color: '#ef4444' }}>{error}</div>
         )}
