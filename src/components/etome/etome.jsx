@@ -1,267 +1,44 @@
-import React, { useState,useEffect } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
-import { useSelector } from 'react-redux';
-import axios from 'axios';
+import { useNavigate } from 'react-router-dom';
 import Header from '../header/header.jsx';
 import Footer from '../footer/footer.jsx';
-import image8 from '../../assets/image8.png';
-import image12 from '../../assets/image12.jpg';
-import image13 from '../../assets/etomeBusiness.jpg';
-import EtomeStylus from '../../assets/EtomeStylus.jpg';
-import EtomeEcoBoard from '../../assets/etomeEcoboard.jpg';
-import etomewitheco from '../../assets/etomewitheco.jpg';
+import pic11 from '../../assets/E.png';
 import './etome.css';
 
 const Etome = () => {
-    const navigate = useNavigate();
-    useEffect(() => {
-    const savedScroll = sessionStorage.getItem("etomeScroll");
-    if (savedScroll) {
-        window.scrollTo(0, parseInt(savedScroll));
-    }
-}, []);
+  const navigate = useNavigate();
 
-    const [showContactInfo, setShowContactInfo] = useState(false);
+  return (
+    <div className="etome-page">
+      <Header />
 
-    const handleEnquireNow = () => {
-        setShowContactInfo(true);
-    };
+      {/* Hero Section */}
+      <section className="etome-hero">
+        {/* Gradient blobs */}
+        <div className="hero-blob hero-blob-blue" />
+        <div className="hero-blob hero-blob-green" />
 
-    const closeContactInfo = () => {
-        setShowContactInfo(false);
-    };
-
-    
-
-    const handleProductClick = (product) => {
-        // Store product data in localStorage for EtomeProductDetail component
-        const productData = {
-            id: product.id,
-            title: product.title,
-            name: product.title,
-            description: product.description,
-            price: product.price,
-            image: product.image,
-            sizes: product.sizes || []
-        };
-
-        localStorage.setItem('selectedEtomeProduct', JSON.stringify(productData));
-        navigate('/etome-product-detail');
-    };
-
-    const productCards = [
-        {
-            id: "etome-dua",
-            title: "Etome Dua",
-            description:
-                "Designed for readers, writers, and creators to work smarter and stay focused.",
-            price: "Rs.38500",
-            image: image13,
-            buttons: [
-
-                { kind: "secondary", label: "Enquire Now", onClick: handleEnquireNow },
-            ],
-        },
-        {
-            id: "etome-stylus",
-            title: "Etome Stylus",
-            description:
-                "Precision at your fingertips for effortless writing and drawing.",
-            price: "Rs.2000",
-            image: EtomeStylus,
-            buttons: [
-
-                { kind: "secondary", label: "Enquire Now", onClick: handleEnquireNow },
-            ],
-        },
-        {
-            id: "etome-ecoboard",
-            title: "Etome EcoBoard",
-            description:
-                "Empowering digital learning through smart, connected technology.",
-            price: "Rs.40000",
-            image: EtomeEcoBoard,
-            sizes: ['B55P', 'B60P', 'LE60P', 'LE65P', 'LE90P'],
-            buttons: [
-
-                { kind: "secondary", label: "Enquire Now", onClick: handleEnquireNow },
-            ],
-        },
-    ];
-
-
-    return (
-        <div className="etome-container">
-            <Header />
-
-            <main style={{
-
-                marginTop: "40px"
-            }} className="etome-main">
-                <div className="content-section">
-                    <h1 className="content-heading">The Smarter Learning Device</h1>
-
-                    <p className="content-paragraph">
-  Powerful. Intuitive. Purpose-built for education. Etome tablets combine
-  performance and versatility to bring classrooms to life. Explore features
-  and choose the perfect one for your learning environment.
-</p>
-                </div>
-
-                {/* <div style={{
-
-                    marginTop: "20px",
-
-                }} className="content-image-container">
-                    <img 
-                        src={etomewitheco}
-                        alt="Etome content"
-                        className="content-image"
-                    />
-                </div> */}
-
-
-
-                {/* Two Column Section */}
-
-                <div className="two-column-section">
-                    <div className="left-column">
-                        <h2 className="section-heading">Etome Dua Business</h2>
-                        <p style={{
-                            textAlign: "left",
-                            fontSize: "20px"
-                        }} className="section-paragraph">
-                            Etome DUA Business empowers <br /> institutions with an integrated <br /> digital ecosystem that simplifies <br /> operations, enhances <br /> collaboration, and drives smarter <br /> decision-making for educational <br /> and business excellence.                        </p>
-                        <div className="button-group">
-                            <a
-                                href="https://www.etome.in/"
-                                className="learn-more-btn"
-                                onClick={() => {
-                                    sessionStorage.setItem("etomeScroll", window.scrollY);
-                                }}
-                            >
-                                Learn More
-                            </a>
-                        </div>
-                    </div>
-
-
-                    <div className="right-column">
-                        <img
-                            src={image12}
-                            alt="Etome Dua Business"
-                            className="section-image"
-                        />
-                    </div>
-                </div>
-
-                {/* Additional Content Section */}
-
-
-                {/* Products Section */}
-                <div className="products-section">
-                    <div className="products-container">
-                        {productCards.map((p) => (
-                            <div
-                                style={{
-                                    borderRadius: "0px",
-                                    backgroundColor: "#FEF2E2",
-                                    cursor: "pointer"
-                                }}
-                                key={p.id}
-                                className="product-card"
-                                onClick={() => handleProductClick(p)}
-                            >
-                                <div className="product-image-container">
-                                    <img src={p.image} alt={p.title} className="product-card-image" />
-                                </div>
-
-                                <div className="product-info">
-                                    <div>
-                                        <h3 className="product-title">{p.title}</h3>
-                                    </div>
-
-                                    {/* <div>
-                                    <p className="product-description">{p.description}</p>
-                                    </div>   */}
-
-
-                                    {/* <div className="product-price">{p.price}</div> */}
-
-                                    <div className="product-buttons">
-                                        {p.buttons.map((b, i) =>
-                                            b.kind === "primary" ? (
-                                                <button
-                                                    key={i}
-                                                    className="add-to-cart-btn"
-                                                    onClick={(e) => {
-                                                        e.stopPropagation();
-                                                        b.onClick();
-                                                    }}
-                                                >
-                                                    {b.label}
-                                                </button>
-                                            ) : (
-                                                <button
-                                                    key={i}
-                                                    className="learn-more-card-btn"
-                                                    onClick={(e) => {
-                                                        e.stopPropagation();
-                                                        b.onClick();
-                                                    }}
-                                                >
-                                                    {b.label}
-                                                </button>
-                                            )
-                                        )}
-                                    </div>
-                                </div>
-                            </div>
-                        ))}
-                    </div>
-                </div>
-
-
-            </main>
-
-            {showContactInfo && (
-                <div className="contact-modal-overlay" onClick={closeContactInfo}>
-                    <div className="contact-modal" onClick={(e) => e.stopPropagation()}>
-                        <div className="contact-modal-header">
-                            <h3>Contact Information</h3>
-                            <button className="close-btn" onClick={closeContactInfo}>×</button>
-                        </div>
-                        <div className="contact-modal-content">
-                            <div className="contact-item">
-                                <div className="contact-icon">📞</div>
-                                <div className="contact-details">
-                                    <h4>Phone Number</h4>
-                                    <p className="contact-value">9061576222</p>
-                                </div>
-                            </div>
-                            <div className="contact-item">
-                                <div className="contact-icon">📧</div>
-                                <div className="contact-details">
-                                    <h4>Email Address</h4>
-                                    <p className="contact-value">info@etome.in</p>
-                                </div>
-                            </div>
-                            <div className="contact-actions">
-                                <button className="copy-btn" onClick={() => navigator.clipboard.writeText('9061576222')}>
-                                    Copy Phone
-                                </button>
-                                <button className="copy-btn" onClick={() => navigator.clipboard.writeText('info@etome.in')}>
-                                    Copy Email
-                                </button>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            )}
-
-            <Footer />
+        <div className="hero-content">
+          <h1 className="hero-title">
+            Building the<br />Future of<br />Learning
+          </h1>
+          <p className="hero-subtitle">
+            Connecting technology, innovation, and sustainability to create
+            smarter learning experiences for modern educational environments.
+          </p>
+          <button className="hero-btn" onClick={() => navigate('/edumart')}>
+            Learn More
+          </button>
         </div>
-    );
+
+        {/* Right side image — blended into background */}
+        <div className="hero-image-wrap">
+          <img src={pic11} alt="Etome platform" className="hero-image" />
+        </div>
+      </section>
+
+      <Footer />
+    </div>
+  );
 };
 
 export default Etome;

@@ -10,20 +10,23 @@ const Etomos = () => {
   return (
     <div className="etomos-container">
       <Header />
+
+      {/* Full-viewport background video — fixed behind everything */}
       <div className="image-container">
-        <video 
+        <video
           className="etomos-video"
           autoPlay
           loop
           muted
           playsInline
-          width="100%"
-          height="100%"
         >
           <source src={landing} type="video/mp4" />
-          Your browser does not support the video tag.
         </video>
       </div>
+
+      {/* Pushes footer below the fold */}
+      <div className="etomos-hero-spacer" />
+
       <Footer />
     </div>
   );

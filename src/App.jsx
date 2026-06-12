@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react'
+import React, { useState } from 'react'
 import { BrowserRouter as Router, Routes, Route, useLocation } from 'react-router-dom'
 import Etomos from './components/etomos/etomos.jsx'
 import Ethos from './components/ethos/ethos.jsx'
@@ -24,10 +24,6 @@ import './App.css'
 function AppContent() {
   const [showEnquiry, setShowEnquiry] = useState(false)
   const location = useLocation()
-
-  useEffect(() => {
-    setShowEnquiry(true)
-  }, [])
 
   // ✅ Hide EnquiryModal & Button when route starts with /employee/
   const isEmployeePage = location.pathname.startsWith('/employee/')

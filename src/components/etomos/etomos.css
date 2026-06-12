@@ -3,18 +3,20 @@
   min-height: 100vh;
   display: flex;
   flex-direction: column;
+  overflow-x: hidden;
+  margin-top: -10px;
 }
 
 .image-container {
-  flex: 1;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  padding: 0;
-  background-color: #ffffff;
-  height: 100vh;
   width: 100%;
+  height: 100svh; /* svh = small viewport height, respects mobile browser chrome */
+  overflow: hidden;
+  background-color: #111;
+  flex-shrink: 0;
+  display: block;
 }
+
+.etomos-hero-spacer { display: none; }
 
 .etomos-image {
   width: 100%;
@@ -25,23 +27,16 @@
 
 .etomos-video {
   width: 100%;
-  height: 100vh;
+  height: 100%;
   object-fit: cover;
   display: block;
+  object-position: center center;
 }
 
-/* Responsive Design */
+/* No padding on mobile — video fills edge to edge */
 @media (max-width: 768px) {
-  .image-container {
-    padding: 16px;
-  }
+  .image-container { padding: 0; }
 }
-
 @media (max-width: 480px) {
-  .image-container {
-    padding: 12px;
-  }
-
-
-  
+  .image-container { padding: 0; }
 }
