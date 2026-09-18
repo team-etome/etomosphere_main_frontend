@@ -1,8 +1,11 @@
 import { useState, useRef, useEffect } from 'react';
 import { motion, AnimatePresence, useInView } from 'framer-motion';
+import axios from 'axios';
 import Header from '../header/header.jsx';
 import Footer from '../footer/footer.jsx';
 import './reviews.css';
+
+const APIURL = import.meta.env.VITE_API_URL || 'http://192.168.1.6:8000';
 
 const EASE    = [0.16, 1, 0.3, 1];
 const INITIAL = 6;
@@ -95,7 +98,7 @@ function GlassCard({ review, index, delay }) {
       </div>
 
       {/* Quote */}
-      <p className="rv-card-quote">"{review.text}"</p>
+      <p className="rv-card-quote">"{review.text || review.comment}"</p>
 
       {/* Divider */}
       <div className="rv-card-divider" />
@@ -146,16 +149,29 @@ function WriteReviewModal({ isOpen, onClose }) {
     setFiles(p => [...p, ...valid].slice(0, 3));
   };
 
-  const submit = e => {
+  const [submitError, setSubmitError] = useState('');
+
+  const submit = async e => {
     e.preventDefault();
     if (!form.name || !charOk || form.rating === 0) return;
-    setSubmitted(true);
-    setTimeout(() => {
-      onClose();
-      setSubmitted(false);
-      setForm({ name:'', school:'', rating:0, text:'' });
-      setFiles([]);
-    }, 2200);
+    setSubmitError('');
+    try {
+      await axios.post(`${APIURL}/api/public-reviews/`, {
+        name: form.name,
+        school: form.school,
+        rating: form.rating,
+        comment: form.text,
+      });
+      setSubmitted(true);
+      setTimeout(() => {
+        onClose();
+        setSubmitted(false);
+        setForm({ name:'', school:'', rating:0, text:'' });
+        setFiles([]);
+      }, 2200);
+    } catch (err) {
+      setSubmitError(err?.response?.data?.error || 'Unable to submit. Please try again.');
+    }
   };
 
   const displayStar = hoverStar || form.rating;
@@ -303,6 +319,8 @@ function WriteReviewModal({ isOpen, onClose }) {
                 </div>
               </div>
 
+              {submitError && <p style={{color:'#ef4444',fontSize:'0.85rem',marginBottom:'8px'}}>{submitError}</p>}
+
               {/* Submit */}
               <motion.button
                 type="submit"
@@ -312,6 +330,9 @@ function WriteReviewModal({ isOpen, onClose }) {
               >
                 Submit Review
               </motion.button>
+              <p style={{textAlign:'center',fontSize:'0.78rem',color:'#94a3b8',marginTop:'8px'}}>
+                Your review will appear after admin approval.
+              </p>
             </form>
           </>
         )}
@@ -325,10 +346,19 @@ function WriteReviewModal({ isOpen, onClose }) {
    MAIN PAGE
 ══════════════════════════════════════ */
 function Reviews() {
-  const [shown,     setShown]     = useState(INITIAL);
-  const [showModal, setShowModal] = useState(false);
-  const visible = ALL_REVIEWS.slice(0, shown);
-  const hasMore = shown < ALL_REVIEWS.length;
+  const [shown,      setShown]      = useState(INITIAL);
+  const [showModal,  setShowModal]  = useState(false);
+  const [apiReviews, setApiReviews] = useState([]);
+
+  useEffect(() => {
+    axios.get(`${APIURL}/api/public-reviews/`)
+      .then(res => setApiReviews(res.data))
+      .catch(() => {});
+  }, []);
+
+  const ALL_COMBINED = [...ALL_REVIEWS, ...apiReviews];
+  const visible = ALL_COMBINED.slice(0, shown);
+  const hasMore = shown < ALL_COMBINED.length;
 
   return (
     <div className="reviews-page">
@@ -367,7 +397,7 @@ function Reviews() {
                     </motion.svg>
                   ))}
                 </div>
-                <span className="rv-hero-stat-label">{ALL_REVIEWS.length} reviews</span>
+                <span className="rv-hero-stat-label">{ALL_COMBINED.length} reviews</span>
               </div>
             </div>
 
@@ -406,7 +436,7 @@ function Reviews() {
           <motion.div className="rv-loadmore"
             initial={{ opacity:0 }} animate={{ opacity:1 }} transition={{ delay:0.3 }}>
             <motion.button className="rv-loadmore-btn"
-              onClick={() => setShown(s => Math.min(s + STEP, ALL_REVIEWS.length))}
+              onClick={() => setShown(s => Math.min(s + STEP, ALL_COMBINED.length))}
               whileHover={{ scale:1.05, y:-2 }} whileTap={{ scale:0.97 }}>
               Load more reviews
               <svg width="15" height="15" viewBox="0 0 24 24" fill="none"
@@ -414,7 +444,7 @@ function Reviews() {
                 <path d="M6 9l6 6 6-6"/>
               </svg>
             </motion.button>
-            <p className="rv-loadmore-hint">{ALL_REVIEWS.length - shown} more reviews</p>
+            <p className="rv-loadmore-hint">{ALL_COMBINED.length - shown} more reviews</p>
           </motion.div>
         )}
       </div>
