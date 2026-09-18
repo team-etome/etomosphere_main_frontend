@@ -532,6 +532,29 @@
 .em-load-btn:hover { border-color: #015aa6; color: #015aa6; }
 
 /* States */
+.em-loading-wrap {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding-top: 40px;
+}
+.em-spinner {
+  width: 48px;
+  height: 48px;
+  border: 5px solid #e5e7eb;
+  border-top-color: #0f0f23;
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+  margin-bottom: 16px;
+}
+.em-loading-text {
+  color: #6b7280;
+  font-size: 0.95rem;
+  margin-bottom: 32px;
+}
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
 .em-loading {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
@@ -541,9 +564,10 @@
 .em-skeleton {
   height: 280px;
   border-radius: 14px;
-  background: linear-gradient(90deg, #e2e8f0 25%, #cbd5e1 50%, #e2e8f0 75%);
+  background: linear-gradient(90deg, #d1d5db 25%, #9ca3af 50%, #d1d5db 75%);
   background-size: 200% 100%;
   animation: shimmer 1.4s ease-in-out infinite;
+  border: 1px solid #e5e7eb;
 }
 @keyframes shimmer {
   0%   { background-position: 200% 0; }
