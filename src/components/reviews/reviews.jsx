@@ -149,12 +149,14 @@ function WriteReviewModal({ isOpen, onClose }) {
     setFiles(p => [...p, ...valid].slice(0, 3));
   };
 
-  const [submitError, setSubmitError] = useState('');
+  const [submitError,     setSubmitError]     = useState('');
+  const [isSubmitting,    setIsSubmitting]    = useState(false);
 
   const submit = async e => {
     e.preventDefault();
-    if (!form.name || !charOk || form.rating === 0) return;
+    if (!form.name || !charOk || form.rating === 0 || isSubmitting) return;
     setSubmitError('');
+    setIsSubmitting(true);
     try {
       await axios.post(`${APIURL}/api/public-reviews/`, {
         name: form.name,
@@ -171,6 +173,8 @@ function WriteReviewModal({ isOpen, onClose }) {
       }, 2200);
     } catch (err) {
       setSubmitError(err?.response?.data?.error || 'Unable to submit. Please try again.');
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
@@ -324,11 +328,12 @@ function WriteReviewModal({ isOpen, onClose }) {
               {/* Submit */}
               <motion.button
                 type="submit"
-                className={`rvmodal-submit${!form.name || !charOk || form.rating === 0 ? ' disabled' : ''}`}
-                whileHover={form.name && charOk && form.rating > 0 ? { scale:1.02 } : {}}
-                whileTap={form.name  && charOk && form.rating > 0 ? { scale:0.97 } : {}}
+                disabled={!form.name || !charOk || form.rating === 0 || isSubmitting}
+                className={`rvmodal-submit${!form.name || !charOk || form.rating === 0 || isSubmitting ? ' disabled' : ''}`}
+                whileHover={form.name && charOk && form.rating > 0 && !isSubmitting ? { scale:1.02 } : {}}
+                whileTap={form.name  && charOk && form.rating > 0 && !isSubmitting ? { scale:0.97 } : {}}
               >
-                Submit Review
+                {isSubmitting ? 'Submitting…' : 'Submit Review'}
               </motion.button>
               <p style={{textAlign:'center',fontSize:'0.78rem',color:'#94a3b8',marginTop:'8px'}}>
                 Your review will appear after admin approval.
