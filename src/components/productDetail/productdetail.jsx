@@ -2,571 +2,58 @@ import React, { useState, useEffect, useMemo, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import Header from '../header/header.jsx';
 import Footer from '../footer/footer.jsx';
+import { useCart } from '../../context/CartContext.jsx';
+import './productdetail.css';
 import axios from 'axios';
 
 const APIURL = import.meta.env.VITE_API_URL || '';
-
-/* ── Fonts ── */
-if (!document.getElementById('pd-font')) {
-  const l = document.createElement('link');
-  l.id = 'pd-font'; l.rel = 'stylesheet';
-  l.href = 'https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=Playfair+Display:wght@600;700;800&family=JetBrains+Mono:wght@400;500&display=swap';
-  document.head.appendChild(l);
-}
 
 const resolveImg = (url) => {
   if (!url) return null;
   return url.startsWith('http') ? url : `${APIURL}${url}`;
 };
 
-/* ── CSS ── */
-if (!document.getElementById('pd-css')) {
-  const el = document.createElement('style');
-  el.id = 'pd-css';
-  el.textContent = `
-    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
-    :root{
-      --bg:#F8F6F2;
-      --surface:#FFFFFF;
-      --surface2:#F3F1ED;
-      --surface3:#EAE7E1;
-      --border:#E2DED8;
-      --border2:#D0CBC2;
-      --ink:#1A1714;
-      --ink2:#3D3830;
-      --ink3:#7A7268;
-      --ink4:#B0A89E;
-      --green:#1C5C3A; --green-bg:#E6F4EC; --green-bd:#A8D5BA;
-      --red:#7A1C1C; --red-bg:#FDEAEA; --red-bd:#F2AAAA;
-      --blue:#1A3D8C; --blue-bg:#EBF0FC; --blue-bd:#9DB5EE;
-      --amber:#7A4A08; --amber-bg:#FEF4E4; --amber-bd:#F5C87A;
-      --accent:#C8622A;
-    }
-
-    @keyframes fadeUp   { from{opacity:0;transform:translateY(22px)} to{opacity:1;transform:translateY(0)} }
-    @keyframes fadeIn   { from{opacity:0} to{opacity:1} }
-    @keyframes spin     { to{transform:rotate(360deg)} }
-    @keyframes shimmer  { 0%{background-position:-400px 0} 100%{background-position:400px 0} }
-    @keyframes popIn    { 0%{transform:scale(.92);opacity:0} 100%{transform:scale(1);opacity:1} }
-    @keyframes slideUp  { from{opacity:0;transform:translateY(12px)} to{opacity:1;transform:translateY(0)} }
-    @keyframes pulse    { 0%,100%{opacity:1} 50%{opacity:.5} }
-
-    .pd-page {
-      font-family:'Plus Jakarta Sans',sans-serif;
-      background:var(--bg);
-      min-height:100vh;
-      color:var(--ink);
-    }
-
-    /* ── LAYOUT: Two-column full-height ── */
-    .pd-layout {
-      display:grid;
-      grid-template-columns:52% 48%;
-      min-height:calc(100vh - 72px);
-      align-items:start;
-    }
-
-    /* ── LEFT COLUMN ── */
-    .pd-left {
-      position:sticky;
-      top:72px;
-      height:calc(100vh - 72px);
-      display:flex;
-      flex-direction:column;
-      background:var(--surface);
-      border-right:1px solid var(--border);
-      overflow:hidden;
-    }
-
-    /* Main image area */
-    .pd-gallery {
-      flex:1;
-      position:relative;
-      display:flex;
-      align-items:center;
-      justify-content:center;
-      background:var(--surface);
-      overflow:hidden;
-      padding:40px;
-    }
-
-    .pd-gallery::before {
-      content:'';
-      position:absolute;
-      inset:0;
-      background:
-        radial-gradient(ellipse 60% 50% at 30% 40%, rgba(200,98,42,0.04) 0%, transparent 70%),
-        radial-gradient(ellipse 40% 60% at 80% 70%, rgba(26,61,140,0.04) 0%, transparent 70%);
-      pointer-events:none;
-    }
-
-    .pd-main-img {
-      width:100%;
-      height:100%;
-      object-fit:contain;
-      transition:opacity .25s ease, transform .4s cubic-bezier(.4,0,.2,1);
-      max-height:420px;
-    }
-    .pd-main-img.fade { opacity:0; transform:scale(.97); }
-
-    /* Stock badge */
-    .pd-stock {
-      position:absolute;
-      top:20px; left:20px;
-      display:inline-flex;
-      align-items:center;
-      gap:7px;
-      font-size:10px;
-      font-weight:700;
-      letter-spacing:.09em;
-      text-transform:uppercase;
-      border-radius:8px;
-      padding:6px 14px;
-      border:1px solid transparent;
-      backdrop-filter:blur(8px);
-    }
-    .pd-stock.ok { background:var(--green-bg); border-color:var(--green-bd); color:var(--green); }
-    .pd-stock.no { background:var(--red-bg); border-color:var(--red-bd); color:var(--red); }
-    .pd-stock-dot {
-      width:6px; height:6px; border-radius:50%;
-      background:currentColor;
-      animation:pulse 2s infinite;
-    }
-
-    /* Thumbnail strip */
-    .pd-thumbs-row {
-      display:flex;
-      gap:8px;
-      padding:16px 20px;
-      border-top:1px solid var(--border);
-      background:var(--surface2);
-      overflow-x:auto;
-      scrollbar-width:none;
-    }
-    .pd-thumbs-row::-webkit-scrollbar { display:none; }
-    .pd-thumb {
-      flex-shrink:0;
-      width:54px; height:54px;
-      border-radius:10px;
-      background:var(--surface);
-      border:2px solid var(--border);
-      padding:5px;
-      cursor:pointer;
-      overflow:hidden;
-      transition:border-color .15s, transform .15s;
-    }
-    .pd-thumb:hover { transform:translateY(-2px); border-color:var(--ink4); }
-    .pd-thumb.on { border-color:var(--accent); }
-    .pd-thumb img { width:100%; height:100%; object-fit:contain; }
-
-    /* Product name block (bottom of left) */
-    .pd-name-block {
-      padding:20px 24px 24px;
-      border-top:1px solid var(--border);
-      background:var(--surface);
-    }
-    .pd-product-title {
-    
-      font-size:clamp(20px, 2vw, 28px);
-      font-weight:700;
-      color:var(--ink);
-      line-height:1.2;
-      letter-spacing:-.02em;
-      margin-bottom:8px;
-    }
-    /* FIXED - shows full description */
-.pd-product-desc {
-  font-size:13px;
-  color:var(--ink3);
-  line-height:1.7;
-  font-weight:400;
-}
-
-    /* ── RIGHT COLUMN ── */
-    .pd-right {
-      display:flex;
-      flex-direction:column;
-      overflow-y:auto;
-      max-height:calc(100vh - 72px);
-      position:sticky;
-      top:72px;
-      scrollbar-width:thin;
-      scrollbar-color:var(--border2) transparent;
-    }
-    .pd-right::-webkit-scrollbar { width:4px; }
-    .pd-right::-webkit-scrollbar-thumb { background:var(--border2); border-radius:4px; }
-
-    /* Breadcrumb */
-    .pd-bc {
-      display:flex; align-items:center; gap:6px;
-      font-size:10px; font-weight:700; letter-spacing:.1em; text-transform:uppercase;
-      color:var(--ink4); padding:24px 32px 0; flex-wrap:wrap;
-    }
-    .pd-bc-link { cursor:pointer; transition:color .13s; }
-    .pd-bc-link:hover { color:var(--ink2); }
-    .pd-bc-sep { color:var(--border2); }
-    .pd-bc-cur { color:var(--ink3); }
-
-    /* Section header */
-    .pd-section-label {
-      font-size:9px; font-weight:800; letter-spacing:.14em; text-transform:uppercase;
-      color:var(--ink4);
-    }
-
-    /* ── BRAND SECTION ── */
-    .pd-brand-section { padding:20px 32px 0; }
-    .pd-brand-header { display:flex; align-items:center; gap:12px; margin-bottom:14px; }
-    .pd-brand-pills { display:flex; flex-wrap:wrap; gap:8px; }
-    .pd-brand-pill {
-      display:flex; align-items:center; gap:8px;
-      padding:10px 18px; border-radius:12px;
-      background:var(--surface); border:1.5px solid var(--border);
-      cursor:pointer; transition:all .18s;
-      font-size:13px; font-weight:600; color:var(--ink3);
-    }
-    .pd-brand-pill:hover { border-color:var(--ink4); color:var(--ink2); transform:translateY(-1px); }
-    .pd-brand-pill.on {
-  background:var(--blue); border-color:var(--blue); color:#fff;
-  box-shadow:0 4px 16px rgba(26,61,140,0.25);
-}
-    .pd-brand-dot {
-      width:7px; height:7px; border-radius:50%;
-      background:currentColor; opacity:.3; flex-shrink:0;
-    }
-    .pd-brand-pill.on .pd-brand-dot { opacity:1; background:#4ade80; }
-    .pd-brand-count {
-      font-size:10px; font-weight:700;
-      background:var(--surface2); color:var(--ink4);
-      border-radius:6px; padding:2px 7px;
-    }
-    .pd-brand-pill.on .pd-brand-count { background:rgba(255,255,255,.2); color:rgba(255,255,255,.75); }
-
-    /* ── MODELS SECTION ── */
-    .pd-models-section { padding:20px 32px 0; }
-    .pd-models-header { display:flex; align-items:center; justify-content:space-between; margin-bottom:14px; }
-    .pd-models-meta { font-size:11px; color:var(--ink3); font-weight:500; }
-
-    .pd-model-grid {
-      display:grid;
-      grid-template-columns:repeat(auto-fill, minmax(190px, 1fr));
-      gap:10px;
-    }
-
-    .pd-model-card {
-      background:var(--surface);
-      border:1.5px solid var(--border);
-      border-radius:14px;
-      padding:14px 16px;
-      cursor:pointer;
-      transition:all .2s cubic-bezier(.4,0,.2,1);
-      display:flex; flex-direction:column; gap:10px;
-      position:relative; overflow:hidden;
-    }
-    .pd-model-card::after {
-      content:'';
-      position:absolute; left:0; top:0; bottom:0;
-      width:3px; border-radius:2px 0 0 2px;
-      background:transparent;
-      transition:background .15s;
-    }
-    .pd-model-card:hover { border-color:var(--border2); transform:translateY(-2px); box-shadow:0 6px 24px rgba(0,0,0,.07); }
-    .pd-model-card.on { border-color:var(--blue); background:var(--blue-bg); }
-.pd-model-card.on::after { background:var(--blue); }
-
-    .pd-mc-header { display:flex; align-items:flex-start; gap:8px; }
-    .pd-mc-status {
-      width:8px; height:8px; border-radius:50%;
-      background:var(--green-bd); flex-shrink:0; margin-top:3px;
-    }
-    .pd-mc-status.out { background:var(--red-bd); }
-    .pd-model-card.on .pd-mc-status { background: #4ade80; }
-    .pd-mc-name {
-      font-size:13px; font-weight:700; color:var(--ink2); line-height:1.35; flex:1;
-    }
-    .pd-model-card.on .pd-mc-name { color:var(--blue); }
-    .pd-mc-badge {
-      font-size:9px; font-weight:700; color:var(--ink4);
-      background:var(--surface2); border-radius:6px;
-      padding:2px 7px; flex-shrink:0;
-    }
-    .pd-model-card.on .pd-mc-badge { background:var(--blue-bg); color:var(--blue); }
-
-    .pd-mc-sizes { display:flex; gap:5px; flex-wrap:wrap; }
-    .pd-sz-chip {
-      font-family:'JetBrains Mono', monospace;
-      font-size:10px; font-weight:500;
-      padding:3px 9px; border-radius:6px;
-      background:var(--surface2); color:var(--ink3);
-      border:1px solid var(--border);
-      cursor:pointer; transition:all .13s;
-    }
-    .pd-sz-chip:hover { border-color:var(--ink4); color:var(--ink2); }
-    .pd-sz-chip.on { background:var(--blue); color:#fff; border-color:var(--blue); }
-    .pd-sz-chip.oos { opacity:.35; cursor:not-allowed; }
-
-    /* ── SPEC PANEL ── */
-    .pd-spec-panel {
-      margin:16px 32px 0;
-      background:var(--surface);
-      border:1.5px solid var(--border);
-      border-radius:18px;
-      overflow:hidden;
-      animation:slideUp .25s cubic-bezier(.16,1,.3,1);
-      box-shadow:0 8px 32px rgba(0,0,0,.06);
-    }
-
-    .pd-spec-head {
-      padding:18px 22px;
-      background:linear-gradient(135deg, var(--surface2) 0%, var(--surface) 100%);
-      border-bottom:1px solid var(--border);
-      display:flex; align-items:flex-start; justify-content:space-between; gap:12px;
-    }
-    .pd-spec-title {
-      
-      font-size:17px; font-weight:700; color:var(--ink);
-      line-height:1.25; margin-bottom:4px;
-    }
-    .pd-spec-subtitle { font-size:11px; color:var(--ink3); font-weight:500; }
-    .pd-spec-badges { display:flex; gap:6px; flex-wrap:wrap; margin-top:8px; }
-
-    .pd-badge {
-      font-size:9px; font-weight:700;
-      padding:3px 10px; border-radius:6px;
-      letter-spacing:.04em; border:1px solid transparent;
-    }
-    .pd-badge.ok { background:var(--green-bg); border-color:var(--green-bd); color:var(--green); }
-    .pd-badge.no { background:var(--red-bg); border-color:var(--red-bd); color:var(--red); }
-    .pd-badge.info { background:var(--blue-bg); border-color:var(--blue-bd); color:var(--blue); }
-    .pd-badge.neu { background:var(--surface2); border-color:var(--border); color:var(--ink3); }
-    .pd-badge.am { background:var(--amber-bg); border-color:var(--amber-bd); color:var(--amber); }
-
-    .pd-close-btn {
-      width:30px; height:30px; border-radius:8px;
-      background:var(--surface3); border:1px solid var(--border);
-      cursor:pointer; color:var(--ink3); font-size:13px;
-      display:flex; align-items:center; justify-content:center;
-      transition:all .13s; flex-shrink:0;
-    }
-    .pd-close-btn:hover { background:var(--border2); color:var(--ink); }
-
-    /* Spec grid — 2 columns, cleaner */
-    .pd-spec-grid {
-      display:grid;
-      grid-template-columns:1fr 1fr;
-      gap:0;
-    }
-    .pd-spec-cell {
-      padding:13px 20px;
-      border-bottom:1px solid var(--border);
-      border-right:1px solid var(--border);
-    }
-    .pd-spec-cell:nth-child(2n) { border-right:none; }
-    .pd-spec-cell:nth-last-child(-n+2) { border-bottom:none; }
-    .pd-spec-cell:only-child { grid-column:1/-1; border-right:none; }
-    .pd-spec-k {
-      font-size:9px; font-weight:700; letter-spacing:.11em; text-transform:uppercase;
-      color:var(--ink4); margin-bottom:5px;
-    }
-    .pd-spec-v {
-      font-size:13px; font-weight:500; color:var(--ink);
-      font-family:'JetBrains Mono', monospace;
-      line-height:1.4; word-break:break-word;
-    }
-    .pd-bool-y {
-      display:inline-flex; align-items:center; gap:5px;
-      font-family:'Plus Jakarta Sans', sans-serif; font-size:11px; font-weight:700;
-      color:var(--green); background:var(--green-bg);
-      border:1px solid var(--green-bd); border-radius:6px; padding:2px 9px;
-    }
-    .pd-bool-n {
-      display:inline-flex; align-items:center; gap:5px;
-      font-family:'Plus Jakarta Sans', sans-serif; font-size:11px; font-weight:700;
-      color:var(--ink4); background:var(--surface2);
-      border:1px solid var(--border); border-radius:6px; padding:2px 9px;
-    }
-    .pd-spec-empty {
-      padding:32px; text-align:center;
-      color:var(--ink4); font-size:13px; font-style:italic;
-    }
-
-    /* ── PRICE + CTA ── */
-    .pd-price-cta {
-      display:flex; align-items:center; gap:16px; flex-wrap:wrap;
-      padding:18px 22px;
-      background:var(--surface2);
-      border-top:1px solid var(--border);
-    }
-    .pd-price-block { flex:1; min-width:0; }
-    .pd-price-label {
-      font-size:9px; font-weight:800; letter-spacing:.13em; text-transform:uppercase;
-      color:var(--ink4); margin-bottom:4px;
-    }
-    .pd-price-num {
-      font-family:'Playfair Display', serif;
-      font-size:30px; font-weight:700; color:var(--ink);
-      letter-spacing:-.02em; line-height:1;
-    }
-    .pd-price-rq { font-size:13px; color:var(--ink3); font-style:italic; }
-    .pd-sale-tag {
-      background:var(--amber-bg); border:1px solid var(--amber-bd); color:var(--amber);
-      border-radius:8px; padding:5px 12px; font-size:12px; font-weight:700;
-    }
-
-    .pd-enquire-btn {
-      display:flex; align-items:center; gap:9px;
-      padding:14px 28px;
-      background:var(--ink); color:var(--bg);
-      border:none; border-radius:12px;
-      font-family:'Plus Jakarta Sans', sans-serif;
-      font-size:14px; font-weight:700;
-      letter-spacing:.01em; cursor:pointer;
-      transition:all .18s cubic-bezier(.4,0,.2,1);
-      white-space:nowrap;
-      box-shadow:0 4px 16px rgba(26,23,20,0.2);
-    }
-    .pd-enquire-btn:hover {
-      background:var(--accent);
-      transform:translateY(-2px);
-      box-shadow:0 8px 24px rgba(200,98,42,0.3);
-    }
-    .pd-enquire-btn:active { transform:translateY(0); }
-
-    /* ── BOTTOM PAD ── */
-    .pd-pad { height:40px; }
-
-    /* ── MODAL ── */
-    .pd-overlay {
-      position:fixed; inset:0;
-      background:rgba(26,23,20,.6);
-      backdrop-filter:blur(12px);
-      z-index:9999;
-      display:flex; align-items:center; justify-content:center; padding:20px;
-      animation:fadeIn .18s ease;
-    }
-    .pd-modal {
-      background:var(--surface);
-      border-radius:24px; padding:0;
-      width:100%; max-width:420px;
-      box-shadow:0 32px 80px rgba(0,0,0,.25);
-      animation:popIn .24s cubic-bezier(.16,1,.3,1);
-      overflow:hidden;
-    }
-    .pd-modal-header {
-      padding:28px 28px 0;
-      border-bottom:1px solid var(--border);
-      padding-bottom:20px;
-      display:flex; align-items:flex-start; justify-content:space-between;
-      background:linear-gradient(135deg, var(--surface2), var(--surface));
-    }
-    .pd-modal-title {
-      font-family:'Playfair Display', serif;
-      font-size:22px; font-weight:700; color:var(--ink);
-      letter-spacing:-.02em; margin-bottom:4px;
-    }
-    .pd-modal-sub { font-size:12.5px; color:var(--ink3); line-height:1.6; max-width:260px; }
-    .pd-modal-x {
-      width:32px; height:32px; border-radius:9px;
-      background:var(--surface3); border:1px solid var(--border);
-      cursor:pointer; color:var(--ink3); font-size:13px;
-      display:flex; align-items:center; justify-content:center;
-      transition:all .13s; flex-shrink:0;
-    }
-    .pd-modal-x:hover { background:var(--border2); color:var(--ink); }
-
-    .pd-modal-body { padding:20px 28px 28px; }
-    .pd-contact-row {
-      display:flex; align-items:center; gap:14px;
-      padding:14px 0; border-bottom:1px solid var(--surface2);
-    }
-    .pd-contact-row:last-of-type { border:none; }
-    .pd-contact-icon {
-      width:44px; height:44px;
-      background:var(--surface2); border-radius:12px;
-      border:1px solid var(--border);
-      display:flex; align-items:center; justify-content:center;
-      font-size:20px; flex-shrink:0;
-    }
-    .pd-contact-lbl {
-      font-size:9px; color:var(--ink4); font-weight:700;
-      text-transform:uppercase; letter-spacing:.1em; margin-bottom:3px;
-    }
-    .pd-contact-val {
-      font-size:15px; font-weight:600; color:var(--ink);
-      font-family:'JetBrains Mono', monospace;
-    }
-    .pd-modal-actions { display:flex; gap:8px; margin-top:16px; }
-    .pd-action-btn {
-      flex:1; border-radius:10px; padding:11px;
-      font-size:12px; font-weight:700; cursor:pointer;
-      font-family:'Plus Jakarta Sans', sans-serif;
-      border:1.5px solid var(--border);
-      background:var(--surface2); color:var(--ink2);
-      transition:all .14s;
-    }
-    .pd-action-btn:hover { border-color:var(--border2); background:var(--surface3); }
-    .pd-action-btn.copied {
-      background:var(--green-bg); border-color:var(--green-bd); color:var(--green);
-    }
-
-    /* ── STATES ── */
-    .pd-state {
-      display:flex; flex-direction:column; align-items:center; justify-content:center;
-      min-height:60vh; gap:16px; text-align:center; padding:40px;
-    }
-    .pd-spinner {
-      width:32px; height:32px;
-      border:2.5px solid var(--border2);
-      border-top-color:var(--ink);
-      border-radius:50%;
-      animation:spin .7s linear infinite;
-    }
-    .pd-state-title {
-      font-family:'Playfair Display', serif;
-      font-size:22px; font-weight:700; color:var(--ink);
-    }
-    .pd-state-sub { font-size:13px; color:var(--ink3); }
-
-    /* ── RESPONSIVE ── */
-    @media(max-width:1024px){
-      .pd-layout { grid-template-columns:1fr; }
-      .pd-left { position:static; height:auto; border-right:none; border-bottom:1px solid var(--border); }
-      .pd-gallery { min-height:300px; padding:28px; }
-      .pd-right { position:static; max-height:none; overflow-y:visible; }
-      .pd-spec-grid { grid-template-columns:1fr 1fr; }
-    }
-    @media(max-width:680px){
-      .pd-brand-section,.pd-models-section { padding-left:20px; padding-right:20px; }
-      .pd-spec-panel { margin-left:20px; margin-right:20px; }
-      .pd-bc { padding:16px 20px 0; }
-      .pd-model-grid { grid-template-columns:1fr 1fr; }
-    }
-    @media(max-width:440px){
-      .pd-model-grid { grid-template-columns:1fr; }
-      .pd-spec-grid { grid-template-columns:1fr; }
-      .pd-spec-cell:nth-child(2n) { border-right:none; }
-      .pd-spec-cell { border-right:none !important; }
-    }
-  `;
-  document.head.appendChild(el);
-}
-
-/* ── Helpers ── */
-const fmtKey = k => k.replace(/_/g, ' ').replace(/\b\w/g, c => c.toUpperCase());
-const fmtVal = v => {
+const fmtKey = (k) => k.replace(/_/g, ' ').replace(/\b\w/g, (c) => c.toUpperCase());
+const fmtVal = (v) => {
   if (v === null || v === undefined) return '—';
   if (typeof v === 'boolean') return v ? 'Yes' : 'No';
   if (Array.isArray(v)) return v.join(', ');
   if (typeof v === 'object') return Object.entries(v).map(([k, val]) => `${k}: ${val}`).join(' | ');
   return String(v);
 };
+
 const SIZE_KEYS = new Set(['size', 'display_size']);
+
+const isAccessory = (v) => v?.spec_json?.is_accessory === true;
+
+// Warranty-grouped variants: have spec_json.size AND name contains "(N Y)" pattern
+const WARRANTY_RE = /\((\d+)\s*Y\)/i;
+const extractWarranty = (name = '') => {
+  const m = WARRANTY_RE.exec(name);
+  return m ? `${m[1]} Year${m[1] === '1' ? '' : 's'}` : null;
+};
+const isWarrantyGrouped = (variants = []) =>
+  variants.length > 1 &&
+  variants.some((v) => v.spec_json?.size) &&
+  variants.some((v) => WARRANTY_RE.test(v.name));
+
+// Matches a variant name that is nothing but a screen size, e.g. 32", 43", 55.5", 65 inch
+const SIZE_NAME_RE = /^\d+(\.\d+)?["']?\s*(inch|")?$/i;
+
+const extractSizeLabel = (name = '') => {
+  // matches trailing (65"), (75"), (86"), (55.5") etc.
+  const m = /\((\d{2,3}(?:\.\d+)?)\s*["″'`]?\)\s*$/.exec(name);
+  return m ? m[1] + '"' : null;
+};
 
 const groupByModel = (variants = []) => {
   const map = new Map();
   for (const v of variants) {
-    const sz = v.spec_json?.display_size || v.spec_json?.size || null;
+    const sz = v.spec_json?.display_size || v.spec_json?.size
+      || extractSizeLabel(v.name) || null;
     const base = v.name
-      .replace(/\s+\d{2,3}["″'`]?\s*$/i, '')
+      .replace(/\s*\(\d{2,3}(?:\.\d+)?\s*["″'`]?\)\s*$/i, '') // strip (65") pattern
+      .replace(/\s+\d{2,3}(?:\.\d+)?["″'`]?\s*$/i, '')          // strip bare 65"
       .replace(/\s+\d{2,3}\s*inch\s*$/i, '')
       .trim();
     if (!map.has(base)) map.set(base, []);
@@ -575,30 +62,100 @@ const groupByModel = (variants = []) => {
   return [...map.entries()].map(([groupName, variants]) => ({ groupName, variants }));
 };
 
-/* ── Component ── */
-const ProductDetail = () => {
+const PLACEHOLDER = 'https://via.placeholder.com/600x600?text=No+Image';
+
+// All images across every variant of a brand
+const getBrandImages = (brand, name = '') =>
+  (brand?.variants || []).flatMap((v) =>
+    (v.images || []).map((img) => ({
+      src: resolveImg(img.image_url),
+      alt: img.alt_text || name,
+    }))
+  );
+
+/* ── Flipkart-style hover zoom: lens on the image + magnified pane beside it ── */
+function ZoomImage({ src, alt, className = '', imgClassName = '', zoom = 2.4, paneWidth, paneHeight, onError }) {
+  const wrapRef = useRef(null);
+  const [hover, setHover] = useState(false);
+  const [bgPos, setBgPos] = useState({ x: 50, y: 50 });
+  const [lens, setLens]   = useState({ x: 0, y: 0, w: 0, h: 0 });
+  const [side, setSide]   = useState('right');
+
+  const track = (e) => {
+    const rect = wrapRef.current.getBoundingClientRect();
+    if (!rect.width || !rect.height) return;
+
+    const px = Math.max(0, Math.min(100, ((e.clientX - rect.left) / rect.width) * 100));
+    const py = Math.max(0, Math.min(100, ((e.clientY - rect.top) / rect.height) * 100));
+    setBgPos({ x: px, y: py });
+
+    const lensW = rect.width / zoom;
+    const lensH = rect.height / zoom;
+    const lensX = Math.max(0, Math.min(rect.width  - lensW, (e.clientX - rect.left) - lensW / 2));
+    const lensY = Math.max(0, Math.min(rect.height - lensH, (e.clientY - rect.top)  - lensH / 2));
+    setLens({ x: lensX, y: lensY, w: lensW, h: lensH });
+  };
+
+  const handleEnter = (e) => {
+    const rect = wrapRef.current.getBoundingClientRect();
+    const pw = paneWidth || rect.width;
+    setSide(window.innerWidth - rect.right >= pw + 24 ? 'right' : 'left');
+    setHover(true);
+    track(e);
+  };
+
+  return (
+    <div
+      className={`zoom-wrap zoom-pane-${side}${hover ? ' zoom-hover' : ''} ${className}`}
+      ref={wrapRef}
+      onMouseEnter={handleEnter}
+      onMouseMove={track}
+      onMouseLeave={() => setHover(false)}
+    >
+      <div className="zoom-clip">
+        <img
+          className={`zoom-base-img ${imgClassName}`}
+          src={src}
+          alt={alt}
+          onError={onError}
+        />
+      </div>
+      <div className="zoom-lens" style={{ left: lens.x, top: lens.y, width: lens.w, height: lens.h }} />
+      <div
+        className="zoom-pane"
+        style={{
+          width:  paneWidth  || '100%',
+          height: paneHeight || '100%',
+          backgroundImage: src ? `url(${src})` : 'none',
+          backgroundSize: `${zoom * 100}%`,
+          backgroundPosition: `${bgPos.x}% ${bgPos.y}%`,
+        }}
+      />
+    </div>
+  );
+}
+
+export default function ProductDetail() {
   const navigate = useNavigate();
-  const drawerRef = useRef(null);
-  const rightRef = useRef(null);
+  const { addToCart, removeFromCart, updateQty, cartItems } = useCart();
 
-  const [product, setProduct] = useState(null);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState('');
-  const [selImg, setSelImg] = useState(0);
-  const [imgFade, setImgFade] = useState(false);
-  const [activeBrand, setActiveBrand] = useState(null);
-  const [activeGroup, setActiveGroup] = useState(null);
+  const [product,       setProduct]       = useState(null);
+  const [loading,       setLoading]       = useState(true);
+  const [error,         setError]         = useState('');
+  const [selImg,        setSelImg]        = useState(0);
+  const [imgFade,       setImgFade]       = useState(false);
+  const [activeBrand,   setActiveBrand]   = useState(null);
+  const [activeGroup,   setActiveGroup]   = useState(null);
   const [activeVariant, setActiveVariant] = useState(null);
-  const [showModal, setShowModal] = useState(false);
-  const [copiedPhone, setCopiedPhone] = useState(false);
-  const [copiedEmail, setCopiedEmail] = useState(false);
+  const [activeSize,    setActiveSize]    = useState(null);
+  const [activeWarranty, setActiveWarranty] = useState(null);
+  const [showModal,     setShowModal]     = useState(false);
+  const [copied,        setCopied]        = useState('');
 
-  /* Scroll to top on mount */
   useEffect(() => { window.scrollTo(0, 0); }, []);
 
-  /* Fetch product */
   useEffect(() => {
-    const id = localStorage.getItem('selectedProductId');
+    const id   = localStorage.getItem('selectedProductId');
     const type = localStorage.getItem('selectedProductType') || 'product';
     if (!id) { setError('No product selected.'); setLoading(false); return; }
     let live = true;
@@ -611,19 +168,29 @@ const ProductDetail = () => {
         const fb = (data.brands || [])[0] || null;
         setActiveBrand(fb);
         if (fb) {
-          const groups = groupByModel(fb.variants || []);
-          let tg = groups[0] || null, tv = tg?.variants[0] || null;
-          if (data.focused_variant_id) {
-            for (const g of groups) {
-              const m = g.variants.find(v => v.id === data.focused_variant_id);
-              if (m) { tg = g; tv = m; break; }
+          const nonAcc = (fb.variants || []).filter((v) => !isAccessory(v));
+          if (isWarrantyGrouped(nonAcc)) {
+            const sizes = [...new Set(nonAcc.map((v) => v.spec_json?.size).filter(Boolean))];
+            const firstSize = sizes[0] || null;
+            setActiveSize(firstSize);
+            const sizeVars = nonAcc.filter((v) => v.spec_json?.size === firstSize);
+            const firstVar = sizeVars[0] || null;
+            setActiveWarranty(extractWarranty(firstVar?.name || ''));
+            setActiveVariant(firstVar);
+          } else {
+            const groups = groupByModel(nonAcc);
+            let tg = groups[0] || null, tv = tg?.variants[0] || null;
+            if (data.focused_variant_id) {
+              for (const g of groups) {
+                const m = g.variants.find((v) => v.id === data.focused_variant_id);
+                if (m) { tg = g; tv = m; break; }
+              }
             }
+            setActiveGroup(tg); setActiveVariant(tv);
           }
-          setActiveGroup(tg); setActiveVariant(tv);
         }
       } catch (e) {
-        if (!live) return;
-        setError(e?.response?.data?.error || e?.message || 'Failed to load.');
+        if (live) setError(e?.response?.data?.error || e?.message || 'Failed to load.');
       } finally {
         if (live) setLoading(false);
       }
@@ -631,345 +198,666 @@ const ProductDetail = () => {
     return () => { live = false; };
   }, []);
 
-  const varGroups = useMemo(() => groupByModel(activeBrand?.variants || []), [activeBrand]);
+  // Accessories (e.g. case covers, keyboard cases) are shown in their own section
+  // below and excluded from the MODELS list / display-size picker.
+  const mainVariants = useMemo(
+    () => (activeBrand?.variants || []).filter((v) => !isAccessory(v)),
+    [activeBrand]
+  );
+  const accessoryVariants = useMemo(
+    () => (activeBrand?.variants || []).filter((v) => isAccessory(v)),
+    [activeBrand]
+  );
+
+  const varGroups = useMemo(() => groupByModel(mainVariants), [mainVariants]);
+
+  const warrantyGrouped = useMemo(() => isWarrantyGrouped(mainVariants), [mainVariants]);
+
+  const uniqueSizes = useMemo(() => {
+    if (!warrantyGrouped) return [];
+    const seen = new Set();
+    return mainVariants.map((v) => v.spec_json?.size).filter((s) => s && !seen.has(s) && seen.add(s));
+  }, [warrantyGrouped, mainVariants]);
+
+  const uniqueWarranties = useMemo(() => {
+    if (!warrantyGrouped || !activeSize) return [];
+    const seen = new Set();
+    return mainVariants
+      .filter((v) => v.spec_json?.size === activeSize)
+      .map((v) => extractWarranty(v.name))
+      .filter((w) => w && !seen.has(w) && seen.add(w));
+  }, [warrantyGrouped, mainVariants, activeSize]);
+
+  // Only show the MODELS section when at least one variant has a real name.
+  // Products like "Praxam" have a single placeholder variant named "-" — in that
+  // case the variant is still auto-selected (so cart works) but nothing is rendered.
+  const hasRealModels = useMemo(
+    () => mainVariants.some(
+      (v) => v.name && v.name.trim() !== '-' && v.name.trim() !== ''
+    ),
+    [mainVariants]
+  );
+
+  // When every variant's name is just a screen size (e.g. Gladwin's 32", 43",
+  // 55", 65"), show them as a horizontal "SELECT SIZE" chip grid instead of
+  // the tall MODELS list. Brands with real model names (LG, Promark, etc.)
+  // are unaffected.
+  const allAreSizes = useMemo(
+    () => mainVariants.length > 0 && mainVariants.every(
+      (v) => SIZE_NAME_RE.test((v.name || '').trim())
+    ),
+    [mainVariants]
+  );
+
+  // Reset selected thumbnail on brand or size change (not on warranty change)
+  useEffect(() => { setSelImg(0); }, [activeBrand, activeSize, activeGroup]);
 
   const images = useMemo(() => {
-    if (!product) return [];
-    const list = [];
-    (product.images || []).forEach(i => list.push({ id: i.id, src: resolveImg(i.image_url), alt: i.alt_text || product.name }));
-    if (!list.length)
-      (product.brands || []).forEach(b => (b.variants || []).forEach(v => (v.images || []).forEach(i =>
-        list.push({ id: i.id, src: resolveImg(i.image_url), alt: i.alt_text || product.name })
-      )));
-    return list.length ? list : [{ id: 0, src: 'https://via.placeholder.com/600x600?text=No+Image', alt: product?.name || 'Product' }];
-  }, [product]);
+    if (!product) return [{ src: PLACEHOLDER, alt: 'Product' }];
+    let list = [];
 
-  const switchImg = i => {
+    // For warranty-grouped products, images follow SIZE only (not warranty).
+    // For model-grouped products (Cybernetyx style), images follow the GROUP —
+    // the first variant in the active group that has images, so switching sizes
+    // within a group doesn't change the displayed image.
+    let imgVariant = activeVariant;
+    if (warrantyGrouped && activeSize) {
+      imgVariant = mainVariants.find((v) => v.spec_json?.size === activeSize) ?? activeVariant;
+    } else if (!warrantyGrouped && activeGroup) {
+      imgVariant =
+        activeGroup.variants.find((v) => (v.images || []).length > 0) ?? activeVariant;
+    }
+
+    if (imgVariant) {
+      const vImgs = (imgVariant.images || []).map((img) => ({
+        src: resolveImg(img.image_url),
+        alt: img.alt_text || imgVariant.name,
+      }));
+      if (vImgs.length > 0) {
+        list = vImgs;
+      } else {
+        // Before falling back to all brand images, try to find a size-matched sibling.
+        // E.g. PRO-RX-65PC has no image but PRO-RX-65 (same "65") does — use that one.
+        // Use lookahead/lookbehind so "65" matches inside "65PC" (not a word boundary).
+        const sizeM = /(?<!\d)(\d{2,3})(?!\d)/.exec(imgVariant.name || '');
+        if (sizeM) {
+          const sizeRE = new RegExp(`\\b${sizeM[1]}\\b`);
+          const sizeMatch = mainVariants.find(
+            (v) => v.id !== imgVariant.id &&
+                   (v.images || []).length > 0 &&
+                   sizeRE.test(v.name || '')
+          );
+          if (sizeMatch) {
+            // Show only the first image — we're borrowing another size's image
+            const img = sizeMatch.images[0];
+            list = [{ src: resolveImg(img.image_url), alt: img.alt_text || sizeMatch.name }];
+          }
+        }
+        // Last resort: one representative brand image (not the whole gallery)
+        if (!list.length) {
+          const brandImgs = getBrandImages(activeBrand, product.name);
+          if (brandImgs.length) list = [brandImgs[0]];
+        }
+      }
+    } else if (activeBrand) {
+      list = getBrandImages(activeBrand, product.name);
+    }
+
+    // Last-resort: product-level images
+    if (!list.length) {
+      list = (product.images || []).map((i) => ({
+        src: resolveImg(i.image_url),
+        alt: i.alt_text || product.name,
+      }));
+    }
+
+    return list.length ? list : [{ src: PLACEHOLDER, alt: product.name }];
+  }, [activeVariant, activeBrand, product]);
+
+  const switchImg = (i) => {
     if (i === selImg) return;
     setImgFade(true);
-    setTimeout(() => { setSelImg(i); setImgFade(false); }, 200);
+    setTimeout(() => { setSelImg(i); setImgFade(false); }, 180);
   };
 
-  const pickBrand = b => {
+  const pickBrand = (b) => {
     setActiveBrand(b);
-    const groups = groupByModel(b.variants || []);
-    const fg = groups[0] || null;
-    setActiveGroup(fg); setActiveVariant(fg?.variants[0] || null);
+    const nonAcc = (b.variants || []).filter((v) => !isAccessory(v));
+    if (isWarrantyGrouped(nonAcc)) {
+      const sizes = [...new Set(nonAcc.map((v) => v.spec_json?.size).filter(Boolean))];
+      const firstSize = sizes[0] || null;
+      setActiveSize(firstSize);
+      const sizeVars = nonAcc.filter((v) => v.spec_json?.size === firstSize);
+      const firstVar = sizeVars[0] || null;
+      setActiveWarranty(extractWarranty(firstVar?.name || ''));
+      setActiveVariant(firstVar);
+    } else {
+      const groups = groupByModel(nonAcc);
+      const fg = groups[0] || null;
+      setActiveGroup(fg); setActiveVariant(fg?.variants[0] || null);
+      setActiveSize(null); setActiveWarranty(null);
+    }
   };
 
-  const pickGroup = g => {
-    if (activeGroup?.groupName === g.groupName) { setActiveGroup(null); setActiveVariant(null); return; }
+  const pickGroup = (g) => {
     setActiveGroup(g);
     setActiveVariant(g.variants[0] || null);
-    setTimeout(() => drawerRef.current?.scrollIntoView({ behavior: 'smooth', block: 'nearest' }), 80);
   };
 
-  const copyPhone = () => { navigator.clipboard.writeText('9061576222'); setCopiedPhone(true); setTimeout(() => setCopiedPhone(false), 2000); };
-  const copyEmail = () => { navigator.clipboard.writeText('info@etome.in'); setCopiedEmail(true); setTimeout(() => setCopiedEmail(false), 2000); };
+  const pickSize = (size) => {
+    setActiveSize(size);
+    const sizeVars = mainVariants.filter((v) => v.spec_json?.size === size);
+    const match = sizeVars.find((v) => extractWarranty(v.name) === activeWarranty) || sizeVars[0] || null;
+    setActiveWarranty(extractWarranty(match?.name || ''));
+    setActiveVariant(match);
+  };
 
-  const inStock = activeVariant ? activeVariant.stock_status === 'in_stock' : true;
-  const priceStr = (() => {
-    if (!activeVariant) return null;
-    const p = activeVariant.current_price ?? activeVariant.price;
-    return p != null ? `₹${Number(p).toLocaleString('en-IN')}` : null;
-  })();
+  const pickWarranty = (warranty) => {
+    setActiveWarranty(warranty);
+    const match = mainVariants.find((v) => v.spec_json?.size === activeSize && extractWarranty(v.name) === warranty) || null;
+    setActiveVariant(match);
+  };
+
+  const inStock  = activeVariant ? activeVariant.stock_status === 'in_stock' : true;
+  const price    = activeVariant?.current_price ?? activeVariant?.price ?? null;
+  const origPrice = activeVariant?.original_price ?? activeVariant?.mrp ?? null;
+  const priceStr  = price    != null ? `₹${Number(price).toLocaleString('en-IN', { minimumFractionDigits: 2 })}` : null;
+  const origStr   = origPrice != null ? `₹${Number(origPrice).toLocaleString('en-IN', { minimumFractionDigits: 2 })}` : null;
+
+  // DISPLAY SIZE is only meaningful when the model has more than one variant
+  // and at least one of them actually carries a size (e.g. Cyber Square's
+  // Diamond/Gold/Platinum/Grade tiers have no spec_json.size at all).
+  const hasSizeData = useMemo(() => {
+    if (!activeGroup || activeGroup.variants.length <= 1) return false;
+    return activeGroup.variants.some((v) => {
+      const size = v.spec_json?.size;
+      return size !== null && size !== undefined && String(size).trim() !== '';
+    });
+  }, [activeGroup]);
+
   const specRows = useMemo(() => {
     if (!activeVariant?.spec_json) return [];
     return Object.entries(activeVariant.spec_json)
       .filter(([k, v]) => !SIZE_KEYS.has(k) && v !== null && v !== undefined && v !== '');
   }, [activeVariant]);
 
+  // Main product cart line — keyed the same way everywhere in the app
+  // (variantId, falling back to productId), so it stays in sync with the
+  // listing page: adding/adjusting quantity here or on /edumart reflects
+  // on both, and switching the selected variant here re-checks its own line.
+  const mainItemKey  = activeVariant?.id ?? product?.id;
+  const mainCartItem = cartItems.find((i) => (i.variantId ?? i.productId) === mainItemKey);
+  const mainInCart   = !!mainCartItem;
+  const mainQty      = mainCartItem?.quantity ?? 0;
+
+  const handleAddMain = () => {
+    addToCart({
+      productId:   product?.id,
+      variantId:   activeVariant?.id ?? null,
+      name:        activeVariant && activeVariant.name?.trim() !== '-' ? activeVariant.name : product?.name,
+      image:       images[0]?.src,
+      price,
+      brandName:   activeBrand?.name,
+      description: product?.description || '',
+    });
+  };
+
+  const increaseMainQty = () => updateQty(mainItemKey, mainQty + 1);
+
+  const decreaseMainQty = () => {
+    if (mainQty <= 1) removeFromCart(mainItemKey);
+    else updateQty(mainItemKey, mainQty - 1);
+  };
+
+  const getAccessoryCartItem = (v) => cartItems.find((i) => (i.variantId ?? i.productId) === v.id);
+
+  const handleAddAccessory = (v) => {
+    addToCart({
+      productId:   product?.id,
+      variantId:   v.id,
+      name:        v.name,
+      image:       resolveImg(v.images?.[0]?.image_url),
+      price:       v.current_price ?? v.price ?? null,
+      brandName:   activeBrand?.name,
+      description: '',
+    });
+  };
+
+  const increaseAccessoryQty = (v) => updateQty(v.id, (getAccessoryCartItem(v)?.quantity ?? 0) + 1);
+
+  const decreaseAccessoryQty = (v) => {
+    const qty = getAccessoryCartItem(v)?.quantity ?? 0;
+    if (qty <= 1) removeFromCart(v.id);
+    else updateQty(v.id, qty - 1);
+  };
+
+  const copyText = (text, key) => {
+    navigator.clipboard.writeText(text);
+    setCopied(key);
+    setTimeout(() => setCopied(''), 2000);
+  };
+
   const brands = product?.brands || [];
 
-  /* ── States ── */
+  /* ── Loading ── */
   if (loading) return (
-    <div className="pd-page">
+    <div className="pd2-page">
       <Header />
-      <div className="pd-state">
-        <div className="pd-spinner" />
-        <p style={{ color: 'var(--ink4)', fontSize: 13, fontWeight: 600, letterSpacing: '.05em' }}>Loading product…</p>
+      <div className="pd2-state">
+        <div className="pd2-spinner" />
+        <p className="pd2-state-msg">Loading product…</p>
       </div>
       <Footer />
     </div>
   );
 
   if (error || !product) return (
-    <div className="pd-page">
+    <div className="pd2-page">
       <Header />
-      <div className="pd-state">
-        <p className="pd-state-title">{error || 'Product not found'}</p>
-        <p className="pd-state-sub">We couldn't load this product. Try going back.</p>
-        <button className="pd-enquire-btn" style={{ marginTop: 8 }} onClick={() => navigate('/edumart')}>← Back to Products</button>
+      <div className="pd2-state">
+        <p className="pd2-state-title">{error || 'Product not found'}</p>
+        <p className="pd2-state-msg">We couldn't load this product.</p>
+        <button className="pd2-back-btn" onClick={() => navigate('/edumart')}>← Back to Products</button>
       </div>
       <Footer />
     </div>
   );
 
   return (
-    <div className="pd-page">
+    <div className="pd2-page">
       <Header />
 
-      <div className="pd-layout">
+      <div className="pd2-layout">
 
-        {/* ═══ LEFT: Image Gallery ═══ */}
-        <div className="pd-left">
-          <div className="pd-gallery">
-            <div className={`pd-stock ${inStock ? 'ok' : 'no'}`}>
-              <span className="pd-stock-dot" />
-              {inStock ? 'In Stock' : 'Out of Stock'}
-            </div>
-            <img
-              className={`pd-main-img${imgFade ? ' fade' : ''}`}
+        {/* ── LEFT: Gallery ── */}
+        <div className="pd2-left">
+          <div className="pd2-main-img-wrap">
+            <ZoomImage
+              className="pd2-main-zoom"
+              imgClassName={`pd2-main-img${imgFade ? ' fade' : ''}`}
               src={images[selImg]?.src}
               alt={images[selImg]?.alt}
-              onError={e => { e.currentTarget.src = 'https://via.placeholder.com/600x600?text=No+Image'; }}
+              onError={(e) => { e.currentTarget.src = PLACEHOLDER; }}
             />
           </div>
 
-          {images.length > 1 && (
-            <div className="pd-thumbs-row">
-              {images.slice(0, 8).map((img, i) => (
+          {images.length > 0 && (
+            <div className="pd2-thumbs">
+              {images.map((img, i) => (
                 <div
-                  key={`${img.id}-${i}`}
-                  className={`pd-thumb${i === selImg ? ' on' : ''}`}
+                  key={i}
+                  className={`pd2-thumb${i === selImg ? ' active' : ''}`}
                   onClick={() => switchImg(i)}
                 >
-                  <img src={img.src} alt={img.alt} onError={e => { e.currentTarget.src = 'https://via.placeholder.com/80'; }} />
+                  <img
+                    src={img.src}
+                    alt={img.alt}
+                    onError={(e) => { e.currentTarget.src = PLACEHOLDER; }}
+                  />
                 </div>
               ))}
             </div>
           )}
 
-          <div className="pd-name-block">
-            <h1 className="pd-product-title">{product.name}</h1>
-            {product.description && <p className="pd-product-desc">{product.description}</p>}
-          </div>
+          {/* Variant name + spec table */}
+          {activeVariant && (
+            <div className="pd2-variant-info">
+              {activeVariant.name && activeVariant.name.trim() !== '-' && activeVariant.name.trim() !== '' && (
+                <h2 className="pd2-variant-name">{activeVariant.name}</h2>
+              )}
+              {specRows.length > 0 && (
+                <table className="pd2-spec-table">
+                  <tbody>
+                    {specRows.map(([k, v]) => (
+                      <tr key={k}>
+                        <td className="pd2-spec-k">{fmtKey(k)}</td>
+                        <td className="pd2-spec-v">{fmtVal(v)}</td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              )}
+            </div>
+          )}
         </div>
 
-        {/* ═══ RIGHT: Interactive Content ═══ */}
-        <div className="pd-right" ref={rightRef}>
+        {/* ── RIGHT: Info ── */}
+        <div className="pd2-right">
 
-          {/* Breadcrumb */}
-          <nav className="pd-bc">
-            <span className="pd-bc-link" onClick={() => navigate('/edumart')}>Products</span>
-            {product.category?.name && (
-              <><span className="pd-bc-sep">›</span><span className="pd-bc-link">{product.category.name}</span></>
-            )}
-            <span className="pd-bc-sep">›</span>
-            <span className="pd-bc-cur">{product.name}</span>
-          </nav>
+          {/* Stock badge */}
+          <span className={`pd2-stock-badge ${inStock ? 'in' : 'out'}`}>
+            {inStock ? 'IN STOCK' : 'OUT OF STOCK'}
+          </span>
 
-          {/* Brand section */}
+          {/* Product name */}
+          <h1 className="pd2-title">{product.name}</h1>
+
+          {/* Description */}
+          {product.description && (
+            <p className="pd2-desc">{product.description}</p>
+          )}
+
+          {/* Price */}
+          {priceStr && (
+            <div className="pd2-price-row">
+              <span className="pd2-price">{priceStr}</span>
+              {origStr && <span className="pd2-orig-price">{origStr}</span>}
+            </div>
+          )}
+
+          <div className="pd2-divider" />
+
+          {/* Brands */}
           {brands.length > 0 && (
-            <div className="pd-brand-section">
-              <div className="pd-brand-header">
-                <span className="pd-section-label">Brand</span>
-              </div>
-              <div className="pd-brand-pills">
-                {brands.map(b => (
-                  <div
+            <div className="pd2-section">
+              <p className="pd2-section-label">BRANDS</p>
+              <div className="pd2-pills">
+                {brands.map((b) => (
+                  <button
                     key={b.id}
-                    className={`pd-brand-pill${activeBrand?.id === b.id ? ' on' : ''}`}
+                    className={`pd2-pill ${activeBrand?.id === b.id ? 'active' : ''}`}
                     onClick={() => pickBrand(b)}
                   >
-                    <span className="pd-brand-dot" />
-                    {b.logo && (
-                      <img
-                        src={resolveImg(b.logo)} alt={b.name}
-                        style={{ height: 16, objectFit: 'contain' }}
-                        onError={e => { e.currentTarget.style.display = 'none'; }}
-                      />
-                    )}
                     {b.name}
-                    <span className="pd-brand-count">{groupByModel(b.variants || []).length}</span>
-                  </div>
+                  </button>
                 ))}
               </div>
             </div>
           )}
 
-          {/* Models grid */}
-          {activeBrand && varGroups.length > 0 && (
-            <div className="pd-models-section">
-              <div className="pd-models-header">
-                <span className="pd-section-label">{activeBrand.name} — Models</span>
-                <span className="pd-models-meta">{varGroups.length} model{varGroups.length !== 1 ? 's' : ''}</span>
-              </div>
-              <div className="pd-model-grid">
-                {varGroups.map(g => {
-                  const isOn = activeGroup?.groupName === g.groupName;
-                  const allOut = g.variants.every(v => v.stock_status !== 'in_stock');
-                  return (
-                    <div
-                      key={g.groupName}
-                      className={`pd-model-card${isOn ? ' on' : ''}`}
-                      onClick={() => pickGroup(g)}
+          {/* Size + Warranty grouped UI (e.g. IFP: 65"/75"/86" × 3Y/5Y) */}
+          {activeBrand && warrantyGrouped && (
+            <>
+              <div className="pd2-section">
+                <p className="pd2-section-label">SIZE</p>
+                <div className="pd2-sizes">
+                  {uniqueSizes.map((size) => (
+                    <button
+                      key={size}
+                      className={`pd2-size-btn ${activeSize === size ? 'active' : ''}`}
+                      onClick={() => pickSize(size)}
                     >
-                      <div className="pd-mc-header">
-                        <span className={`pd-mc-status${allOut ? ' out' : ''}`} />
-                        <span className="pd-mc-name">{g.groupName}</span>
-                        <span className="pd-mc-badge">{g.variants.length}</span>
-                      </div>
-                      {g.variants.length > 1 && (
-                        <div className="pd-mc-sizes" onClick={e => e.stopPropagation()}>
-                          {g.variants.map(v => {
-                            const lbl = v._sz || v.name;
-                            const oos = v.stock_status !== 'in_stock';
-                            const sel = activeVariant?.id === v.id && isOn;
-                            return (
-                              <span
-                                key={v.id}
-                                className={`pd-sz-chip${sel ? ' on' : ''}${oos ? ' oos' : ''}`}
-                                onClick={e => {
-                                  e.stopPropagation();
-                                  if (!oos) {
-                                    if (!isOn) setActiveGroup(g);
-                                    setActiveVariant(v);
-                                    if (!isOn) setTimeout(() => drawerRef.current?.scrollIntoView({ behavior: 'smooth', block: 'nearest' }), 80);
-                                  }
-                                }}
-                              >
-                                {lbl}
-                              </span>
-                            );
-                          })}
-                        </div>
-                      )}
-                    </div>
+                      {size}"
+                    </button>
+                  ))}
+                </div>
+              </div>
+              {uniqueWarranties.length > 0 && (
+                <div className="pd2-section">
+                  <p className="pd2-section-label">WARRANTY</p>
+                  <div className="pd2-sizes">
+                    {uniqueWarranties.map((w) => (
+                      <button
+                        key={w}
+                        className={`pd2-size-btn ${activeWarranty === w ? 'active' : ''}`}
+                        onClick={() => pickWarranty(w)}
+                      >
+                        {w}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+              )}
+            </>
+          )}
+
+          {/* Models — brands whose variant names are plain screen sizes
+              (e.g. Gladwin: 32", 43", 55", 65") show a size chip grid instead */}
+          {activeBrand && !warrantyGrouped && varGroups.length > 0 && hasRealModels && !allAreSizes && (
+            <div className="pd2-section">
+              <p className="pd2-section-label">MODELS</p>
+              <div className="pd2-models">
+                {varGroups.map((g) => (
+                  <button
+                    key={g.groupName}
+                    className={`pd2-model-btn ${activeGroup?.groupName === g.groupName ? 'active' : ''}`}
+                    onClick={() => pickGroup(g)}
+                  >
+                    {g.groupName}
+                  </button>
+                ))}
+              </div>
+            </div>
+          )}
+
+          {activeBrand && !warrantyGrouped && varGroups.length > 0 && allAreSizes && (
+            <div className="pd2-section">
+              <p className="pd2-section-label">SELECT SIZE</p>
+              <div className="pd2-sizes">
+                {varGroups.map((g) => {
+                  const v   = g.variants[0];
+                  const oos = v.stock_status !== 'in_stock';
+                  const sel = activeGroup?.groupName === g.groupName;
+                  return (
+                    <button
+                      key={g.groupName}
+                      className={`pd2-size-btn ${sel ? 'active' : ''} ${oos ? 'oos' : ''}`}
+                      onClick={() => !oos && pickGroup(g)}
+                      disabled={oos}
+                    >
+                      {g.groupName}
+                    </button>
                   );
                 })}
               </div>
             </div>
           )}
 
-          {/* Spec panel */}
-          {activeGroup && activeVariant && (
-            <div ref={drawerRef} style={{ paddingTop: 0 }}>
-              <div className="pd-spec-panel">
-
-                <div className="pd-spec-head">
-                  <div style={{ flex: 1, minWidth: 0 }}>
-                    <div className="pd-spec-title">
-                      {activeGroup.groupName}
-                      {activeVariant._sz && (
-                        <span style={{ color: 'var(--blue)', fontWeight: 500, fontSize: 15 }}> · {activeVariant._sz}</span>
-                      )}
-                    </div>
-                    <div className="pd-spec-subtitle">{activeBrand?.name}</div>
-                    <div className="pd-spec-badges">
-                      <span className={`pd-badge ${activeVariant.stock_status === 'in_stock' ? 'ok' : 'no'}`}>
-                        {activeVariant.stock_status === 'in_stock' ? 'In Stock' : 'Out of Stock'}
-                      </span>
-                      {activeVariant.lifecycle_status === 'active' && <span className="pd-badge info">Active</span>}
-                      {activeVariant.is_on_sale && <span className="pd-badge am">On Sale</span>}
-                      {activeVariant.sku && <span className="pd-badge neu">{activeVariant.sku}</span>}
-                    </div>
-                  </div>
-                  <button className="pd-close-btn" onClick={() => { setActiveGroup(null); setActiveVariant(null); }}>✕</button>
-                </div>
-
-                {specRows.length > 0 ? (
-                  <div className="pd-spec-grid" key={activeVariant.id}>
-                    {specRows.map(([key, val]) => {
-                      const isBool = typeof val === 'boolean';
-                      return (
-                        <div key={key} className="pd-spec-cell">
-                          <div className="pd-spec-k">{fmtKey(key)}</div>
-                          {isBool ? (
-                            val
-                              ? <span className="pd-bool-y">
-                                  <svg width="9" height="9" viewBox="0 0 12 12" fill="none"><path d="M2 6l3 3 5-5" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" /></svg>
-                                  Yes
-                                </span>
-                              : <span className="pd-bool-n">
-                                  <svg width="9" height="9" viewBox="0 0 12 12" fill="none"><path d="M3 9l6-6M9 9L3 3" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" /></svg>
-                                  No
-                                </span>
-                          ) : (
-                            <div className="pd-spec-v">{fmtVal(val)}</div>
-                          )}
-                        </div>
-                      );
-                    })}
-                  </div>
-                ) : (
-                  <div className="pd-spec-empty">No specifications listed for this variant.</div>
-                )}
-
-                <div className="pd-price-cta">
-                  <div className="pd-price-block">
-                    <div className="pd-price-label">Price</div>
-                    {priceStr
-                      ? <div className="pd-price-num">{priceStr}</div>
-                      : <div className="pd-price-rq">Enquire for pricing</div>
-                    }
-                  </div>
-                  {activeVariant.is_on_sale && (activeVariant.discount_percentage || 0) > 0 && (
-                    <span className="pd-sale-tag">{activeVariant.discount_percentage}% OFF</span>
-                  )}
-                  <button className="pd-enquire-btn" onClick={() => setShowModal(true)}>
-                    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2">
-                      <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" strokeLinecap="round" strokeLinejoin="round" />
-                    </svg>
-                    Enquire Now
-                  </button>
-                </div>
-
+          {/* Display sizes */}
+          {!warrantyGrouped && hasSizeData && (
+            <div className="pd2-section">
+              <p className="pd2-section-label">DISPLAY SIZE</p>
+              <div className="pd2-sizes">
+                {activeGroup.variants.map((v) => {
+                  const lbl = v._sz || v.name;
+                  const oos = v.stock_status !== 'in_stock';
+                  const sel = activeVariant?.id === v.id;
+                  return (
+                    <button
+                      key={v.id}
+                      className={`pd2-size-btn ${sel ? 'active' : ''} ${oos ? 'oos' : ''}`}
+                      onClick={() => !oos && setActiveVariant(v)}
+                      disabled={oos}
+                    >
+                      {lbl}
+                    </button>
+                  );
+                })}
               </div>
             </div>
           )}
 
-          <div className="pd-pad" />
+          <div className="pd2-divider" />
+
+          {/* Add to Cart — same in-cart qty control as the listing page */}
+          <div className="pd2-cta-row">
+            {mainInCart ? (
+              <div className="pd2-main-qty-ctrl">
+                <button
+                  className="pd2-qty-btn"
+                  onClick={decreaseMainQty}
+                  aria-label={mainQty <= 1 ? 'Remove from cart' : 'Decrease quantity'}
+                >
+                  {mainQty <= 1 ? (
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                      <polyline points="3 6 5 6 21 6"/>
+                      <path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/>
+                      <path d="M10 11v6M14 11v6"/>
+                      <path d="M9 6V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"/>
+                    </svg>
+                  ) : (
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round">
+                      <line x1="5" y1="12" x2="19" y2="12"/>
+                    </svg>
+                  )}
+                </button>
+                <span className="pd2-main-qty-label">{mainQty} in cart</span>
+                <button className="pd2-qty-btn" onClick={increaseMainQty} aria-label="Add one more">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round">
+                    <line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/>
+                  </svg>
+                </button>
+              </div>
+            ) : (
+              <button className="pd2-cart-btn" onClick={handleAddMain}>
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
+                  <circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/>
+                  <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"/>
+                </svg>
+                Add to Cart
+              </button>
+            )}
+          </div>
+
+          <button className="pd2-enquire-link" onClick={() => setShowModal(true)}>
+            Enquire for Details
+          </button>
+
         </div>
       </div>
+
+      {/* ── Accessories ── */}
+      {accessoryVariants.length > 0 && (
+        <div className="pd2-accessories">
+          <div className="pd2-accessories-inner">
+            <h2 className="pd2-accessories-title">Accessories</h2>
+            <div className="pd2-accessories-grid">
+              {accessoryVariants.map((v) => {
+                const img      = resolveImg(v.images?.[0]?.image_url) || PLACEHOLDER;
+                const cartItem = getAccessoryCartItem(v);
+                const inCart   = !!cartItem;
+                const qty      = cartItem?.quantity ?? 0;
+                return (
+                  <div key={v.id} className="pd2-accessory-card">
+                    <div className="pd2-accessory-img-wrap">
+                      <ZoomImage
+                        className="pd2-accessory-zoom"
+                        src={img}
+                        alt={v.name}
+                        zoom={2.2}
+                        paneWidth={260}
+                        paneHeight={260}
+                        onError={(e) => { e.currentTarget.src = PLACEHOLDER; }}
+                      />
+                    </div>
+                    <p className="pd2-accessory-name">{v.name}</p>
+
+                    {inCart ? (
+                      <div className="pd2-accessory-qty">
+                        <button
+                          className="pd2-accessory-qty-btn"
+                          onClick={() => decreaseAccessoryQty(v)}
+                          aria-label={qty <= 1 ? 'Remove from cart' : 'Decrease quantity'}
+                        >
+                          {qty <= 1 ? (
+                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                              <polyline points="3 6 5 6 21 6"/>
+                              <path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/>
+                              <path d="M10 11v6M14 11v6"/>
+                              <path d="M9 6V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"/>
+                            </svg>
+                          ) : (
+                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round">
+                              <line x1="5" y1="12" x2="19" y2="12"/>
+                            </svg>
+                          )}
+                        </button>
+                        <span className="pd2-accessory-qty-label">{qty} in cart</span>
+                        <button
+                          className="pd2-accessory-qty-btn"
+                          onClick={() => increaseAccessoryQty(v)}
+                          aria-label="Add one more"
+                        >
+                          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round">
+                            <line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/>
+                          </svg>
+                        </button>
+                      </div>
+                    ) : (
+                      <button className="pd2-accessory-btn" onClick={() => handleAddAccessory(v)}>
+                        Add to Cart
+                      </button>
+                    )}
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+        </div>
+      )}
 
       <Footer />
 
       {/* ── Modal ── */}
       {showModal && (
-        <div className="pd-overlay" onClick={() => setShowModal(false)}>
-          <div className="pd-modal" onClick={e => e.stopPropagation()}>
-            <div className="pd-modal-header">
-              <div>
-                <h3 className="pd-modal-title">Get in Touch</h3>
-                <p className="pd-modal-sub">
-                  Interested in <strong style={{ color: 'var(--ink)' }}>
-                    {activeGroup?.groupName || product.name}
-                    {activeVariant?._sz ? ` · ${activeVariant._sz}` : ''}
-                  </strong>? Our team will respond promptly.
+        <div className="pd2-overlay" onClick={() => setShowModal(false)}>
+          <div className="pd2-modal" onClick={(e) => e.stopPropagation()} role="dialog" aria-modal="true" aria-labelledby="pd2-modal-title">
+            <button className="pd2-modal-close" onClick={() => setShowModal(false)} aria-label="Close">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round">
+                <path d="M18 6 6 18M6 6l12 12" />
+              </svg>
+            </button>
+
+            <div className="pd2-modal-head">
+              <div className="pd2-modal-icon">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                  <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.13.96.36 1.9.7 2.81a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.9.34 1.85.57 2.81.7A2 2 0 0 1 22 16.92z" />
+                </svg>
+              </div>
+              <div className="pd2-modal-head-text">
+                <h3 className="pd2-modal-title" id="pd2-modal-title">Get in Touch</h3>
+                <p className="pd2-modal-sub">
+                  Interested in <strong>{(hasRealModels && activeGroup?.groupName) || product.name}</strong>? Our team will respond promptly.
                 </p>
               </div>
-              <button className="pd-modal-x" onClick={() => setShowModal(false)}>✕</button>
             </div>
-            <div className="pd-modal-body">
-              <div className="pd-contact-row">
-                <div className="pd-contact-icon">📞</div>
-                <div>
-                  <div className="pd-contact-lbl">Phone</div>
-                  <div className="pd-contact-val">9061576222</div>
+
+            <div className="pd2-contact-list">
+              <div className="pd2-contact-row">
+                <span className="pd2-contact-ic" aria-hidden="true">
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                    <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.13.96.36 1.9.7 2.81a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.9.34 1.85.57 2.81.7A2 2 0 0 1 22 16.92z" />
+                  </svg>
+                </span>
+                <div className="pd2-contact-meta">
+                  <span className="pd2-contact-lbl">Phone</span>
+                  <a className="pd2-contact-val" href="tel:9061576222">9061576222</a>
                 </div>
-              </div>
-              <div className="pd-contact-row">
-                <div className="pd-contact-icon">📧</div>
-                <div>
-                  <div className="pd-contact-lbl">Email</div>
-                  <div className="pd-contact-val">info@etome.in</div>
-                </div>
-              </div>
-              <div className="pd-modal-actions">
-                <button className={`pd-action-btn${copiedPhone ? ' copied' : ''}`} onClick={copyPhone}>
-                  {copiedPhone ? '✓ Copied!' : 'Copy Phone'}
-                </button>
-                <button className={`pd-action-btn${copiedEmail ? ' copied' : ''}`} onClick={copyEmail}>
-                  {copiedEmail ? '✓ Copied!' : 'Copy Email'}
+                <button
+                  className={`pd2-copy-btn ${copied === 'phone' ? 'copied' : ''}`}
+                  onClick={() => copyText('9061576222', 'phone')}
+                >
+                  {copied === 'phone' ? '✓ Copied' : 'Copy'}
                 </button>
               </div>
+
+              <div className="pd2-contact-row">
+                <span className="pd2-contact-ic" aria-hidden="true">
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                    <rect x="2" y="4" width="20" height="16" rx="2" />
+                    <path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7" />
+                  </svg>
+                </span>
+                <div className="pd2-contact-meta">
+                  <span className="pd2-contact-lbl">Email</span>
+                  <a className="pd2-contact-val" href="mailto:info@etome.in">info@etome.in</a>
+                </div>
+                <button
+                  className={`pd2-copy-btn ${copied === 'email' ? 'copied' : ''}`}
+                  onClick={() => copyText('info@etome.in', 'email')}
+                >
+                  {copied === 'email' ? '✓ Copied' : 'Copy'}
+                </button>
+              </div>
+            </div>
+
+            <div className="pd2-modal-actions">
+              <a className="pd2-modal-btn primary" href="tel:9061576222">Call Now</a>
+              <a className="pd2-modal-btn ghost" href="mailto:info@etome.in">Send Email</a>
             </div>
           </div>
         </div>
       )}
     </div>
   );
-};
-
-export default ProductDetail;
+}

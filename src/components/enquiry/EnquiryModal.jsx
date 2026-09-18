@@ -1,296 +1,197 @@
 import React, { useState, useEffect } from 'react';
-import { Link } from "react-router-dom";
 import axios from 'axios';
-import { useSelector } from 'react-redux';
-/**
- * EnquiryModal - reusable enquiry/contact form modal
- * Props:
- * - isOpen: boolean - controls visibility
- * - onClose: () => void - called when closing
- * - onSubmit?: (payload) => Promise<void> | void - optional submit handler
- */
+import etomosphereLogo from '../../assets/Etomosphere Full logo.png';
+import './EnquiryModal.css';
+
 const initialFormState = {
-  name: '',
-  organisation: '',
-  designation: '',
-  phone: '',
-  email: '',
-  location: '',
-  comment: ''
+  name: '', organisation: '', designation: '',
+  phone: '', email: '', location: '', comment: ''
 };
 
-function EnquiryModal({ isOpen, onClose, onSubmit }) {
-  // const APIURL = useSelector((state) => state.APIURL?.url) || 'https://api.etomosphere.com';
-  const APIURL = import.meta.env.VITE_API_URL || "http://192.168.1.6:8000";
-  console.log("VITE_API_URL:", import.meta.env.VITE_API_URL);
-  console.log("APIURL USED:", APIURL);
+function EnquiryModal({ isOpen, onClose, onSubmit, cartItems = [] }) {
+  const APIURL = import.meta.env.VITE_API_URL || 'http://192.168.1.6:8000';
 
-  const [formData, setFormData] = useState(initialFormState);
-
-  const [submitting, setSubmitting] = useState(false);
-  const [errors, setErrors] = useState({});
-  const [submitError, setSubmitError] = useState('');
+  const [formData, setFormData]           = useState(initialFormState);
+  const [submitting, setSubmitting]       = useState(false);
+  const [errors, setErrors]               = useState({});
+  const [submitError, setSubmitError]     = useState('');
   const [submitSuccess, setSubmitSuccess] = useState(false);
 
   useEffect(() => {
     if (isOpen) {
-      // Prevent body scroll when modal is open
-      const original = document.body.style.overflow;
       document.body.style.overflow = 'hidden';
+      document.documentElement.style.overflow = 'hidden';
       return () => {
-        document.body.style.overflow = original;
+        document.body.style.overflow = '';
+        document.documentElement.style.overflow = '';
       };
     }
   }, [isOpen]);
 
+  useEffect(() => {
+    if (!isOpen) return;
+    const onKey = e => { if (e.key === 'Escape') onClose(); };
+    document.addEventListener('keydown', onKey);
+    return () => document.removeEventListener('keydown', onKey);
+  }, [isOpen, onClose]);
+
   if (!isOpen) return null;
 
-  const handleChange = (e) => {
+  const handleChange = e => {
     const { name, value } = e.target;
-    setFormData((prev) => ({ ...prev, [name]: value }));
+    setFormData(prev => ({ ...prev, [name]: value }));
+    if (errors[name]) setErrors(prev => ({ ...prev, [name]: '' }));
   };
 
   const validate = () => {
-    const next = {};
-    if (!formData.name.trim()) next.name = 'Required';
-    if (!formData.organisation.trim()) next.organisation = 'Required';
-    if (!formData.phone.trim()) next.phone = 'Required';
-    if (!formData.email.trim()) next.email = 'Required';
-    return next;
+    const errs = {};
+    if (!formData.name.trim())         errs.name         = 'Required';
+    if (!formData.organisation.trim()) errs.organisation = 'Required';
+    if (!formData.phone.trim())        errs.phone        = 'Required';
+    if (!formData.email.trim())        errs.email        = 'Required';
+    return errs;
   };
 
-  const handleSubmit = async (e) => {
+  const handleSubmit = async e => {
     e.preventDefault();
-    setSubmitError('');
-    setSubmitSuccess(false);
+    setSubmitError(''); setSubmitSuccess(false);
     const v = validate();
     setErrors(v);
     if (Object.keys(v).length > 0) return;
     try {
       setSubmitting(true);
+      const products = cartItems.map(
+        item => `${item.name}${item.quantity > 1 ? ` (x${item.quantity})` : ''}${item.brandName ? ` — ${item.brandName}` : ''}`
+      );
 
       const payload = {
-        name: formData.name.trim(),
-        organisation: formData.organisation.trim(),
-        designation: formData.designation.trim(),
-        phone: formData.phone.trim(),
-        email: formData.email.trim(),
-        location: formData.location.trim(),
-        comment: formData.comment.trim()
+        name: formData.name.trim(), organisation: formData.organisation.trim(),
+        designation: formData.designation.trim(), phone: formData.phone.trim(),
+        email: formData.email.trim(), location: formData.location.trim(),
+        comment: formData.comment.trim(),
+        products,
       };
-
       await axios.post(`${APIURL}/api/enquiry/`, payload);
       setSubmitSuccess(true);
-      setFormData(initialFormState);
-      setErrors({});
-
-      if (onSubmit) {
-        await onSubmit(payload);
-      }
-      onClose?.();
-    } catch (error) {
-      const message =
-        error.response?.data?.detail ||
-        error.response?.data?.message ||
-        'Unable to submit your enquiry right now. Please try again later.';
-      setSubmitError(message);
-    } finally {
-      setSubmitting(false);
-    }
+      setFormData(initialFormState); setErrors({});
+      if (onSubmit) await onSubmit(payload);
+      setTimeout(() => { onClose?.(); setSubmitSuccess(false); }, 2000);
+    } catch (err) {
+      setSubmitError(err.response?.data?.detail || err.response?.data?.message || 'Something went wrong. Please try again.');
+    } finally { setSubmitting(false); }
   };
 
   return (
-    <div style={styles.overlay} onClick={onClose}>
-      <div style={styles.card} onClick={(e) => e.stopPropagation()}>
-        {/* Placeholder color styles */}
-        <style>{`
-          .enquiry-input::placeholder { color: #000; opacity: 1; }
-          .enquiry-textarea::placeholder { color: #000; opacity: 1; }
-          /* Disable hover/focus border effects */
-          .enquiry-input:hover, .enquiry-textarea:hover { border-color: #000 !important; }
-          .enquiry-input:focus, .enquiry-textarea:focus { outline: none; border-color: #000 !important; box-shadow: none !important; }
-          .enquiry-btn { outline: none; box-shadow: none; }
-          .enquiry-btn:hover, .enquiry-btn:focus { outline: none; box-shadow: none; border-color: inherit; }
-        `}</style>
-        {/* Header */}
-        <div style={styles.header}>
-          <div style={styles.brandRow}>
-          <div>
-          <Link to="/" className="brand-link">
-            <h1 style={{
-              fontSize:"30px"
-            }} className="brand-name">ETOMOSPHERE</h1>
-          </Link>
-        </div>
-            <button type="button" onClick={onClose} aria-label="Close" style={styles.closeBtn}>
-              ×
+    <div className="pro-overlay" onClick={onClose}>
+      <div className="pro-modal" onClick={e => e.stopPropagation()}>
+
+        {/* ── Left info panel ── */}
+        <aside className="pro-aside">
+          <img src={etomosphereLogo} alt="Etomosphere" className="pro-aside-logo" />
+
+          <div className="pro-aside-main">
+            <h2 className="pro-aside-title">Request a Pricing Enquiry</h2>
+            <p className="pro-aside-body">
+              Get personalised pricing, bulk discounts, and expert guidance for your institution.
+            </p>
+          </div>
+
+          <div className="pro-steps">
+            <p className="pro-steps-heading">What happens next?</p>
+            {[
+              { n: '01', text: 'We review your enquiry within 2 business hours.' },
+              { n: '02', text: 'Our specialist prepares a tailored pricing proposal.' },
+              { n: '03', text: 'You receive the quote directly to your email.' },
+            ].map(s => (
+              <div key={s.n} className="pro-step">
+                <span className="pro-step-n">{s.n}</span>
+                <p className="pro-step-text">{s.text}</p>
+              </div>
+            ))}
+          </div>
+
+          <div className="pro-aside-footer">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+            </svg>
+            Your information is kept strictly confidential.
+          </div>
+        </aside>
+
+        {/* ── Right form panel ── */}
+        <div className="pro-form-wrap">
+          <div className="pro-form-head">
+            <div>
+              <h3 className="pro-form-title">Your Details</h3>
+              <p className="pro-form-sub">Fields marked <span>*</span> are required.</p>
+            </div>
+            <button className="pro-close" onClick={onClose} aria-label="Close">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                <line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>
+              </svg>
             </button>
           </div>
-          <h2 style={styles.title}>Get in Touch with Our Experts</h2>
-          <p style={styles.subtitle}>
-            Share your details and our team will help you find the right solution for your needs.
-          </p>
+
+          <form onSubmit={handleSubmit} noValidate className="pro-form">
+            <div className="pro-grid">
+
+              <div className={`pro-field${errors.name ? ' pro-field--err' : ''}`}>
+                <label>Full Name <span>*</span></label>
+                <input name="name" value={formData.name} onChange={handleChange} placeholder="e.g. Anil Kumar" />
+                {errors.name && <em>{errors.name}</em>}
+              </div>
+
+              <div className={`pro-field${errors.organisation ? ' pro-field--err' : ''}`}>
+                <label>Organisation <span>*</span></label>
+                <input name="organisation" value={formData.organisation} onChange={handleChange} placeholder="School or company name" />
+                {errors.organisation && <em>{errors.organisation}</em>}
+              </div>
+
+              <div className="pro-field">
+                <label>Designation</label>
+                <input name="designation" value={formData.designation} onChange={handleChange} placeholder="e.g. Principal, Director" />
+              </div>
+
+              <div className={`pro-field${errors.phone ? ' pro-field--err' : ''}`}>
+                <label>Phone Number <span>*</span></label>
+                <input name="phone" value={formData.phone} onChange={handleChange} placeholder="+91 98765 43210" />
+                {errors.phone && <em>{errors.phone}</em>}
+              </div>
+
+              <div className={`pro-field${errors.email ? ' pro-field--err' : ''}`}>
+                <label>Email Address <span>*</span></label>
+                <input name="email" type="email" value={formData.email} onChange={handleChange} placeholder="you@example.com" />
+                {errors.email && <em>{errors.email}</em>}
+              </div>
+
+              <div className="pro-field">
+                <label>Location</label>
+                <input name="location" value={formData.location} onChange={handleChange} placeholder="City, State" />
+              </div>
+
+            </div>
+
+            <div className="pro-field pro-field--full">
+              <label>Additional Message <span className="pro-opt">(Optional)</span></label>
+              <textarea name="comment" value={formData.comment} onChange={handleChange}
+                placeholder="Share any specific requirements, quantity, or questions…" rows={2} />
+            </div>
+
+            {submitError   && <p className="pro-alert pro-alert--err">{submitError}</p>}
+            {submitSuccess && <p className="pro-alert pro-alert--ok">Enquiry submitted successfully. We'll be in touch shortly.</p>}
+
+            <div className="pro-actions">
+              <button type="button" className="pro-btn-cancel" onClick={onClose}>Cancel</button>
+              <button type="submit" disabled={submitting} className="pro-btn-submit">
+                {submitting ? <><span className="pro-spinner" /> Submitting…</> : 'Submit Enquiry'}
+              </button>
+            </div>
+          </form>
         </div>
 
-        {/* Form */}
-        <form onSubmit={handleSubmit} style={styles.form}>
-          <div style={styles.grid2}>
-            <div style={styles.inputWrap}>
-              <input
-                name="name"
-                placeholder="Name*"
-                value={formData.name}
-                onChange={handleChange}
-                className="enquiry-input"
-                style={{ ...styles.input, ...(errors.name ? styles.inputError : null) }}
-              />
-            </div>
-            <div style={styles.inputWrap}>
-              <input
-                name="organisation"
-                placeholder="Organisation*"
-                value={formData.organisation}
-                onChange={handleChange}
-                className="enquiry-input"
-                style={{ ...styles.input, ...(errors.organisation ? styles.inputError : null) }}
-              />
-            </div>
-
-            <div style={styles.inputWrap}>
-              <input
-                name="designation"
-                placeholder="Designation"
-                value={formData.designation}
-                onChange={handleChange}
-                className="enquiry-input"
-                style={styles.input}
-              />
-            </div>
-            <div style={styles.inputWrap}>
-              <input
-                name="phone"
-                placeholder="Phone Number*"
-                value={formData.phone}
-                onChange={handleChange}
-                className="enquiry-input"
-                style={{ ...styles.input, ...(errors.phone ? styles.inputError : null) }}
-              />
-            </div>
-
-            <div style={styles.inputWrap}>
-              <input
-                name="email"
-                placeholder="Email*"
-                type="email"
-                value={formData.email}
-                onChange={handleChange}
-                className="enquiry-input"
-                style={{ ...styles.input, ...(errors.email ? styles.inputError : null) }}
-              />
-            </div>
-            <div style={styles.inputWrap}>
-              <input
-                name="location"
-                placeholder="Location*"
-                value={formData.location}
-                onChange={handleChange}
-                className="enquiry-input"
-                style={styles.input}
-              />
-            </div>
-          </div>
-
-          <div style={styles.textareaWrap}>
-            <textarea
-              name="comment"
-              placeholder="Comment"
-              rows={4}
-              value={formData.comment}
-              onChange={handleChange}
-              className="enquiry-textarea"
-              style={styles.textarea}
-            />
-          </div>
-
-          {submitError && (
-            <p style={styles.errorText}>{submitError}</p>
-          )}
-          {submitSuccess && (
-            <p style={styles.successText}>Thanks! Our team will reach out shortly.</p>
-          )}
-
-          <div style={styles.actions}>
-         
-            <button type="submit" disabled={submitting} style={styles.primaryBtn} className="enquiry-btn">
-              {submitting ? 'Submitting...' : 'Submit'}
-            </button>
-          </div>
-        </form>
       </div>
     </div>
   );
 }
 
-const styles = {
-  overlay: {
-    position: 'fixed', top: 0, left: 0, right: 0, bottom: 0,
-    background: 'rgba(0,0,0,0.5)', display: 'flex', alignItems: 'center', justifyContent: 'center',
-    zIndex: 1000, padding: 16
-  },
-  card: {
-    width: 'min(920px, 95vw)', background: '#fff', borderRadius: 12,
-    boxShadow: '0 10px 30px rgba(0,0,0,0.25)'
-  },
-  header: { padding: '20px 20px 0 20px' },
-  brandRow: { display: 'flex', alignItems: 'center', justifyContent: 'space-between' },
-  logoText: { fontSize: 22, letterSpacing: 1, fontFamily: 'Inter, system-ui, Arial, sans-serif' },
-  closeBtn: {
-    width: 32, height: 32, color:"black", cursor: 'pointer',
-    display: 'flex', alignItems: 'center', justifyContent: 'center',
-    padding: 0, lineHeight: 1, background: 'transparent', border: 'none'
-  },
-  title: {
-    margin: '12px 0 4px 0', textAlign: 'center', fontSize: 20, fontWeight: 700, color: '#111827'
-  },
-  subtitle: {
-    margin: 0, textAlign: 'center', color: 'black', fontSize: 16, paddingBottom: 12
-  },
-  form: { padding: 20 },
-  grid2: {
-    display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12
-  },
-  inputWrap: {},
-  input: {
-    width: '100%', padding: '10px 12px', borderRadius: 8, border: '1px solid #000',
-    outline: 'none', fontSize: 14, background: '#fff', color: '#000'
-  },
-  inputError: { borderColor: '#ef4444' },
-  textareaWrap: { marginTop: 12 },
-  textarea: {
-    width: '100%', padding: '10px 12px', borderRadius: 8, border: '1px solid #000', resize: 'vertical', fontSize: 14,
-    background: '#fff', color: '#000'
-  },
-  actions: {
-    display: 'flex', justifyContent: 'flex-end', gap: 10, paddingTop: 12
-  },
-  secondaryBtn: {
-    padding: '10px 14px', borderRadius: 8, border: '1px solid #d1d5db', background: '#fff', cursor: 'pointer'
-  },
-  primaryBtn: {
-    padding: '10px 14px', borderRadius: 8, border: '1px solid #1d4ed8', background: '#1d4ed8', color: '#fff', cursor: 'pointer'
-  },
-  errorText: {
-    color: '#b91c1c',
-    margin: '8px 0 0 0',
-    fontSize: 14
-  },
-  successText: {
-    color: '#065f46',
-    margin: '8px 0 0 0',
-    fontSize: 14
-  }
-};
-
 export default EnquiryModal;
-
-

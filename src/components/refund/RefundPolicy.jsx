@@ -1,197 +1,130 @@
 import React from 'react';
 import Header from '../header/header.jsx';
 import Footer from '../footer/footer.jsx';
+import '../privacy/privacy.css';
 
+const sections = [
+  {
+    title: '2. Order Cancellation',
+    body: `You may request cancellation of an order before it has been dispatched by contacting:
 
-const RefundPolicy = () => {
+support@etomeworks.com
 
+Please provide your name, order number and reason for cancellation.
+
+Once an order has been dispatched, cancellation may no longer be possible. In such cases, the request may be handled under the applicable return or refund process.
+
+Where cancellation is accepted and payment has already been received, any applicable refund will be processed to the original payment method.`,
+  },
+  {
+    title: '3. Returns',
+    body: `A return may be accepted where the product is:
+• Defective or damaged
+• Incorrect or different from the product ordered
+• Materially different from its description or specifications
+• Otherwise eligible for return under applicable law or a specific offer
+
+For eligible physical products, we may require the product to be returned in its original or reasonably complete condition, together with available packaging, accessories and proof of purchase.
+
+The condition of the product may be reviewed before a replacement or refund is approved.`,
+  },
+  {
+    title: '4. Damaged, Defective or Incorrect Products',
+    body: `Please inspect your order after delivery and contact us as soon as reasonably possible if:
+• The product arrives damaged
+• The wrong product has been delivered
+• An item is missing
+• The product appears to have a manufacturing defect
+
+Please provide your order number and, where useful, photographs or videos showing the issue.
+
+After reviewing the issue, Etome may provide an appropriate remedy, including replacement, repair, refund or another applicable solution.`,
+  },
+  {
+    title: '5. Products That May Not Be Returnable',
+    body: `Certain products may not be eligible for return where the nature of the product makes return inappropriate, including:
+• Digital downloads or digital books once access or download has been provided
+• Software licences or subscriptions, subject to applicable law
+• Personalised or customised products
+• Products materially altered or damaged after delivery through improper use, installation or handling
+• Opened consumable products, where applicable
+
+This does not limit consumer rights that cannot legally be excluded.`,
+  },
+  {
+    title: '6. Change-of-Mind Returns',
+    body: `Etome does not provide a general change-of-mind return unless the specific product listing or promotional offer expressly states otherwise.
+
+A return request based only on a change of mind may therefore be declined where no return right otherwise applies.`,
+  },
+  {
+    title: '7. Refunds',
+    body: `Where a refund is approved, Etome will normally process it to the original payment method.
+
+The time required for the refund to appear may depend on the payment gateway, bank or other payment service provider.
+
+Refunds will be processed within the period required under applicable law or, where no specific period applies, within a reasonable period after approval.`,
+  },
+  {
+    title: '8. Return Shipping',
+    body: `Where a return is accepted because the product was damaged, defective, incorrect or otherwise the responsibility of Etome, we will provide appropriate instructions regarding return logistics.
+
+For other approved returns, any applicable return shipping costs will be communicated to the customer before the return is processed.`,
+  },
+  {
+    title: '9. How to Request a Return or Refund',
+    body: `Contact:
+
+support@etomeworks.com
+
+Please include:
+• Name
+• Order number
+• Product purchased
+• Reason for the request
+• Photographs or other supporting information, where relevant
+
+We may request additional information reasonably required to assess the request.`,
+  },
+  {
+    title: '10. Contact',
+    body: `Etome Works Ltd
+Door No. 142, Arickathil Business Centre
+Kurishumood PO, Changanacherry, 686104
+India
+
+Email: support@etomeworks.com
+Phone: +91-97786 90354`,
+  },
+];
+
+export default function RefundPolicy() {
   return (
-    <div className="privacy-policy-container">
+    <div className="pp-page">
       <Header />
-      <div style={{
+      <div className="pp-body">
+        <h1 className="pp-title">Return, Cancellation &amp; Refund Policy</h1>
+        <p className="pp-last-updated">Last Updated: 10 September 2026</p>
 
-        marginLeft: "40px",
-        marginBottom:"40px"
-      }}>
+        <div className="pp-section">
+          <h3 className="pp-section-title">1. Overview</h3>
+          <p style={{ whiteSpace: 'pre-line' }}>
+            {`At Etome, we aim to provide reliable educational products and services.
 
-        <div style={{
-          marginTop:"40px"
-        }}>
+This policy explains when an order may be cancelled, returned, replaced or refunded.
 
-          <h1 style={{
-            color: "black"
-          }}>Return and Refund Policy</h1>
-
-        </div>
-
-        <div>
-          <p style={{
-            fontSize: "16px",
-            marginTop: "22px",
-            fontFamily: "'Manrope', sans-serif"
-          }}>At Etome Works Ltd, we want you to be fully satisfied with your purchase. If you are not entirely happy with your product, we’re here to help. <br />  This Return and Refund Policy outlines how you can return a product, request a replacement, or obtain a refund.</p>
-        </div>
-
-        <div style={{
-          marginTop: "20px"
-        }}>
-          <h3 style={{
-            color: "black"
-          }}>1. Return Eligibility</h3>
-          <p>
-          We have a 30-day return policy, which means you have 30 days from the date of delivery to request a return. <br /> </p> 
-
-
-          <p style={{
-            marginTop:"22px"
-          }}>
-          To be eligible for a return: <br />    - The product must be unused, uninstalled, and in the same condition that you received it. <br /> - The item must be in its original packaging, with all accessories, manuals, and tags intact. <br />  - You must provide the original invoice or proof of purchase. <br /> 
-
-          </p>
-
-          <p style={{
-            marginTop:"22px"
-          }}>
-          Please note that products returned without a valid request or approval will not be accepted.
+All requests are subject to the nature of the product, the circumstances of the request and applicable law.`}
           </p>
         </div>
 
-        <div style={{
-          marginTop: "20px"
-        }}>
-          <h3 style={{
-            color: "black"
-          }}>2. How to Initiate a Return</h3>
-          <p>
-          To start a return, please contact us at info@etome.in with the following details: <br />
-          - Your full name <br /> - Order number <br /> - Product name and reason for return <br /> - Photographs of the product (if damaged or defective) <br />
-          </p>
-
-          <p style={{
-            marginTop:"20px"
-          }}>Once your request is reviewed and approved, we will: <br /> - Provide you with a return shipping label, and <br /> - Send detailed instructions on how and where to send your package.
-          </p>
-
-          <p style={{
-            marginTop:"20px"
-          }}>The product must be shipped to our authorized service or return center at the address provided in our confirmation email. <br />  Items sent back without prior approval will not be accepted.</p>
-
-          <p style={{
-            marginTop:"20px"
-          }}>For any questions regarding returns, you can also reach us at info@etome.in.</p>
-
-
-
-        </div>
-
-        <div style={{
-          marginTop: "20px"
-        }}>
-          <h3 style={{
-            color: "black"
-          }}>3. Damages and Issues</h3>
-          <p>
-          Please inspect your order upon receipt and contact us immediately at info@etome.in if: <br /> - The item is defective or damaged, or <br /> - You have received the wrong product.
-          </p>
-          <p style={{marginTop:"20px"}}>We will evaluate the issue and arrange a replacement or refund as appropriate.</p>
-        </div>
-
-        <div style={{
-          marginTop: "20px"
-        }}>
-          <h3 style={{
-            color: "black"
-          }}>4. Non-Returnable / Non-Refundable Items</h3>
-          <p>
-          Certain categories of items are not eligible for return or refund, including: <br />  - Software licenses, digital books, and downloadable content. <br /> - Customized or personalized items (including special configurations). <br /> - Opened consumables or accessories (such as stylus nibs, cleaning kits, etc.). <br /> - Products damaged due to improper handling, installation, or use. - Clearance or “sale” items. </p>
-
-          <p style={{
-            marginTop:"20px"
-          }}>If you are unsure whether your product qualifies, please contact us before sending it back.</p>
-        </div>
-
-        <div style={{
-          marginTop: "20px"
-        }}>
-          <h3 style={{
-            color: "black"
-          }}>5. Exchanges</h3>
-          <p>
-          If you wish to exchange a product (e.g., due to wrong model or defect): <br /> - The quickest method is to return the original item as per this policy. <br /> - Once the return is approved, you can place a new order for the desired item. </p>     
-          
-
-          <p style={{
-            marginTop:"20px"
-          }}>In some cases, direct exchanges may be possible based on stock availability.</p>
+        {sections.map((s) => (
+          <div key={s.title} className="pp-section">
+            <h3 className="pp-section-title">{s.title}</h3>
+            <p style={{ whiteSpace: 'pre-line' }}>{s.body}</p>
           </div>
-
-
-        <div style={{
-          marginTop: "20px"
-        }}>
-          <h3 style={{
-            color: "black"
-          }}>6. Refunds</h3>
-          <p>
-          Once we receive and inspect your returned product, we will notify you about the status of your refund.
-          </p>
-
-          <p style={{
-            marginTop:"20px"
-          }}> - If your return is approved, a refund will be processed within 7–10 business days to your original payment method. <br /> - Please note that banks or payment gateways may take additional time to reflect the amount in your account. <br /> - If more than 15 business days have passed since your refund approval, please contact us at info@etome.in.</p>
-
-        </div>
-
-
-
-        <div style={{
-          marginTop: "20px"
-        }}>
-          <h3 style={{
-            color: "black"
-          }}>7. Cancellations</h3>
-          <p>
-          Orders can be cancelled before dispatch by contacting us at info@etome.in. Once shipped, the order will fall under the return process mentioned above          </p>
-
-        </div>
-
-
-        <div style={{
-          marginTop: "20px"
-        }}>
-          <h3 style={{
-            color: "black"
-          }}>8. Contact Us</h3>
-          <p>
-          For all return, refund, or exchange queries, please contact: </p>
-
-          <p style={{
-            marginTop:"20px"
-          }}>Etome Works Ltd <br /> Email: info@etome.in <br /> Door No: 142, Arickathil Business Centre,<br /> Kurishumood PO Chnaganaserry,<br /> 686104
-          <br /> Customer Support Hours: Monday – Saturday, 10 AM to 6 PM</p>
-
-        </div>
-
-
-       
-
-
-            
-
-
-
-
+        ))}
       </div>
-
-
-
       <Footer />
-        
-
     </div>
-  ); 
-};
-
-
-
-export default RefundPolicy;
+  );
+}

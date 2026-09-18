@@ -1,5 +1,6 @@
-import React, { useEffect, useState } from 'react'
+import React, { useEffect } from 'react'
 import { BrowserRouter as Router, Routes, Route, useLocation } from 'react-router-dom'
+import { CartProvider } from './context/CartContext.jsx'
 import Etomos from './components/etomos/etomos.jsx'
 import Ethos from './components/ethos/ethos.jsx'
 import Edumart from './components/edumart/edumart.jsx'
@@ -13,27 +14,26 @@ import AdminProduct from './components/adminProduct/adminProduct.jsx'
 import Brandpage from './components/brandpage/brandpage.jsx'
 import BrandProduct from './components/brandProduct/brandProduct.jsx'
 import EducosDetails from './components/educosDetails/educosDetails.jsx'
-import EnquiryModal from './components/enquiry/EnquiryModal.jsx'
 import EmployeePublic from './components/employeDetails/EmployeePublic.jsx'
 import PrivacyPolicy from './components/privacy/PolicyPage.jsx'
 import RefundPolicy from './components/refund/RefundPolicy.jsx'
 import TermsConditions from './components/terms/TermsConditions.jsx'
+import ShippingPolicy from './components/shipping/ShippingPolicy.jsx'
+import Reviews from './components/reviews/reviews.jsx'
+import Programmes from './components/programmes/programmes.jsx'
 import './App.css'
 
 
+function ScrollToTop() {
+  const { pathname } = useLocation();
+  useEffect(() => { window.scrollTo(0, 0); }, [pathname]);
+  return null;
+}
+
 function AppContent() {
-  const [showEnquiry, setShowEnquiry] = useState(false)
-  const location = useLocation()
-
-  useEffect(() => {
-    setShowEnquiry(true)
-  }, [])
-
-  // ✅ Hide EnquiryModal & Button when route starts with /employee/
-  const isEmployeePage = location.pathname.startsWith('/employee/')
-
   return (
     <div className="App">
+      <ScrollToTop />
       <Routes>
         <Route path="/" element={<Etomos />} />
         <Route path="/ethos" element={<Ethos />} />
@@ -49,49 +49,13 @@ function AppContent() {
         <Route path="/brandproduct" element={<BrandProduct />} />
         <Route path="/educosdetails" element={<EducosDetails />} />
         <Route path="/employee/:slug" element={<EmployeePublic />} />
-        <Route path="/enquiry" element={<EnquiryModal isOpen onClose={() => {}} />} />
         <Route path="/privacy-policy" element={<PrivacyPolicy />} />
         <Route path="/refund-policy" element={<RefundPolicy />} />
-        <Route path="/terms-conditions" element={<TermsConditions />} />   
+        <Route path="/terms-conditions" element={<TermsConditions />} />
+        <Route path="/shipping-policy" element={<ShippingPolicy />} />
+        <Route path="/reviews" element={<Reviews />} />
+        <Route path="/programmes" element={<Programmes />} />
       </Routes>
-
-      {/* ✅ Only show enquiry components if NOT on employee page */}
-      {!isEmployeePage && (
-        <>
-          <EnquiryModal
-            isOpen={showEnquiry}
-            onClose={() => setShowEnquiry(false)}
-            onSubmit={async () => setShowEnquiry(false)}
-          />
-
-          <button
-  onClick={() => setShowEnquiry(true)}
-  style={{
-    position: 'fixed',
-    right: 0,
-    top: '50%',
-    transform: 'translateY(-50%)',
-    width: '32px',
-    height: '120px',
-    backgroundColor: '#ffa000',
-    color: '#000',
-    border: 'none',
-    borderRadius: '8px 0 0 8px',
-    cursor: 'pointer',
-    fontSize: '11px',
-    fontWeight: 600,
-    writingMode: 'vertical-rl',
-    textOrientation: 'mixed',
-    zIndex: 999,
-    boxShadow: '0 4px 12px rgba(0,0,0,0.15)',
-    letterSpacing: '0.5px'
-  }}
-  aria-label="Enquire Sales"
->
-  Enquire Now
-</button>
-        </>
-      )}
     </div>
   )
 }
@@ -100,7 +64,9 @@ function AppContent() {
 export default function App() {
   return (
     <Router>
-      <AppContent />
+      <CartProvider>
+        <AppContent />
+      </CartProvider>
     </Router>
   )
 }

@@ -10,7 +10,6 @@
   flex-direction: column;
   font-family: 'Manrope', sans-serif;
   background: #fff;
-  zoom: 0.95;  /* add this — try 0.85 or 0.9 */
 }
 main {
   flex: 1;

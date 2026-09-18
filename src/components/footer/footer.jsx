@@ -1,9 +1,12 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import './footer.css';
 import EtomosphereLogo from '../../assets/Etomosphere Full logo.png';
+import ContactModal from '../enquiry/ContactModal.jsx';
 
 const Footer = () => {
+  const [showContact, setShowContact] = useState(false);
+
   return (
     <footer className="footer">
       {/* Injecting a lightweight, standard icon stylesheet into the head dynamically.
@@ -47,7 +50,7 @@ const Footer = () => {
                 </div>
 
               </div>
-              <button className="contact-sales-btn">Contact Sales</button>
+              <button className="contact-sales-btn" onClick={() => setShowContact(true)}>Contact Sales</button>
             </div>
 
             {/* Office Address Column */}
@@ -120,6 +123,8 @@ const Footer = () => {
           </div>
         </div>
       </div>
+
+      <ContactModal isOpen={showContact} onClose={() => setShowContact(false)} />
     </footer>
   );
 };
