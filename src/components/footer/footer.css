@@ -5,6 +5,7 @@
   background-color: #f2f4f7;
   font-family: 'Manrope', sans-serif;  /* was 'Segoe UI' */
   color: #2c3e50;
+  overflow-x: hidden; /* safety net: the logo/copyright pull left with a negative margin below */
 }
 
 /* ===== TOP SECTION ===== */
@@ -34,7 +35,7 @@
   max-width: 480px;
   height: auto;
   display: block;
-  margin-left: -80px;
+  margin-left: -40px;
   margin-top: 50px;
 }
 /* ===== RIGHT - COLUMNS ===== */
@@ -64,7 +65,7 @@
 .contact-items-wrapper {
   display: flex;
   flex-direction: column;
-  gap: 0;
+  gap: 12px;
   margin-bottom: 26px;
   background: none;
   border: none;
@@ -171,7 +172,7 @@
   font-size: 13px;
   color: #4D5062;
   margin: 0;
-  margin-left: -85px;
+  margin-left: -40px;
 }
 
 /* ===== SOCIAL ICONS ===== */
@@ -214,28 +215,52 @@
   .footer-container {
     flex-direction: column;
     gap: 36px;
+    padding: 0 32px;
   }
 
   .footer-columns {
     flex-wrap: wrap;
     gap: 36px;
     justify-content: flex-start;
+    width: 100%;
   }
 
   .footer-left {
+    max-width: 100%;
+  }
+
+  .footer-logo-img {
+    margin-left: 0;
+    margin-top: 0;
     max-width: 220px;
+  }
+
+  .footer-copyright {
+    margin-left: 0;
   }
 }
 
 @media (max-width: 560px) {
+  .footer-container {
+    padding: 0 20px;
+  }
+
   .footer-columns {
     flex-direction: column;
     gap: 28px;
+  }
+
+  .footer-logo-img {
+    max-width: 180px;
   }
 
   .footer-bottom .footer-container {
     flex-direction: column;
     gap: 14px;
     text-align: center;
+  }
+
+  .footer-copyright {
+    margin-left: 0;
   }
 }

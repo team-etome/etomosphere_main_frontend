@@ -1,0 +1,212 @@
+@import url('https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&display=swap');
+
+.prog-page {
+  min-height: 100vh;
+  background: #fff;
+  font-family: 'Manrope', sans-serif;
+}
+
+/* ── Hero ── */
+.prog-hero {
+  padding: 56px 8% 40px;
+  text-align: center;
+  max-width: 780px;
+  margin: 0 auto;
+}
+
+.prog-hero-title {
+  font-size: clamp(1.9rem, 4vw, 2.7rem);
+  font-weight: 800;
+  color: #222222;
+  margin: 0 0 16px;
+  line-height: 1.15;
+  letter-spacing: -0.02em;
+}
+
+.prog-hero-sub {
+  font-size: 1rem;
+  color: #4D5062;
+  line-height: 1.7;
+  margin: 0;
+}
+
+/* ── Category tabs ──
+   Real grid columns (arrow | scroller | arrow) — nothing is absolutely
+   positioned or overlaid, so the arrows can never sit on top of a tab. */
+.prog-tabs-wrap {
+  position: sticky;
+  top: 0;
+  z-index: 20;
+  background: #fafbfc;
+  border-bottom: 1px solid #e2e8f0;
+}
+
+.prog-tabs-inner {
+  max-width: 1440px;
+  margin: 0 auto;
+  padding: 10px 3%;
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  align-items: center;
+  gap: 8px;
+}
+
+.prog-tabs-arrow {
+  flex-shrink: 0;
+  box-sizing: border-box;
+  width: 38px;
+  height: 38px;
+  padding: 0;
+  margin: 0;
+  line-height: 1;
+  border-radius: 50%;
+  border: 1.5px solid #d7dce3;
+  background: #fff;
+  color: #0249AB;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  font-size: 22px;
+  font-weight: 700;
+  font-family: 'Manrope', sans-serif;
+  box-shadow: 0 4px 12px rgba(15, 23, 42, 0.1);
+  transition: background 0.15s ease, color 0.15s ease, border-color 0.15s ease, box-shadow 0.15s ease;
+}
+.prog-tabs-arrow:hover:not(:disabled) {
+  background: #0249AB;
+  color: #fff;
+  border-color: #0249AB;
+  box-shadow: 0 6px 16px rgba(2, 73, 171, 0.28);
+}
+.prog-tabs-arrow:disabled {
+  opacity: 0.3;
+  cursor: default;
+  box-shadow: none;
+}
+
+.prog-tabs {
+  display: flex;
+  flex-wrap: nowrap;
+  overflow-x: auto;
+  gap: 10px;
+  min-width: 0;
+  scroll-behavior: smooth;
+  scrollbar-width: none;
+}
+.prog-tabs::-webkit-scrollbar { display: none; }
+
+.prog-tab {
+  flex-shrink: 0;
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  padding: 9px 16px;
+  border-radius: 20px;
+  border: 1.5px solid #e2e8f0;
+  background: #fff;
+  font-family: 'Manrope', sans-serif;
+  font-size: 0.84rem;
+  font-weight: 600;
+  color: #4D5062;
+  white-space: nowrap;
+  cursor: pointer;
+  transition: all 0.18s ease;
+}
+.prog-tab:hover { border-color: #0249AB; color: #0249AB; }
+.prog-tab.active {
+  background: #0249AB;
+  border-color: #0249AB;
+  color: #fff;
+}
+
+.prog-tab-count {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 18px;
+  height: 18px;
+  padding: 0 5px;
+  border-radius: 9px;
+  background: rgba(2, 73, 171, 0.1);
+  color: #0249AB;
+  font-size: 0.68rem;
+  font-weight: 800;
+}
+.prog-tab.active .prog-tab-count {
+  background: rgba(255, 255, 255, 0.22);
+  color: #fff;
+}
+
+/* ── Main ── */
+.prog-main {
+  max-width: 1440px;
+  margin: 0 auto;
+  padding: 36px 3% 100px;
+}
+
+.prog-category-title {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: #222222;
+  margin: 0 0 24px;
+  font-family: 'Manrope', sans-serif;
+}
+
+.prog-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 14px;
+}
+
+@media (min-width: 600px) {
+  .prog-grid { grid-template-columns: repeat(2, 1fr); }
+}
+@media (min-width: 900px) {
+  .prog-grid { grid-template-columns: repeat(3, 1fr); }
+}
+
+.prog-card {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  padding: 16px;
+  background: #f8fafc;
+  border: 1px solid #e8edf3;
+  border-radius: 12px;
+  transition: box-shadow 0.2s ease, border-color 0.2s ease, transform 0.2s ease;
+}
+
+.prog-card:hover {
+  border-color: #cbd5e1;
+  box-shadow: 0 8px 20px rgba(15, 23, 42, 0.06);
+  transform: translateY(-2px);
+}
+
+.prog-card-icon {
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 30px;
+  height: 30px;
+  border-radius: 8px;
+  background: rgba(2, 73, 171, 0.08);
+  color: #0249AB;
+}
+
+.prog-card-text {
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: #222222;
+  line-height: 1.45;
+  padding-top: 4px;
+}
+
+@media (max-width: 700px) {
+  .prog-hero { padding: 44px 6% 32px; }
+  .prog-tabs-inner { padding: 8px 4%; gap: 6px; }
+  .prog-tabs-arrow { width: 30px; height: 30px; }
+  .prog-main { padding: 28px 6% 72px; }
+  .prog-grid { grid-template-columns: 1fr; }
+}

@@ -1,0 +1,74 @@
+@import url('https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&display=swap');
+
+.pp-page {
+  min-height: 100vh;
+  background: #fff;
+  font-family: 'Manrope', sans-serif;
+  color: #0f172a;
+}
+
+.pp-body {
+  padding: 20px 48px 80px;
+}
+
+/* Title */
+.pp-title {
+  font-size: 2.2rem;
+  font-weight: 800;
+  color: #0f172a;
+  margin: 0 0 28px;
+  line-height: 1.15;
+  font-family: 'Manrope', sans-serif;
+}
+
+/* Last updated date */
+.pp-last-updated {
+  font-size: 0.82rem;
+  color: #94a3b8;
+  margin: -16px 0 32px;
+}
+
+/* Intro paragraph */
+.pp-intro {
+  font-size: 0.9rem;
+  color: #475569;
+  line-height: 1.78;
+  margin: 0 0 40px;
+}
+
+/* Each section block */
+.pp-section {
+  margin-bottom: 32px;
+}
+
+.pp-section-title {
+  font-size: 1.05rem;
+  font-weight: 700;
+  color: #0f172a;
+  margin: 0 0 10px;
+  font-family: 'Manrope', sans-serif;
+  text-decoration: none;
+}
+
+.pp-section p {
+  font-size: 0.875rem;
+  color: #475569;
+  line-height: 1.82;
+  margin: 0;
+  text-decoration: none;
+}
+
+/* Divider between sections */
+.pp-section + .pp-section {
+  padding-top: 4px;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .pp-body  { padding: 36px 20px 60px; }
+  .pp-title { font-size: 1.6rem; }
+}
+
+@media (min-width: 1400px) {
+  .pp-body { padding-left: 72px; padding-right: 72px; }
+}

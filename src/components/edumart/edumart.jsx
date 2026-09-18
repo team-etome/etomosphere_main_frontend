@@ -2,29 +2,12 @@ import React, { useState, useEffect, useMemo, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import Header from '../header/header.jsx';
 import Footer from '../footer/footer.jsx';
+import { useCart } from '../../context/CartContext.jsx';
 import './edumart.css';
 import axios from 'axios';
-import etomosphereVideo from '../../assets/etomosphere.mp4';
 
-/* ─── Font ────────────────────────────────────────────────────────────────── */
-if (!document.getElementById('edumart-font')) {
-  const l = document.createElement('link');
-  l.id = 'edumart-font';
-  l.rel = 'stylesheet';
-  l.href =
-    'https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:ital,wght@0,300;0,400;0,500;1,400&display=swap';
-  document.head.appendChild(l);
-}
-
-/* ─── Config ──────────────────────────────────────────────────────────────── */
 const APIURL = import.meta.env.VITE_API_URL || '';
-const DEFAULT_FILTERS = {
-  solutions: [],
-  categories: [],
-  brands: [],
-};
 
-/* ─── Image helpers ───────────────────────────────────────────────────────── */
 const resolveImg = (url) => {
   if (!url) return null;
   return url.startsWith('http') ? url : `${APIURL}${url}`;
@@ -35,483 +18,290 @@ const firstImg = (arr = []) => {
   return resolveImg(found?.image_url);
 };
 
-/* ─── Flatten API → displayable cards ──────────────────────────────────────── */
-const flattenProducts = (categories = []) => {
+// First available image from variant images across all brands
+const getProductCardImage = (brands = []) => {
+  for (const b of brands) {
+    for (const v of (b.variants || [])) {
+      if (v.images?.length > 0) return resolveImg(v.images[0].image_url);
+    }
+  }
+  return null;
+};
+
+// Build one product card from solution + category + product objects
+const makeCard = (sol, cat, prod) => {
+  const prodImgs = prod.images || [];
+  const catImgs  = cat.images  || [];
+  const brands   = prod.brands || [];
+  const image    = getProductCardImage(brands) || firstImg(prodImgs) || firstImg(catImgs);
+
+  const allPrices = brands.flatMap((b) => b.variants || [])
+    .map((v) => (v.current_price != null ? parseFloat(v.current_price) : null))
+    .filter((p) => p !== null);
+  const minPrice   = allPrices.length > 0 ? Math.min(...allPrices) : null;
+  const brandNames = brands.map((b) => b.name);
+
+  // The listing shows one card per product (no variant picker here), but the cart
+  // still needs a real, stable line-item identity that matches whichever variant
+  // the product detail page auto-selects first — otherwise quantities added from
+  // the listing never show up as "in cart" on the detail page and vice versa.
+  const defaultVariantId = brands[0]?.variants?.[0]?.id ?? null;
+
+  return {
+    id:           `p-${prod.id}`,
+    variantId:    null,
+    defaultVariantId,
+    productId:    prod.id,
+    name:         prod.name,
+    brandName:    brandNames.join(', '),
+    brandNames,
+    categoryName: cat.name  || 'Uncategorized',
+    solutionName: sol.name  || 'General',
+    solutionSlug: sol.slug  || '',
+    description:  prod.description || '',
+    price:        minPrice,
+    inStock:      true,
+    image,
+    raw: { solution: sol, category: cat, product: prod },
+  };
+};
+
+// Flatten all solutions into a flat product card array (used for search + All Products view)
+const flattenSolutions = (solutions = []) => {
   const cards = [];
-
-  categories.forEach((cat) => {
-    const catName = cat.name || 'Uncategorized';
-    const solName = cat.solution || 'General';
-    const catImgs = cat.images || [];
-
-    (cat.products || []).forEach((prod) => {
-      const prodImgs = prod.images || [];
-      const brands = prod.brands || [];
-
-      const allVariantImgs = brands.flatMap((b) =>
-        (b.variants || []).flatMap((v) => v.images || [])
-      );
-      const image =
-        firstImg(prodImgs) || firstImg(allVariantImgs) || firstImg(catImgs);
-
-      const allPrices = brands
-        .flatMap((b) => b.variants || [])
-        .map((v) => (v.current_price != null ? parseFloat(v.current_price) : null))
-        .filter((p) => p !== null);
-      const minPrice = allPrices.length > 0 ? Math.min(...allPrices) : null;
-
-      const totalVariants = brands.flatMap((b) => b.variants || []).length;
-      const brandNames = brands.map((b) => b.name);
-
-      cards.push({
-        id: `p-${prod.id}`,
-        variantId: null,
-        productId: prod.id,
-        brandId: null,
-        name: prod.name,
-        productName: prod.name,
-        brandName: brandNames.join(', '),
-        brandNames,
-        categoryName: catName,
-        solutionName: solName,
-        sku: '',
-        description: prod.description || '',
-        specJson: {},
-        price: minPrice,
-        originalPrice: null,
-        isOnSale: false,
-        discountPct: 0,
-        inStock: true,
-        stockStatus: 'in_stock',
-        variantCount: totalVariants,
-        image,
-        tier: 'product',
-        raw: { category: cat, product: prod },
+  solutions.forEach((sol) => {
+    (sol.categories || []).forEach((cat) => {
+      (cat.products || []).forEach((prod) => {
+        cards.push(makeCard(sol, cat, prod));
       });
     });
   });
-
   return cards;
 };
 
-/* ─── Filter Panel ────────────────────────────────────────────────────────── */
-function FilterPanel({ solutions, categories, brands, filters, onChange, onApply, onReset, onClose }) {
-  return (
-    <>
-      <div
-        onClick={onClose}
-        style={{
-          position: 'fixed',
-          inset: 0,
-          background: 'rgba(0,0,0,0.35)',
-          zIndex: 300,
-          backdropFilter: 'blur(2px)',
-        }}
-      />
-      <div
-        style={{
-          position: 'fixed',
-          top: 0,
-          right: 0,
-          width: 'min(340px, 100vw)',
-          height: '100vh',
-          background: '#ffffff',
-          zIndex: 10001,
-          boxShadow: '-10px 0 50px rgba(0,0,0,0.18)',
-          display: 'flex',
-          flexDirection: 'column',
-          padding: '28px 22px',
-          overflowY: 'auto',
-          animation: 'fpIn .25s cubic-bezier(.4,0,.2,1)',
-          fontFamily: "'DM Sans', sans-serif",
-        }}
-      >
-        {/* Header */}
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 24 }}>
-          <div>
-            <div style={{ fontFamily: "'Syne',sans-serif", fontSize: 20, fontWeight: 700, color: '#0f172a' }}>
-              Filters
-            </div>
-            <div style={{ fontSize: 12, color: '#9ca3af', marginTop: 2 }}>Refine your selection</div>
-          </div>
-          <button
-            onClick={onClose}
-            style={{
-              background: 'none', border: '1px solid #e5e7eb', borderRadius: 7,
-              width: 32, height: 32, cursor: 'pointer', fontSize: 15, color: '#6b7280',
-              display: 'flex', alignItems: 'center', justifyContent: 'center',
-            }}
-          >✕</button>
-        </div>
-
-        {/* Solutions */}
-        {solutions.length > 0 && (
-          <SectionBlock label="⊕  SOLUTIONS">
-            {solutions.map((s) => (
-              <CheckRow
-                key={s} label={s}
-                checked={filters.solutions.includes(s)}
-                onChange={() => {
-                  const next = filters.solutions.includes(s)
-                    ? filters.solutions.filter((x) => x !== s)
-                    : [...filters.solutions, s];
-                  onChange({ ...filters, solutions: next });
-                }}
-              />
-            ))}
-          </SectionBlock>
-        )}
-
-        {/* Categories */}
-        {categories.length > 0 && (
-          <SectionBlock label="◈  CATEGORIES">
-            {categories.map((c) => (
-              <CheckRow
-                key={c} label={c}
-                checked={filters.categories.includes(c)}
-                onChange={() => {
-                  const next = filters.categories.includes(c)
-                    ? filters.categories.filter((x) => x !== c)
-                    : [...filters.categories, c];
-                  onChange({ ...filters, categories: next });
-                }}
-              />
-            ))}
-          </SectionBlock>
-        )}
-
-        {/* Brands */}
-        {brands.length > 0 && (
-          <SectionBlock label="◉  BRANDS">
-            {brands.map((b) => (
-              <CheckRow
-                key={b} label={b}
-                checked={filters.brands.includes(b)}
-                onChange={() => {
-                  const next = filters.brands.includes(b)
-                    ? filters.brands.filter((x) => x !== b)
-                    : [...filters.brands, b];
-                  onChange({ ...filters, brands: next });
-                }}
-              />
-            ))}
-          </SectionBlock>
-        )}
-
-        <div style={{ flex: 1 }} />
-
-        <button
-          onClick={onApply}
-          style={{
-            width: '100%', background: '#1e293b', color: '#fff', border: 'none',
-            borderRadius: 10, padding: '13px 0', fontSize: 15, fontWeight: 700,
-            cursor: 'pointer', marginTop: 28, fontFamily: "'Syne',sans-serif",
-          }}
-        >
-          Apply Filters
-        </button>
-        <button
-          onClick={onReset}
-          style={{
-            width: '100%', background: 'none', border: 'none',
-            color: '#9ca3af', fontSize: 13, cursor: 'pointer', padding: '8px 0',
-          }}
-        >
-          ↺ Reset All
-        </button>
-      </div>
-      <style>{`@keyframes fpIn { from{transform:translateX(100%)} to{transform:translateX(0)} }`}</style>
-    </>
-  );
-}
-
-function SectionBlock({ label, children }) {
-  return (
-    <div style={{ borderTop: '1px solid #f1f5f9', paddingTop: 16, marginBottom: 20 }}>
-      <div style={{ fontSize: 10, fontWeight: 700, letterSpacing: '0.12em', color: '#94a3b8', marginBottom: 12, fontFamily: "'Syne',sans-serif" }}>
-        {label}
-      </div>
-      {children}
-    </div>
-  );
-}
-
-function CheckRow({ label, checked, onChange }) {
-  return (
-    <label style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 10, cursor: 'pointer' }}>
-      <span
-        style={{
-          width: 17, height: 17, borderRadius: 4, border: '2px solid',
-          borderColor: checked ? '#1e293b' : '#d1d5db',
-          background: checked ? '#1e293b' : '#fff',
-          display: 'flex', alignItems: 'center', justifyContent: 'center',
-          flexShrink: 0, transition: 'all .15s',
-        }}
-      >
-        {checked && (
-          <svg width="10" height="10" viewBox="0 0 10 10">
-            <polyline points="1.5,5.5 4,8 8.5,2" stroke="#fff" strokeWidth="1.8" fill="none" strokeLinecap="round" />
-          </svg>
-        )}
-      </span>
-      <input type="checkbox" style={{ display: 'none' }} checked={checked} onChange={onChange} />
-      <span style={{ fontSize: 14, color: '#374151' }}>{label}</span>
-    </label>
-  );
-}
-
-/* ─── Hero ────────────────────────────────────────────────────────────────── */
-function HeroSection() {
-  const videoRef = useRef(null);
-  const [playing, setPlaying] = useState(true);
-  const [muted, setMuted] = useState(true);
-
-  const togglePlay = () => {
-    if (!videoRef.current) return;
-    if (videoRef.current.paused) { videoRef.current.play(); setPlaying(true); }
-    else { videoRef.current.pause(); setPlaying(false); }
-  };
-  const toggleMute = () => {
-    if (!videoRef.current) return;
-    videoRef.current.muted = !muted;
-    setMuted((m) => !m);
-  };
-
-  return (
-    <div style={{
-      background: '#ffffff',
-      padding: 'clamp(28px, 4vw, 56px) clamp(18px, 4vw, 60px) clamp(24px, 3vw, 48px)',
-      display: 'grid',
-      gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))',
-      gap: 'clamp(24px, 3vw, 48px)',
-      alignItems: 'center',
-      minHeight: 'clamp(260px, 35vw, 400px)',
-    }}>
-      <div>
-        <h1 style={{
-  fontFamily: "'Manrope', sans-serif",
-  fontSize: '96px',
-  fontWeight: 400,
-  color: '#222222',
-  lineHeight: 1.1,
-  margin: '0 0 14px',
-  letterSpacing: '-4.8px',
-}}>
-  Explore<br />Products
-</h1>
-        <p style={{
-          fontFamily: "'Manrope', sans-serif",
-          fontSize: 'clamp(13px, 1.5vw, 15px)',
-          color: '#475569', lineHeight: 'normal',fontWeight: 400,
-          margin: '0 0 24px', maxWidth: 380,
-        }}>
-          Shop from a wide range of educational and lifestyle products designed to enhance learning experiences. From smart devices to accessories, explore top brands and trusted solutions,{' '}
-          <strong style={{ color: '#0f172a' }}>all in one place.</strong>
-        </p>
-      </div>
-      {/* ── RIGHT SIDE ── */}
-<div style={{ position: 'relative' }}>
-  <div style={{
-    borderRadius: 24,
-    overflow: 'hidden',
-    aspectRatio: '16/9',
-    boxShadow: '0 32px 80px rgba(0,0,0,0.18)',
-  }}>
-    <video
-      autoPlay muted loop playsInline
-      style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block' }}
-      src={etomosphereVideo}
-    />
-  </div>
-</div>
-      <style>{`@keyframes livePulse { 0%,100%{opacity:1;transform:scale(1)} 50%{opacity:.4;transform:scale(1.4)} }`}</style>
-    </div>
-  );
-}
-
-function VidBtn({ onClick, children }) {
-  return (
-    <button onClick={onClick} style={{
-      background: 'rgba(255,255,255,0.18)', backdropFilter: 'blur(6px)',
-      border: '1px solid rgba(255,255,255,0.2)', borderRadius: 8,
-      width: 34, height: 34, cursor: 'pointer',
-      display: 'flex', alignItems: 'center', justifyContent: 'center',
-    }}>
-      {children}
-    </button>
-  );
-}
-
-/* ─── Product Card ────────────────────────────────────────────────────────── */
+/* ── Product Card ─────────────────────────────────────────────────────── */
 function ProductCard({ product, onClick }) {
-  const [hov, setHov] = useState(false);
-  const PLACEHOLDER = 'https://via.placeholder.com/400x500?text=No+Image';
+  const { addToCart, removeFromCart, updateQty, cartItems } = useCart();
+
+  const itemKey   = product.defaultVariantId ?? product.productId;
+  const cartItem  = cartItems.find((i) => (i.variantId ?? i.productId) === itemKey);
+  const inCart    = !!cartItem;
+  const qty       = cartItem?.quantity ?? 0;
+
+  const handleAdd = (e) => {
+    e.stopPropagation();
+    addToCart({
+      productId:   product.productId,
+      variantId:   product.defaultVariantId,
+      name:        product.name,
+      image:       product.image,
+      price:       product.price,
+      brandName:   product.brandName,
+      description: product.description,
+    });
+  };
+
+  const handleIncrease = (e) => {
+    e.stopPropagation();
+    updateQty(itemKey, qty + 1);
+  };
+
+  const handleDecrease = (e) => {
+    e.stopPropagation();
+    if (qty <= 1) removeFromCart(itemKey);
+    else updateQty(itemKey, qty - 1);
+  };
 
   return (
-    <div
-      onClick={() => onClick(product)}
-      onMouseEnter={() => setHov(true)}
-      onMouseLeave={() => setHov(false)}
-      style={{ cursor: 'pointer', display: 'flex', flexDirection: 'column', transition: 'all 0.3s ease' }}
-    >
-      <div style={{
-        position: 'relative', width: '100%', aspectRatio: '1/1',
-        overflow: 'hidden', background: '#fff',
-        borderRadius: '12px', border: '1.5px solid #e2e8f0',
-boxShadow: '0 4px 16px rgba(0,0,0,0.08)',
-      }}>
-        <img
-          src={product.image || PLACEHOLDER}
-          alt={product.name}
-          style={{
-            width: '100%', height: '100%', objectFit: 'contain', padding: '20px',
-            transform: hov ? 'scale(1.05)' : 'scale(1)',
-            transition: 'transform 0.6s cubic-bezier(0.4, 0, 0.2, 1)',
-          }}
-        />
-      </div>
-      <div style={{ padding: '16px 4px' }}>
-        <div style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: 15, color: '#1a1a1a', marginBottom: 4 }}>
-          {product.name}
-        </div>
-        {/* {product.brandName && (
-          <div style={{ fontSize: 12, color: '#94a3b8', fontWeight: 500, marginBottom: 4 }}>
-            {product.brandName}
+    <div className="em-card" onClick={() => onClick(product)}>
+      <div className="em-card-img">
+        {product.image ? (
+          <img src={product.image} alt={product.name} />
+        ) : (
+          <div className="em-card-no-img">
+            <svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="#cbd5e1" strokeWidth="1.4" strokeLinecap="round" strokeLinejoin="round">
+              <rect x="3" y="3" width="18" height="18" rx="2" ry="2"/>
+              <circle cx="8.5" cy="8.5" r="1.5"/>
+              <polyline points="21 15 16 10 5 21"/>
+            </svg>
+            <span>No Image</span>
           </div>
-        )} */}
-        <div style={{ fontSize: 14, color: '#757575', fontWeight: 400 }}>
-          {product.price
-            ? `₹${Number(product.price).toLocaleString('en-IN')}`
-            : 'Enquire for Price'}
-        </div>
+        )}
       </div>
-    </div>
-  );
-}
+      <div className="em-card-body">
+        <h4 className="em-card-name">{product.name}</h4>
+        <p className="em-card-desc">
+          {product.description
+            ? product.description.slice(0, 80) + (product.description.length > 80 ? '…' : '')
+            : 'Lorem ipsum dolor sit amet, consectetur adipiscing elit.'}
+        </p>
 
-/* ─── Active Filter Chip ──────────────────────────────────────────────────── */
-function Chip({ label, onRemove }) {
-  return (
-    <span
-      onClick={onRemove}
-      style={{
-        background: '#f1f5f9', border: '1px solid #e2e8f0', borderRadius: 20,
-        padding: '4px 12px', fontSize: 12, fontWeight: 600, color: '#334155',
-        cursor: 'pointer', display: 'inline-flex', alignItems: 'center', gap: 6, whiteSpace: 'nowrap',
-      }}
-    >
-      {label} <span style={{ color: '#94a3b8' }}>✕</span>
-    </span>
-  );
-}
-/* ─── Sort Dropdown ───────────────────────────────────────────────────────── */
-function SortDropdown({ value, onChange }) {
-  const [open, setOpen] = useState(false);
-  const ref = useRef(null);
-
-  const options = [
-    { value: 'newest',     label: 'Newest' },
-    { value: 'name',       label: 'Name A–Z' },
-    { value: 'price-asc',  label: 'Price: Low to High' },
-    { value: 'price-desc', label: 'Price: High to Low' },
-  ];
-
-  const selected = options.find(o => o.value === value);
-
-  useEffect(() => {
-    const handler = (e) => { if (ref.current && !ref.current.contains(e.target)) setOpen(false); };
-    document.addEventListener('mousedown', handler);
-    return () => document.removeEventListener('mousedown', handler);
-  }, []);
-
-  return (
-    <div ref={ref} style={{ position: 'relative' }}>
-      <button
-        onClick={() => setOpen(o => !o)}
-        style={{
-          display: 'flex', alignItems: 'center', gap: 8,
-          background: '#f1f1f1', border: 'none', borderRadius: 40,
-          padding: '12px 20px', cursor: 'pointer',
-          fontSize: 14, color: '#1a1a1a',
-          fontFamily: "'DM Sans', sans-serif",
-        }}
-      >
-        <span style={{ color: '#757575', fontSize: 13 }}>Sort:</span>
-        <span style={{ fontWeight: 600 }}>{selected?.label}</span>
-        <svg width="12" height="12" viewBox="0 0 12 12" fill="none"
-          style={{ transform: open ? 'rotate(180deg)' : 'rotate(0deg)', transition: 'transform 0.2s' }}>
-          <path d="M2 4l4 4 4-4" stroke="#1a1a1a" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
-        </svg>
-      </button>
-
-      {open && (
-        <div style={{
-          position: 'absolute', top: 'calc(100% + 8px)', right: 0,
-          background: '#fff', borderRadius: 14,
-          boxShadow: '0 8px 32px rgba(0,0,0,0.12)',
-          overflow: 'hidden', zIndex: 200, minWidth: 210,
-          border: '1px solid #f1f1f1',
-        }}>
-          {options.map((opt) => (
-            <button
-              key={opt.value}
-              onClick={() => { onChange(opt.value); setOpen(false); }}
-              style={{
-                display: 'flex', alignItems: 'center', justifyContent: 'space-between',
-                width: '100%', padding: '12px 16px',
-                background: opt.value === value ? '#f0f7ff' : 'transparent',
-                border: 'none', cursor: 'pointer', textAlign: 'left',
-                fontSize: 14, fontWeight: opt.value === value ? 600 : 400,
-                color: opt.value === value ? '#0066b2' : '#374151',
-                fontFamily: "'DM Sans', sans-serif",
-              }}
-              onMouseEnter={e => { if (opt.value !== value) e.currentTarget.style.background = '#f8fafc'; }}
-              onMouseLeave={e => { if (opt.value !== value) e.currentTarget.style.background = 'transparent'; }}
-            >
-              {opt.label}
-              {opt.value === value && (
-                <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
-                  <path d="M2.5 7l3 3 6-6" stroke="#0066b2" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"/>
+        {inCart ? (
+          <div className="em-qty-ctrl" onClick={(e) => e.stopPropagation()}>
+            <button className="em-qty-btn em-qty-remove" onClick={handleDecrease} aria-label={qty <= 1 ? 'Remove from cart' : 'Decrease quantity'}>
+              {qty <= 1 ? (
+                <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                  <polyline points="3 6 5 6 21 6"/>
+                  <path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/>
+                  <path d="M10 11v6M14 11v6"/>
+                  <path d="M9 6V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"/>
+                </svg>
+              ) : (
+                <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round">
+                  <line x1="5" y1="12" x2="19" y2="12"/>
                 </svg>
               )}
             </button>
-          ))}
+            <span className="em-qty-label">{qty} in cart</span>
+            <button className="em-qty-btn em-qty-add" onClick={handleIncrease} aria-label="Add one more">
+              <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round">
+                <line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/>
+              </svg>
+            </button>
+          </div>
+        ) : (
+          <button className="em-card-btn" onClick={handleAdd}>
+            Add to Cart
+          </button>
+        )}
+      </div>
+    </div>
+  );
+}
+
+/* ── Category sub-section within a solution ───────────────────────────── */
+function CategorySection({ name, products, onProductClick, startIndex = 0 }) {
+  const [showAll, setShowAll] = useState(false);
+  const visible = showAll ? products : products.slice(0, 6);
+
+  return (
+    <div className="em-category">
+      <h3 className="em-category-title">{name}</h3>
+      <div className="em-group-grid">
+        {visible.map((p) => (
+          <ProductCard key={p.id} product={p} onClick={onProductClick} />
+        ))}
+      </div>
+      {products.length > 6 && (
+        <div className="em-load-wrap">
+          <button className="em-load-btn" onClick={() => setShowAll((v) => !v)}>
+            {showAll ? 'Show Less' : `Load More (${products.length - 6} more)`}
+          </button>
         </div>
       )}
     </div>
   );
 }
-/* ─── Main Page ───────────────────────────────────────────────────────────── */
+
+/* ── Solution section — all products flat under one title ─────────────── */
+function SolutionGroup({ solutionName, categories, onProductClick }) {
+  const [showAll, setShowAll] = useState(false);
+  const products = categories.flatMap((c) => c.products);
+  const visible  = showAll ? products : products.slice(0, 6);
+
+  return (
+    <div className="em-group">
+      <h2 className="em-group-title">{solutionName}</h2>
+      <div className="em-group-grid">
+        {visible.map((p) => (
+          <ProductCard key={p.id} product={p} onClick={onProductClick} />
+        ))}
+      </div>
+      {products.length > 6 && (
+        <div className="em-load-wrap">
+          <button className="em-load-btn" onClick={() => setShowAll((v) => !v)}>
+            {showAll ? 'Show Less' : 'Load More'}
+          </button>
+        </div>
+      )}
+    </div>
+  );
+}
+
+/* ── Flat grid — no section headings (All Solutions + specific solution) ── */
+function FlatGrid({ title, products, onProductClick }) {
+  const [showAll, setShowAll] = useState(false);
+  const visible = showAll ? products : products.slice(0, 12);
+
+  return (
+    <div className="em-group">
+      {title && <h2 className="em-group-title">{title}</h2>}
+      <div className="em-group-grid">
+        {visible.map((p) => (
+          <ProductCard key={p.id} product={p} onClick={onProductClick} />
+        ))}
+      </div>
+      {products.length > 12 && (
+        <div className="em-load-wrap">
+          <button className="em-load-btn" onClick={() => setShowAll((v) => !v)}>
+            {showAll ? 'Show Less' : 'Load More'}
+          </button>
+        </div>
+      )}
+    </div>
+  );
+}
+
+/* ── Single unified grid with full-width type labels as separators ─────── */
+function TypedGrid({ groupedByType, onProductClick }) {
+  const items = [];
+  groupedByType.forEach(([typeName, products]) => {
+    items.push({ kind: 'label', name: typeName });
+    products.forEach((p) => items.push({ kind: 'card', product: p }));
+  });
+
+  return (
+    <div className="em-typed-grid">
+      {items.map((item) =>
+        item.kind === 'label' ? (
+          <div key={`lbl-${item.name}`} className="em-type-label">
+            {item.name}
+          </div>
+        ) : (
+          <ProductCard
+            key={item.product.id}
+            product={item.product}
+            onClick={onProductClick}
+          />
+        )
+      )}
+    </div>
+  );
+}
+
+/* ── Main Page ────────────────────────────────────────────────────────── */
 export default function Edumart() {
   const navigate = useNavigate();
 
-  const [allItems, setAllItems] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState('');
+  const [allItems, setAllItems]         = useState([]);
+  const [loading, setLoading]           = useState(true);
+  const [error, setError]               = useState('');
+  const [search, setSearch]             = useState('');
+  const [selectedTypes, setSelectedTypes] = useState([]); // multi-select category filter; [] = all types
+  const [showFilters, setShowFilters]   = useState(false);
+  const [filterQuery, setFilterQuery]   = useState('');
+  const filterRef = useRef(null);
 
-  const [panelOpen, setPanelOpen] = useState(false);
-  const [pending, setPending] = useState(DEFAULT_FILTERS);
-  const [applied, setApplied] = useState(DEFAULT_FILTERS);
-  const [sortBy, setSort] = useState('newest');
-
-  /* ── Body class side-effect ── */
   useEffect(() => {
-    document.body.classList.toggle('filters-open', panelOpen);
-    return () => document.body.classList.remove('filters-open');
-  }, [panelOpen]);
+    const onClick = (e) => {
+      if (showFilters && filterRef.current && !filterRef.current.contains(e.target)) {
+        setShowFilters(false);
+      }
+    };
+    document.addEventListener('mousedown', onClick);
+    return () => document.removeEventListener('mousedown', onClick);
+  }, [showFilters]);
 
-  /* ── Fetch & flatten ── */
   useEffect(() => {
     let active = true;
     (async () => {
       try {
         setLoading(true); setError('');
-        const res = await axios.get(`${APIURL}/api/products/`);
+        const res  = await axios.get(`${APIURL}/api/products/`);
         if (!active) return;
-        const raw = res.data?.categories ?? res.data?.products ?? res.data ?? [];
-        const list = Array.isArray(raw) ? raw : [];
-        const flat = flattenProducts(list);
-        setAllItems(flat);
+        // NEW shape: { count, solutions: [ { name, slug, categories: [...] } ] }
+        const sols = res.data?.solutions ?? [];
+        setAllItems(flattenSolutions(sols));
       } catch (e) {
         if (active) setError(e?.response?.data?.detail || e?.message || 'Failed to load products.');
       } finally {
@@ -521,31 +311,57 @@ export default function Edumart() {
     return () => { active = false; };
   }, []);
 
-  /* ── Derived filter options ── */
-  const solutions  = useMemo(() => [...new Set(allItems.map((p) => p.solutionName))].sort(), [allItems]);
-  const categories = useMemo(() => [...new Set(allItems.map((p) => p.categoryName))].sort(), [allItems]);
-  const brands     = useMemo(() => [...new Set(allItems.flatMap((p) => p.brandNames))].sort(), [allItems]);
+  // Type options = every distinct product category (e.g. Digital Kiosk, LED Wall, Furniture...)
+  const typeOptions = useMemo(() => {
+    const set = new Set();
+    allItems.forEach((p) => set.add(p.categoryName || 'Other'));
+    return [...set].sort((a, b) => a.localeCompare(b));
+  }, [allItems]);
 
-  /* ── Filtered list ── */
-  const filtered = useMemo(() => {
-    let list = allItems.filter((p) => {
-      if (applied.solutions.length  && !applied.solutions.includes(p.solutionName))  return false;
-      if (applied.categories.length && !applied.categories.includes(p.categoryName)) return false;
-      if (applied.brands.length     && !applied.brands.some((b) => p.brandNames.includes(b))) return false;
-      return true;
-    });
-    if (sortBy === 'price-asc')  list = [...list].sort((a, b) => (a.price ?? 0) - (b.price ?? 0));
-    if (sortBy === 'price-desc') list = [...list].sort((a, b) => (b.price ?? 0) - (a.price ?? 0));
-    if (sortBy === 'name')       list = [...list].sort((a, b) => a.name.localeCompare(b.name));
+  const filteredTypeOptions = useMemo(() => {
+    const fq = filterQuery.trim().toLowerCase();
+    if (!fq) return typeOptions;
+    return typeOptions.filter((t) => t.toLowerCase().includes(fq));
+  }, [typeOptions, filterQuery]);
+
+  const toggleType = (type) => {
+    setSelectedTypes((prev) =>
+      prev.includes(type) ? prev.filter((t) => t !== type) : [...prev, type]
+    );
+  };
+  const removeType  = (type) => setSelectedTypes((prev) => prev.filter((t) => t !== type));
+  const clearTypes  = () => setSelectedTypes([]);
+
+  const q = search.trim().toLowerCase();
+
+  // Flat product list, filtered by selected type(s) + search
+  const flatProducts = useMemo(() => {
+    let list = allItems;
+    if (selectedTypes.length > 0) {
+      list = list.filter((p) => selectedTypes.includes(p.categoryName || 'Other'));
+    }
+    if (q) {
+      list = list.filter((p) =>
+        p.name.toLowerCase().includes(q) ||
+        p.categoryName.toLowerCase().includes(q) ||
+        p.solutionName.toLowerCase().includes(q)
+      );
+    }
     return list;
-  }, [allItems, applied, sortBy]);
+  }, [allItems, selectedTypes, q]);
 
-  /* ── Active filter chips ── */
-  const activeChips = [
-    ...applied.solutions.map((s)  => ({ label: `Solution: ${s}`,  remove: () => setApplied((f) => ({ ...f, solutions:  f.solutions.filter((x)  => x !== s) })) })),
-    ...applied.categories.map((c) => ({ label: `Category: ${c}`,  remove: () => setApplied((f) => ({ ...f, categories: f.categories.filter((x) => x !== c) })) })),
-    ...applied.brands.map((b)     => ({ label: `Brand: ${b}`,     remove: () => setApplied((f) => ({ ...f, brands:     f.brands.filter((x)     => x !== b) })) })),
-  ];
+  // Group by Type (categoryName) for display
+  const groupedByType = useMemo(() => {
+    const map = {};
+    flatProducts.forEach((p) => {
+      const key = p.categoryName || 'Other';
+      if (!map[key]) map[key] = [];
+      map[key].push(p);
+    });
+    return Object.entries(map);
+  }, [flatProducts]);
+
+  const isEmpty = groupedByType.length === 0;
 
   const handleProductClick = (product) => {
     const id   = product.variantId ?? product.productId;
@@ -555,168 +371,142 @@ export default function Edumart() {
     navigate('/productdetail');
   };
 
-  const totalActive = applied.solutions.length + applied.categories.length + applied.brands.length;
-
   return (
-    <div style={{ fontFamily: "'DM Sans',sans-serif", background: '#ffffff', minHeight: '100vh' }}>
+    <div className="em-page">
       <Header />
-      <HeroSection />
 
-      {/* ── Toolbar ── */}
-      <div style={{
-        padding: 'clamp(20px, 3vw, 40px) clamp(16px, 4vw, 60px) 16px',
-        display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: 12,
-        maxWidth: '1400px', margin: '0 auto', width: '100%', boxSizing: 'border-box',
-      }}>
-        <div style={{ fontSize: 14, color: '#1a1a1a' }}>
-          Showing <strong style={{ fontWeight: 700 }}>{filtered.length}</strong> products
-        </div>
-
-        <div style={{ display: 'flex', alignItems: 'center', gap: 12, flexWrap: 'wrap' }}>
-          {/* Sort */}
-          <SortDropdown value={sortBy} onChange={setSort} />
-
-          {/* Filter button */}
-          <button
-            onClick={() => { setPending({ ...applied }); setPanelOpen(true); }}
-            style={{
-              display: 'flex', alignItems: 'center', gap: 10,
-              background: '#0066b2', color: '#fff', border: 'none',
-              borderRadius: 40, padding: '12px 24px',
-              fontSize: 14, fontWeight: 600, cursor: 'pointer',
-              position: 'relative',
-            }}
+      {/* ── Hero ── */}
+      <section className="em-hero">
+        <h1 className="em-hero-title">Empowering the Future of Technology</h1>
+        <p className="em-hero-sub">
+          Discover precision-engineered hardware and software ecosystems designed<br />
+          to scale with your enterprise's ambition.
+        </p>
+        <div className="em-search-wrap">
+          <svg
+            className="em-search-icon"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="2"
+            strokeLinecap="round"
+            strokeLinejoin="round"
           >
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-              <path d="M4 6h16M7 12h10M10 18h4" strokeLinecap="round" />
-            </svg>
-            Filter
-            {totalActive > 0 && (
-              <span style={{
-                position: 'absolute', top: -6, right: -6,
-                background: '#ef4444', color: '#fff',
-                borderRadius: '50%', width: 20, height: 20,
-                fontSize: 11, fontWeight: 700,
-                display: 'flex', alignItems: 'center', justifyContent: 'center',
-              }}>
-                {totalActive}
-              </span>
-            )}
-          </button>
-        </div>
-      </div>
-
-      {/* ── Active filter chips ── */}
-      {activeChips.length > 0 && (
-        <div style={{
-          padding: '0 clamp(16px, 4vw, 60px) 12px',
-          maxWidth: '1400px', margin: '0 auto',
-          display: 'flex', gap: 8, flexWrap: 'wrap', alignItems: 'center',
-        }}>
-          {activeChips.map((chip, i) => (
-            <Chip key={i} label={chip.label} onRemove={chip.remove} />
-          ))}
-          <button
-            onClick={() => { setPending(DEFAULT_FILTERS); setApplied(DEFAULT_FILTERS); }}
-            style={{ fontSize: 12, color: '#ef4444', background: 'none', border: 'none', cursor: 'pointer', fontWeight: 600 }}
-          >
-            Clear all
-          </button>
-        </div>
-      )}
-
-      {/* ── Grid ── */}
-      <main style={{ padding: 'clamp(16px, 3vw, 32px) clamp(16px, 4vw, 60px) clamp(40px, 5vw, 60px)' }}>
-        {loading && (
-  <div style={{
-    display: 'grid',
-    gridTemplateColumns: 'repeat(auto-fill, minmax(min(220px, 100%), 1fr))',
-    gap: 'clamp(20px, 3vw, 40px) clamp(12px, 2vw, 24px)',
-    width: '100%',
-  }}>
-    {Array.from({ length: 12 }).map((_, i) => (
-      <div key={i} style={{ display: 'flex', flexDirection: 'column' }}>
-        <div style={{
-          width: '100%', aspectRatio: '1/1',
-          borderRadius: '12px', border: '1.5px solid #e2e8f0',
-          background: 'linear-gradient(90deg, #f1f5f9 25%, #e2e8f0 50%, #f1f5f9 75%)',
-          backgroundSize: '200% 100%',
-          animation: `shimmer 1.5s infinite ${i * 0.1}s`,
-        }} />
-        <div style={{ padding: '16px 4px' }}>
-          <div style={{
-            height: 16, borderRadius: 6, marginBottom: 8,
-            background: 'linear-gradient(90deg, #f1f5f9 25%, #e2e8f0 50%, #f1f5f9 75%)',
-            backgroundSize: '200% 100%',
-            animation: `shimmer 1.5s infinite ${i * 0.1}s`,
-            width: '70%',
-          }} />
-          <div style={{
-            height: 13, borderRadius: 6,
-            background: 'linear-gradient(90deg, #f1f5f9 25%, #e2e8f0 50%, #f1f5f9 75%)',
-            backgroundSize: '200% 100%',
-            animation: `shimmer 1.5s infinite ${i * 0.1}s`,
-            width: '40%',
-          }} />
-        </div>
-      </div>
-    ))}
-    <style>{`
-      @keyframes shimmer {
-        0% { background-position: 200% 0; }
-        100% { background-position: -200% 0; }
-      }
-    `}</style>
-  </div>
-)}
-        {!loading && error && (
-          <div style={{ textAlign: 'center', padding: '80px 0', color: '#ef4444' }}>{error}</div>
-        )}
-        {!loading && !error && filtered.length === 0 && (
-          <div style={{ textAlign: 'center', padding: '80px 0' }}>
-            <div style={{ fontSize: 18, color: '#94a3b8', fontFamily: "'Syne',sans-serif" }}>
-              No products match your filters.
-            </div>
+            <circle cx="11" cy="11" r="8" /><path d="m21 21-4.35-4.35" />
+          </svg>
+          <input
+            className="em-search"
+            type="text"
+            placeholder="Search for solutions, hardware, or software..."
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+          />
+          <div className="em-filter-dd" ref={filterRef}>
             <button
-              onClick={() => { setPending(DEFAULT_FILTERS); setApplied(DEFAULT_FILTERS); }}
-              style={{
-                marginTop: 18, background: '#1e293b', color: '#fff', border: 'none',
-                borderRadius: 10, padding: '11px 28px', fontSize: 14,
-                cursor: 'pointer', fontFamily: "'Syne',sans-serif", fontWeight: 600,
-              }}
+              className={`em-filter-btn ${selectedTypes.length > 0 ? 'em-filter-btn--active' : ''}`}
+              onClick={() => setShowFilters((v) => !v)}
+              aria-expanded={showFilters}
             >
-              Clear Filters
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3" />
+              </svg>
+              Filter by Type
+              {selectedTypes.length > 0 && (
+                <span className="em-filter-count">{selectedTypes.length}</span>
+              )}
+              <svg className={`em-filter-chev ${showFilters ? 'open' : ''}`} width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round">
+                <polyline points="6 9 12 15 18 9" />
+              </svg>
             </button>
+
+            {showFilters && (
+              <div className="em-filter-panel">
+                <div className="em-filter-search">
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                    <circle cx="11" cy="11" r="8" /><path d="m21 21-4.35-4.35" />
+                  </svg>
+                  <input
+                    type="text"
+                    placeholder="Search types..."
+                    value={filterQuery}
+                    onChange={(e) => setFilterQuery(e.target.value)}
+                    autoFocus
+                  />
+                </div>
+                <div className="em-filter-list">
+                  {filteredTypeOptions.length === 0 && (
+                    <div className="em-filter-none">No matching type.</div>
+                  )}
+                  {filteredTypeOptions.map((type) => {
+                    const checked = selectedTypes.includes(type);
+                    return (
+                      <button
+                        key={type}
+                        className={`em-filter-opt ${checked ? 'active' : ''}`}
+                        onClick={() => toggleType(type)}
+                      >
+                        <span className={`em-filter-checkbox ${checked ? 'checked' : ''}`}>
+                          {checked && (
+                            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
+                              <polyline points="20 6 9 17 4 12" />
+                            </svg>
+                          )}
+                        </span>
+                        <span className="em-filter-opt-label">{type}</span>
+                      </button>
+                    );
+                  })}
+                </div>
+                {selectedTypes.length > 0 && (
+                  <div className="em-filter-panel-actions">
+                    <button className="em-filter-clear" onClick={clearTypes}>Clear all</button>
+                    <button className="em-filter-done" onClick={() => setShowFilters(false)}>Done</button>
+                  </div>
+                )}
+              </div>
+            )}
           </div>
-        )}
-        {!loading && !error && filtered.length > 0 && (
-          <div style={{
-            display: 'grid',
-            gridTemplateColumns: 'repeat(auto-fill, minmax(min(220px, 100%), 1fr))',
-            gap: 'clamp(20px, 3vw, 40px) clamp(12px, 2vw, 24px)',
-            width: '100%',
-          }}>
-            {filtered.map((p) => (
-              <ProductCard key={p.id} product={p} onClick={handleProductClick} />
+        </div>
+
+        {selectedTypes.length > 0 && (
+          <div className="em-chips-row">
+            {selectedTypes.map((type) => (
+              <div className="em-active-chip" key={type}>
+                <span>{type}</span>
+                <button onClick={() => removeType(type)} aria-label={`Remove ${type} filter`}>
+                  <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.6" strokeLinecap="round">
+                    <path d="M18 6 6 18M6 6l12 12" />
+                  </svg>
+                </button>
+              </div>
             ))}
           </div>
+        )}
+      </section>
+
+      {/* ── Content ── */}
+      <main className="em-main">
+        {loading && (
+          <div className="em-loading">
+            {Array.from({ length: 6 }).map((_, i) => (
+              <div key={i} className="em-skeleton" />
+            ))}
+          </div>
+        )}
+        {!loading && error && <div className="em-error">{error}</div>}
+        {!loading && !error && isEmpty && (
+          <div className="em-empty">No products match your search.</div>
+        )}
+
+        {!loading && !error && !isEmpty && (
+          <TypedGrid
+            groupedByType={groupedByType}
+            onProductClick={handleProductClick}
+          />
         )}
       </main>
 
       <Footer />
-
-      {panelOpen && (
-        <FilterPanel
-          solutions={solutions}
-          categories={categories}
-          brands={brands}
-          filters={pending}
-          onChange={setPending}
-          onApply={() => { setApplied({ ...pending }); setPanelOpen(false); }}
-          onReset={() => { setPending(DEFAULT_FILTERS); setApplied(DEFAULT_FILTERS); setPanelOpen(false); }}
-          onClose={() => setPanelOpen(false)}
-        />
-      )}
     </div>
   );
 }
