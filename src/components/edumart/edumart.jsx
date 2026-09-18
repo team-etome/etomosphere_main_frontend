@@ -487,10 +487,14 @@ export default function Edumart() {
       {/* ── Content ── */}
       <main className="em-main">
         {loading && (
-          <div className="em-loading">
-            {Array.from({ length: 6 }).map((_, i) => (
-              <div key={i} className="em-skeleton" />
-            ))}
+          <div className="em-loading-wrap">
+            <div className="em-spinner" />
+            <p className="em-loading-text">Loading products…</p>
+            <div className="em-loading">
+              {Array.from({ length: 6 }).map((_, i) => (
+                <div key={i} className="em-skeleton" />
+              ))}
+            </div>
           </div>
         )}
         {!loading && error && <div className="em-error">{error}</div>}
