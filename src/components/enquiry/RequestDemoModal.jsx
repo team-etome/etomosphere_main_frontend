@@ -45,8 +45,9 @@ function RequestDemoModal({ isOpen, onClose }) {
       await axios.post(`${APIURL}/api/demo/`, form);
       setSuccess(true);
       setTimeout(onClose, 1800);
-    } catch {
-      setError('Unable to submit. Please try again.');
+    } catch (err) {
+      const msg = err?.response?.data?.error || 'Unable to submit. Please try again.';
+      setError(msg);
     } finally {
       setSubmitting(false);
     }
