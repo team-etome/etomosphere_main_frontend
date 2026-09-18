@@ -532,11 +532,11 @@
 .em-load-btn:hover { border-color: #015aa6; color: #015aa6; }
 
 /* States */
-.em-loading-wrap {
+.em-spinner-wrap {
   display: flex;
   flex-direction: column;
   align-items: center;
-  padding-top: 40px;
+  padding: 40px 0 8px;
 }
 .em-spinner {
   width: 48px;
@@ -560,7 +560,6 @@
   grid-template-columns: repeat(3, 1fr);
   gap: 24px;
   padding: 32px 0;
-  width: 100%;
 }
 .em-skeleton {
   height: 280px;
