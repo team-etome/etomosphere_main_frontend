@@ -90,7 +90,7 @@
             >
               <button
                 className="hero-btn"
-                onClick={() => navigate('/edumart')}
+                onClick={() => window.open('https://www.etome.in', '_blank', 'noopener,noreferrer')}
               >
                 Learn More
               </button>
@@ -244,7 +244,7 @@
                 transition={{ duration: 0.50, ease: [0.22, 1, 0.36, 1], delay: 0.44 }}
               >
                 <button className="praxam-btn-primary" onClick={() => setShowDemo(true)}>Request Demo</button>
-                <button className="praxam-btn-ghost" onClick={() => navigate('/edumart')}>Learn More</button>
+                <button className="praxam-btn-ghost" onClick={() => window.open('https://www.etome.in/apps', '_blank', 'noopener,noreferrer')}>Learn More</button>
               </motion.div>
             </div>
             <motion.div
