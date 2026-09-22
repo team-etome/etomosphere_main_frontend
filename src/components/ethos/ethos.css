@@ -135,12 +135,11 @@
   background: #1d3fa5;
   color: #fff;
   border: none;
-  box-shadow: 0 4px 14px rgba(29, 63, 165, 0.30);
+  box-shadow: none;
 }
 
 .ethos-btn-primary:hover {
   background: #163082;
-  box-shadow: 0 8px 22px rgba(29, 63, 165, 0.40);
 }
 
 .ethos-btn-outline {
@@ -152,7 +151,6 @@
 
 .ethos-btn-outline:hover {
   background: #f0f4ff;
-  box-shadow: 0 4px 14px rgba(29, 63, 165, 0.12);
 }
 
 /* ══════════════════════════════
