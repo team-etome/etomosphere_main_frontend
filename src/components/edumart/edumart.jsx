@@ -48,16 +48,17 @@ const makeCard = (sol, cat, prod) => {
   const defaultVariantId = brands[0]?.variants?.[0]?.id ?? null;
 
   return {
-    id:           `p-${prod.id}`,
-    variantId:    null,
+    id:                `p-${prod.id}`,
+    variantId:         null,
     defaultVariantId,
-    productId:    prod.id,
-    name:         prod.name,
-    brandName:    brandNames.join(', '),
+    productId:         prod.id,
+    name:              prod.name,
+    brandName:         brandNames.join(', '),
     brandNames,
-    categoryName: cat.name  || 'Uncategorized',
-    solutionName: sol.name  || 'General',
-    solutionSlug: sol.slug  || '',
+    categoryName:      cat.name  || 'Uncategorized',
+    solutionName:      sol.name  || 'General',
+    solutionSortOrder: sol.sort_order ?? 999,
+    solutionSlug:      sol.slug  || '',
     description:  prod.description || '',
     price:        minPrice,
     inStock:      true,
@@ -350,15 +351,19 @@ export default function Edumart() {
     return list;
   }, [allItems, selectedTypes, q]);
 
-  // Group by Type (categoryName) for display
+  // Group by Solution name for display (preserving sort_order)
   const groupedByType = useMemo(() => {
     const map = {};
+    const orderMap = {};
     flatProducts.forEach((p) => {
-      const key = p.categoryName || 'Other';
-      if (!map[key]) map[key] = [];
+      const key = p.solutionName || 'Other';
+      if (!map[key]) {
+        map[key] = [];
+        orderMap[key] = p.solutionSortOrder ?? 999;
+      }
       map[key].push(p);
     });
-    return Object.entries(map);
+    return Object.entries(map).sort((a, b) => (orderMap[a[0]] ?? 999) - (orderMap[b[0]] ?? 999));
   }, [flatProducts]);
 
   const isEmpty = groupedByType.length === 0;
