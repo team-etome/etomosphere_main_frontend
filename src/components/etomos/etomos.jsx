@@ -1,11 +1,13 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { motion, useMotionValue, useSpring, useTransform } from 'framer-motion';
 import Header from '../header/header.jsx';
+import RequestDemoModal from '../enquiry/RequestDemoModal.jsx';
 import homepage1 from '../../assets/z.png';
 import './etomos.css';
 
 const Etomos = () => {
+  const [showDemo, setShowDemo] = useState(false);
   const rawX = useMotionValue(0);
   const rawY = useMotionValue(0);
 
@@ -76,7 +78,7 @@ const Etomos = () => {
             connected learning ecosystems, and digital campus solutions.
           </p>
           <div className="etomos-hero-btns">
-            <Link to="/enquiry" className="etomos-btn-primary">Request a Demo</Link>
+            <button className="etomos-btn-primary" onClick={() => setShowDemo(true)}>Request a Demo</button>
             <Link to="/edumart" className="etomos-btn-secondary">
               Explore Products
               <span className="etomos-btn-arrow">
@@ -89,6 +91,8 @@ const Etomos = () => {
         </motion.div>
 
       </section>
+
+      <RequestDemoModal isOpen={showDemo} onClose={() => setShowDemo(false)} />
     </div>
   );
 };

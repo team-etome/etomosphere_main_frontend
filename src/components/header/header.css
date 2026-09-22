@@ -39,6 +39,13 @@
     0 1px 0 rgba(255, 255, 255, 0.9) inset !important;
 }
 
+/* Dark hero header stays dark when open too — don't restore the bright light-theme sheen */
+.header--dark.header--nav-open {
+  box-shadow:
+    0 4px 24px rgba(0, 0, 0, 0.25),
+    0 1px 0 rgba(255, 255, 255, 0.08) inset !important;
+}
+
 /* ── Home page: dark glass pill ── */
 .header--dark {
   background: rgba(0, 0, 0, 0.38);
@@ -88,13 +95,13 @@
   align-items: center;
   justify-content: space-between;
   padding: 0 10px 0 20px;
-  height: 52px;
+  height: 60px;
   gap: 8px;
 }
 
 /* ---- Spacer ---- */
 .header-spacer {
-  height: 80px;
+  height: 88px;
 }
 
 /* ============================================================
@@ -362,44 +369,44 @@
 .hamburger-menu {
   display: none;
   flex-direction: column;
-  background: rgba(255, 255, 255, 0.30);
-  border: 1px solid rgba(255, 255, 255, 0.55);
-  backdrop-filter: blur(8px);
-  -webkit-backdrop-filter: blur(8px);
+  align-items: center;
+  justify-content: center;
+  background: transparent;
+  border: none;
   cursor: pointer;
-  padding: 10px;
+  width: 40px;
+  height: 40px;
+  padding: 0;
   gap: 5px;
   z-index: 101;
   flex-shrink: 0;
-  border-radius: 12px;
-  box-shadow: 0 1px 0 rgba(255,255,255,0.8) inset;
-  transition: background 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease;
+  border-radius: 10px;
+  transition: background 0.2s ease;
   outline: none;
 }
 
 .hamburger-menu:focus { outline: none; }
 
 .hamburger-menu:hover {
-  background: rgba(255, 255, 255, 0.50);
+  background: rgba(1, 90, 166, 0.08);
 }
 
 .hamburger-menu.hamburger-open {
   background: transparent !important;
-  border-color: transparent !important;
-  box-shadow: none !important;
-  backdrop-filter: none !important;
-  -webkit-backdrop-filter: none !important;
-  outline: none !important;
 }
 
 .hamburger-line {
-  width: 22px;
+  width: 20px;
   height: 2px;
   background-color: #1a1a2e;
   transition: all 0.3s ease;
   border-radius: 2px;
   display: block;
 }
+
+/* Dark hero header — white lines, no light-glass artifacts */
+.header--dark .hamburger-menu:hover { background: rgba(255, 255, 255, 0.12); }
+.header--dark .hamburger-line { background-color: #fff; }
 
 .hamburger-line.open:nth-child(1) { transform: rotate(45deg) translate(5px, 5px); }
 .hamburger-line.open:nth-child(2) { opacity: 0; }
@@ -533,7 +540,7 @@
 /* ============================================================
    RESPONSIVE
    ============================================================ */
-@media (max-width: 960px) {
+@media (max-width: 1250px) {
   .navigation   { display: none; }
   .header-right { display: none; }
   .hamburger-menu { display: flex; }
@@ -548,8 +555,8 @@
     border-radius: 999px;
   }
 
-  .header-container { padding: 0 12px 0 18px; height: 52px; }
-  .header-spacer    { height: 76px; }
+  .header-container { padding: 0 12px 0 18px; height: 58px; }
+  .header-spacer    { height: 82px; }
   .brand-logo       { height: 42px; }
 }
 
@@ -561,8 +568,8 @@
     border-radius: 999px;
   }
 
-  .header-container { padding: 0 10px 0 16px; height: 50px; }
-  .header-spacer    { height: 70px; }
+  .header-container { padding: 0 10px 0 16px; height: 56px; }
+  .header-spacer    { height: 76px; }
   .brand-logo       { height: 38px; }
 }
 
