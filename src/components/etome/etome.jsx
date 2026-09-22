@@ -6,10 +6,10 @@
   import RequestDemoModal from '../enquiry/RequestDemoModal.jsx';
   import { useCart } from '../../context/CartContext.jsx';
   import heroMainImg  from '../../assets/main1.png';
-  import pic4 from '../../assets/etome 1.png';
+  import pic4 from '../../assets/eco1-new.png';
   import pic5 from '../../assets/praxam.png';
   import pic6 from '../../assets/etome11.png';
-  import pic7 from '../../assets/ecoboard1.png';
+  import pic7 from '../../assets/eco-23.png';
   import frame1 from '../../assets/Frame1.png';
   import frame2 from '../../assets/Frame 1000011165.png';
   import etomeStylusImg from '../../assets/0Q9A0395.png';

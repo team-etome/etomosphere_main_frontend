@@ -404,16 +404,6 @@ function HorizontalTimeline({ entries }) {
 function Ethos() {
   const navigate = useNavigate();
   const [showContact, setShowContact] = useState(false);
-  const btn1Ref  = useRef(null);
-  const btn2Ref  = useRef(null);
-
-  const mx1 = useMotionValue(0); const my1 = useMotionValue(0);
-  const sx1 = useSpring(mx1, { stiffness: 360, damping: 28 });
-  const sy1 = useSpring(my1, { stiffness: 360, damping: 28 });
-
-  const mx2 = useMotionValue(0); const my2 = useMotionValue(0);
-  const sx2 = useSpring(mx2, { stiffness: 360, damping: 28 });
-  const sy2 = useSpring(my2, { stiffness: 360, damping: 28 });
 
   // Hero ambient parallax
   const heroX  = useMotionValue(0);
@@ -436,15 +426,6 @@ function Ethos() {
   ]);
   const orbScrollX     = useTransform(cvProgress, [0, 1], [0, -50]);
   const orbScrollScale = useTransform(cvProgress, [0, 0.5, 1], [0.85, 1.15, 0.9]);
-
-  const magnet = (ref, mx, my) => ({
-    onMouseMove: (e) => {
-      const r = ref.current.getBoundingClientRect();
-      mx.set((e.clientX - r.left - r.width  / 2) * 0.35);
-      my.set((e.clientY - r.top  - r.height / 2) * 0.35);
-    },
-    onMouseLeave: () => { mx.set(0); my.set(0); },
-  });
 
   return (
     <div className="ethos-page">
@@ -509,27 +490,19 @@ function Ethos() {
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.65, ease: EASE, delay: 0.72 }}
           >
-            <motion.button
-              ref={btn1Ref}
+            <button
               className="ethos-btn ethos-btn-primary"
-              style={{ x: sx1, y: sy1 }}
-              {...magnet(btn1Ref, mx1, my1)}
-              whileTap={{ scale: 0.96 }}
               onClick={() => navigate('/etome')}
             >
               Explore our Journey
-            </motion.button>
+            </button>
 
-            <motion.button
-              ref={btn2Ref}
+            <button
               className="ethos-btn ethos-btn-outline"
-              style={{ x: sx2, y: sy2 }}
-              {...magnet(btn2Ref, mx2, my2)}
-              whileTap={{ scale: 0.96 }}
               onClick={() => setShowContact(true)}
             >
               Contact Us
-            </motion.button>
+            </button>
           </motion.div>
         </div>
       </section>
