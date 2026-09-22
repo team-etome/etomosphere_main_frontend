@@ -351,19 +351,15 @@ export default function Edumart() {
     return list;
   }, [allItems, selectedTypes, q]);
 
-  // Group by Solution name for display (preserving sort_order)
+  // Group by Solution name for display, alphabetical order
   const groupedByType = useMemo(() => {
     const map = {};
-    const orderMap = {};
     flatProducts.forEach((p) => {
       const key = p.solutionName || 'Other';
-      if (!map[key]) {
-        map[key] = [];
-        orderMap[key] = p.solutionSortOrder ?? 999;
-      }
+      if (!map[key]) map[key] = [];
       map[key].push(p);
     });
-    return Object.entries(map).sort((a, b) => (orderMap[a[0]] ?? 999) - (orderMap[b[0]] ?? 999));
+    return Object.entries(map).sort((a, b) => a[0].localeCompare(b[0]));
   }, [flatProducts]);
 
   const isEmpty = groupedByType.length === 0;
