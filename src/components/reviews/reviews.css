@@ -14,7 +14,6 @@
     radial-gradient(ellipse 40% 40% at 20% 80%, rgba(251,146,60,0.03) 0%, transparent 50%),
     #fcfcff;
   position: relative;
-  overflow-x: hidden;
 }
 
 /* ══════════════════════════════════════
@@ -207,8 +206,9 @@
   z-index: 1;
   width: 100%;
   max-width: 1120px;
-  margin: 0 auto;
-  padding: 8px 5% 64px;
+  margin-left: auto;
+  margin-right: auto;
+  padding: 8px 40px 64px;
   box-sizing: border-box;
 }
 
@@ -397,6 +397,35 @@
   color: #6b7280;
   line-height: 1.6;
   margin: 0 0 22px;
+}
+
+/* ── Loading spinner ── */
+.rv-loading {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 16px;
+  padding: 64px 20px;
+}
+
+.rv-spinner {
+  width: 44px;
+  height: 44px;
+  border: 3px solid rgba(124, 58, 237, 0.15);
+  border-top-color: #7c3aed;
+  border-radius: 50%;
+  animation: rvSpin 0.75s linear infinite;
+}
+
+@keyframes rvSpin {
+  to { transform: rotate(360deg); }
+}
+
+.rv-loading-text {
+  font-size: 0.88rem;
+  font-weight: 600;
+  color: #94a3b8;
+  margin: 0;
 }
 
 /* ══════════════════════════════════════
