@@ -102,6 +102,11 @@
   font-size: 14px;
   color: #4D5062;
   line-height: 1;
+  text-decoration: none;
+}
+
+a.contact-text:hover {
+  color: #1a3a8f;
 }
 
 /* ===== CONTACT SALES BUTTON ===== */
