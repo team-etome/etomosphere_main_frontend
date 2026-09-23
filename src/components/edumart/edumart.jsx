@@ -312,10 +312,10 @@ export default function Edumart() {
     return () => { active = false; };
   }, []);
 
-  // Type options = every distinct product category (e.g. Digital Kiosk, LED Wall, Furniture...)
+  // Type options = every distinct solution name
   const typeOptions = useMemo(() => {
     const set = new Set();
-    allItems.forEach((p) => set.add(p.categoryName || 'Other'));
+    allItems.forEach((p) => set.add(p.solutionName || 'Other'));
     return [...set].sort((a, b) => a.localeCompare(b));
   }, [allItems]);
 
@@ -335,23 +335,22 @@ export default function Edumart() {
 
   const q = search.trim().toLowerCase();
 
-  // Flat product list, filtered by selected type(s) + search
+  // Flat product list, filtered by selected solution(s) + search
   const flatProducts = useMemo(() => {
     let list = allItems;
     if (selectedTypes.length > 0) {
-      list = list.filter((p) => selectedTypes.includes(p.categoryName || 'Other'));
+      list = list.filter((p) => selectedTypes.includes(p.solutionName || 'Other'));
     }
     if (q) {
       list = list.filter((p) =>
         p.name.toLowerCase().includes(q) ||
-        p.categoryName.toLowerCase().includes(q) ||
         p.solutionName.toLowerCase().includes(q)
       );
     }
     return list;
   }, [allItems, selectedTypes, q]);
 
-  // Group by Solution name for display, alphabetical order
+  // Group by Solution name, most products first
   const groupedByType = useMemo(() => {
     const map = {};
     flatProducts.forEach((p) => {
@@ -359,7 +358,7 @@ export default function Edumart() {
       if (!map[key]) map[key] = [];
       map[key].push(p);
     });
-    return Object.entries(map).sort((a, b) => a[0].localeCompare(b[0]));
+    return Object.entries(map).sort((a, b) => b[1].length - a[1].length);
   }, [flatProducts]);
 
   const isEmpty = groupedByType.length === 0;
