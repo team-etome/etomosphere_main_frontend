@@ -4,6 +4,8 @@
 
 .reviews-page {
   min-height: 100vh;
+  width: 100%;
+  box-sizing: border-box;
   font-family: 'Manrope', sans-serif;
   background:
     radial-gradient(ellipse 80% 60% at 10% 10%, rgba(167,139,250,0.06) 0%, transparent 55%),
@@ -12,6 +14,7 @@
     radial-gradient(ellipse 40% 40% at 20% 80%, rgba(251,146,60,0.03) 0%, transparent 50%),
     #fcfcff;
   position: relative;
+  overflow-x: hidden;
 }
 
 /* ══════════════════════════════════════
@@ -202,9 +205,11 @@
 .rv-grid-wrap {
   position: relative;
   z-index: 1;
+  width: 100%;
   max-width: 1120px;
   margin: 0 auto;
   padding: 8px 5% 64px;
+  box-sizing: border-box;
 }
 
 .rv-grid {
