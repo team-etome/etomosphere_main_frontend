@@ -339,6 +339,7 @@ function Reviews() {
   const [shown,      setShown]      = useState(INITIAL);
   const [showModal,  setShowModal]  = useState(false);
   const [apiReviews, setApiReviews] = useState([]);
+  const [loading,    setLoading]    = useState(true);
 
   useEffect(() => {
     axios.get(`${APIURL}/api/public-reviews/`)
@@ -347,7 +348,8 @@ function Reviews() {
         const list = Array.isArray(data) ? data : Array.isArray(data?.results) ? data.results : [];
         setApiReviews(list);
       })
-      .catch(() => setApiReviews([]));
+      .catch(() => setApiReviews([]))
+      .finally(() => setLoading(false));
   }, []);
 
   const visible  = apiReviews.slice(0, shown);
@@ -425,7 +427,12 @@ function Reviews() {
 
       {/* ── Glass card grid ── */}
       <div className="rv-grid-wrap">
-        {hasAny ? (
+        {loading ? (
+          <div className="rv-loading">
+            <div className="rv-spinner" />
+            <p className="rv-loading-text">Loading reviews…</p>
+          </div>
+        ) : hasAny ? (
           <>
             <div className="rv-grid">
               {visible.map((review, i) => (
