@@ -16,21 +16,6 @@ const GLOW    = ['rgba(129,140,248,0.35)','rgba(251,146,60,0.35)','rgba(52,211,1
                  'rgba(248,113,113,0.35)','rgba(167,139,250,0.35)','rgba(96,165,250,0.35)',
                  'rgba(74,222,128,0.35)','rgba(251,191,36,0.35)'];
 
-const ALL_REVIEWS = [
-  { id:1,  name:'Alex M.',          school:"St John's School, Palakkadu",    rating:5, text:'Exceptional service and innovative technology. The interactive panels completely transformed our classroom — every teacher noticed the difference from the very first day.' },
-  { id:2,  name:'Alexander Graham', school:"St Peter's School, Kottayam",    rating:5, text:'Outstanding support and top-quality products. Installation was seamless and our students are far more engaged than ever before with the new interactive displays.' },
-  { id:3,  name:'James Cameron',    school:'St George School, Pala',         rating:5, text:'The solutions significantly improved our teaching methods. The digital boards are intuitive and after-sales support from the Etomosphere team is truly commendable.' },
-  { id:4,  name:'Priya Nair',       school:'Bhavans Public School, Kochi',   rating:4, text:'Great range of products for modern classrooms. Demo sessions were very informative and pricing is competitive. Very satisfied with the ongoing support team.' },
-  { id:5,  name:'Rajan Menon',      school:'Christ Nagar School, TVM',       rating:5, text:'Etomosphere delivered well beyond expectations. Their knowledgeable team helped us choose the perfect solution and the entire setup was incredibly smooth.' },
-  { id:6,  name:'Divya Thomas',     school:"St Peter's School, Kottayam",    rating:4, text:'A reliable technology partner. Smart boards have been a game-changer for interactive learning at our school. Professional team and smooth delivery experience.' },
-  { id:7,  name:'Anoop Krishnan',   school:'Sacred Heart School, Ernakulam', rating:5, text:'The demo was impressive and the final product exceeded all expectations. Clear communication throughout and excellent post-installation support from the team.' },
-  { id:8,  name:'Meera Pillai',     school:'St Thomas School, Thrissur',     rating:5, text:'We upgraded our entire AV setup with Etomosphere and have zero regrets. The quality and professionalism of the team is unmatched anywhere in this segment.' },
-  { id:9,  name:'Suresh Babu',      school:'Don Bosco School, Kozhikode',    rating:4, text:'Very good products and knowledgeable staff. The interactive display quality is superb. I highly recommend Etomosphere to any institution wanting to modernize.' },
-  { id:10, name:'Lekha Varma',      school:'Vidya Niketan, Palakkad',        rating:5, text:'Our smart classroom project was transformed. The support team was always available and technology integration was handled with absolute precision throughout.' },
-  { id:11, name:'George Mathew',    school:'Holy Cross School, Kottayam',    rating:5, text:'Best educational technology vendor we have worked with. Products are durable, feature-rich, and very easy for teachers to adopt without extensive training.' },
-  { id:12, name:'Nisha Jose',       school:'Carmel School, Alappuzha',       rating:4, text:'Solid products at fair pricing. Consultative sales team, clean installation, and outstanding handover training — everything was handled professionally.' },
-];
-
 /* ── Count-up ── */
 function CountUp({ to, decimals = 1, duration = 1600 }) {
   const [val, setVal] = useState('0');
@@ -357,13 +342,23 @@ function Reviews() {
 
   useEffect(() => {
     axios.get(`${APIURL}/api/public-reviews/`)
-      .then(res => setApiReviews(res.data))
-      .catch(() => {});
+      .then(res => {
+        const data = res.data;
+        const list = Array.isArray(data) ? data : Array.isArray(data?.results) ? data.results : [];
+        setApiReviews(list);
+      })
+      .catch(() => setApiReviews([]));
   }, []);
 
-  const ALL_COMBINED = [...ALL_REVIEWS, ...apiReviews];
-  const visible = ALL_COMBINED.slice(0, shown);
-  const hasMore = shown < ALL_COMBINED.length;
+  const visible  = apiReviews.slice(0, shown);
+  const hasMore  = shown < apiReviews.length;
+  const hasAny   = apiReviews.length > 0;
+  const avgRating = hasAny
+    ? apiReviews.reduce((sum, r) => sum + (r.rating || 0), 0) / apiReviews.length
+    : 0;
+  const satisfactionRate = hasAny
+    ? Math.round((apiReviews.filter(r => (r.rating || 0) >= 4).length / apiReviews.length) * 100)
+    : 0;
 
   return (
     <div className="reviews-page">
@@ -390,30 +385,34 @@ function Reviews() {
           </h1>
 
           <div className="rv-hero-stats">
-            <div className="rv-hero-stat">
-              <span className="rv-hero-stat-num"><CountUp to={4.8} decimals={1} duration={1800}/></span>
-              <div className="rv-hero-stat-sub">
-                <div className="rv-stars-hero">
-                  {[1,2,3,4,5].map(i => (
-                    <motion.svg key={i} width="18" height="18" viewBox="0 0 24 24" fill="#fbbf24"
-                      initial={{ scale:0, opacity:0 }} animate={{ scale:1, opacity:1 }}
-                      transition={{ type:'spring', stiffness:500, damping:18, delay:0.5+i*0.07 }}>
-                      <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
-                    </motion.svg>
-                  ))}
+            {hasAny && (
+              <>
+                <div className="rv-hero-stat">
+                  <span className="rv-hero-stat-num"><CountUp to={avgRating} decimals={1} duration={1800}/></span>
+                  <div className="rv-hero-stat-sub">
+                    <div className="rv-stars-hero">
+                      {[1,2,3,4,5].map(i => (
+                        <motion.svg key={i} width="18" height="18" viewBox="0 0 24 24" fill="#fbbf24"
+                          initial={{ scale:0, opacity:0 }} animate={{ scale:1, opacity:1 }}
+                          transition={{ type:'spring', stiffness:500, damping:18, delay:0.5+i*0.07 }}>
+                          <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
+                        </motion.svg>
+                      ))}
+                    </div>
+                    <span className="rv-hero-stat-label">{apiReviews.length} reviews</span>
+                  </div>
                 </div>
-                <span className="rv-hero-stat-label">{ALL_COMBINED.length} reviews</span>
-              </div>
-            </div>
 
-            <div className="rv-hero-divider" />
+                <div className="rv-hero-divider" />
 
-            <div className="rv-hero-stat">
-              <span className="rv-hero-stat-num"><CountUp to={100} decimals={0} duration={1400}/>%</span>
-              <span className="rv-hero-stat-label">satisfaction rate</span>
-            </div>
+                <div className="rv-hero-stat">
+                  <span className="rv-hero-stat-num"><CountUp to={satisfactionRate} decimals={0} duration={1400}/>%</span>
+                  <span className="rv-hero-stat-label">satisfaction rate</span>
+                </div>
 
-            <div className="rv-hero-divider" />
+                <div className="rv-hero-divider" />
+              </>
+            )}
 
             <motion.button className="rv-write-btn"
               onClick={() => setShowModal(true)}
@@ -426,30 +425,46 @@ function Reviews() {
 
       {/* ── Glass card grid ── */}
       <div className="rv-grid-wrap">
-        <div className="rv-grid">
-          {visible.map((review, i) => (
-            <GlassCard
-              key={review.id}
-              review={review}
-              index={i}
-              delay={(i % 3) * 0.08}
-            />
-          ))}
-        </div>
+        {hasAny ? (
+          <>
+            <div className="rv-grid">
+              {visible.map((review, i) => (
+                <GlassCard
+                  key={review.id}
+                  review={review}
+                  index={i}
+                  delay={(i % 3) * 0.08}
+                />
+              ))}
+            </div>
 
-        {hasMore && (
-          <motion.div className="rv-loadmore"
-            initial={{ opacity:0 }} animate={{ opacity:1 }} transition={{ delay:0.3 }}>
-            <motion.button className="rv-loadmore-btn"
-              onClick={() => setShown(s => Math.min(s + STEP, ALL_COMBINED.length))}
-              whileHover={{ scale:1.05, y:-2 }} whileTap={{ scale:0.97 }}>
-              Load more reviews
-              <svg width="15" height="15" viewBox="0 0 24 24" fill="none"
-                stroke="currentColor" strokeWidth="2.3" strokeLinecap="round">
-                <path d="M6 9l6 6 6-6"/>
+            {hasMore && (
+              <motion.div className="rv-loadmore"
+                initial={{ opacity:0 }} animate={{ opacity:1 }} transition={{ delay:0.3 }}>
+                <motion.button className="rv-loadmore-btn"
+                  onClick={() => setShown(s => Math.min(s + STEP, apiReviews.length))}
+                  whileHover={{ scale:1.05, y:-2 }} whileTap={{ scale:0.97 }}>
+                  Load more reviews
+                  <svg width="15" height="15" viewBox="0 0 24 24" fill="none"
+                    stroke="currentColor" strokeWidth="2.3" strokeLinecap="round">
+                    <path d="M6 9l6 6 6-6"/>
+                  </svg>
+                </motion.button>
+                <p className="rv-loadmore-hint">{apiReviews.length - shown} more reviews</p>
+              </motion.div>
+            )}
+          </>
+        ) : (
+          <motion.div className="rv-empty"
+            initial={{ opacity:0, y:20 }} animate={{ opacity:1, y:0 }}
+            transition={{ duration:0.6, ease:EASE }}>
+            <div className="rv-empty-icon">
+              <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
               </svg>
-            </motion.button>
-            <p className="rv-loadmore-hint">{ALL_COMBINED.length - shown} more reviews</p>
+            </div>
+            <p className="rv-empty-title">No reviews yet</p>
+            <p className="rv-empty-sub">Be the first to share your experience with Etomosphere.</p>
           </motion.div>
         )}
       </div>
