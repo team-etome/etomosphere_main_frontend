@@ -15,7 +15,7 @@
   import etomeStylusImg from '../../assets/0Q9A0395.png';
   import etomeCoverImg  from '../../assets/0Q9A0380.png';
   import etomeDuaImg    from '../../assets/Etome 2 1.jpg';
-  import ecoboardImg       from '../../assets/ECOBOARD etome page.png';
+  import ecoboardImg       from '../../assets/-LCD-Blackboard.jpg';
   import ecoboardStylusImg from '../../assets/etome eco board.jpg';
   import './etome.css';
 
