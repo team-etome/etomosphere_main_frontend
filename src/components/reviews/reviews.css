@@ -159,6 +159,7 @@
   color: #111827;
   letter-spacing: -0.04em;
   line-height: 1;
+  font-variant-numeric: tabular-nums;
 }
 
 .rv-hero-stat-sub {
@@ -214,12 +215,15 @@
 
 .rv-grid {
   display: grid;
-  grid-template-columns: repeat(3, 1fr);
+  /* minmax(0, 1fr): without the 0 floor, long non-wrapping text inside a card
+     stretches its track past the viewport on small screens */
+  grid-template-columns: repeat(3, minmax(0, 1fr));
   gap: 20px;
 }
 
 /* ── Glass card ── */
 .rv-card {
+  min-width: 0;
   background: rgba(255, 255, 255, 0.62);
   backdrop-filter: blur(20px);
   -webkit-backdrop-filter: blur(20px);
@@ -267,6 +271,7 @@
   line-height: 1.75;
   margin: 0;
   flex: 1;
+  overflow-wrap: anywhere;
 }
 
 /* Divider */
@@ -764,11 +769,26 @@
 
 /* ── Responsive ── */
 @media (max-width: 900px) {
-  .rv-grid { grid-template-columns: repeat(2,1fr); }
+  .rv-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
 }
 @media (max-width: 560px) {
-  .rv-grid { grid-template-columns: 1fr; }
-  .rv-hero-stats { gap: 14px; padding: 14px 18px; }
+  .rv-grid { grid-template-columns: minmax(0, 1fr); }
+  .rv-grid-wrap { padding: 8px 5% 48px; }
+
+  /* Fixed vertical stack. Previously a wrapping flex row: as the count-up numbers
+     grew (4.4 → …, 95% → 100%), items re-wrapped mid-animation, so the card had
+     one layout while counting and a different one once it finished. */
+  .rv-hero-stats {
+    flex-direction: column;
+    flex-wrap: nowrap;
+    align-items: stretch;
+    width: 100%;
+    box-sizing: border-box;
+    gap: 14px;
+    padding: 16px 18px;
+  }
+  .rv-hero-stat { justify-content: center; }
+  .rv-write-btn { width: 100%; }
   .rv-hero-divider { display: none; }
   .rvmodal-row { grid-template-columns: 1fr; }
   .rvmodal-card { padding: 28px 20px 24px; }
