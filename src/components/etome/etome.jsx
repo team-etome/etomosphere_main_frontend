@@ -12,8 +12,8 @@
   import pic7 from '../../assets/eco-23.png';
   import frame1 from '../../assets/Frame1.png';
   import frame2 from '../../assets/Frame 1000011165.png';
-  import etomeStylusImg from '../../assets/0Q9A0395.png';
-  import etomeCoverImg  from '../../assets/0Q9A0380.png';
+  import etomeStylusImg from '../../assets/0Q9A0395.jpg';
+  import etomeCoverImg  from '../../assets/0Q9A0380.jpg';
   import etomeDuaImg    from '../../assets/Etome 2 1.jpg';
   import ecoboardImg       from '../../assets/-LCD-Blackboard.jpg';
   import ecoboardStylusImg from '../../assets/etome eco board.jpg';
@@ -33,7 +33,7 @@
       family: 'Ecoboard Family',
       img: frame1,
       products: [
-        { id: 'ecoboard',        name: 'Ecoboard',        desc: 'Eco-friendly interactive whiteboard crafted for sustainable, high-performance learning.', img: ecoboardImg },
+        { id: 'ecoboard',        name: 'Ecoboard',        desc: 'Eco-friendly interactive whiteboard crafted for sustainable, high-performance learning.', img: ecoboardImg, imgZoom: 1.05 },
         { id: 'ecoboard-stylus', name: 'Ecoboard Stylus',  desc: 'Responsive stylus engineered for smooth, accurate writing on Ecoboard surfaces.', img: ecoboardStylusImg },
       ],
     },
@@ -311,11 +311,10 @@
                     >
                       <div className="innovations-card-img">
                         <motion.img
-                          className={p.img ? 'innovations-card-img-contain' : ''}
                           src={p.img || img}
                           alt={p.name}
                           initial={{ scale: 1.08 }}
-                          whileInView={{ scale: 1 }}
+                          whileInView={{ scale: p.imgZoom || 1 }}
                           viewport={{ once: true, amount: 0.18 }}
                           transition={{ duration: 1.20, ease: [0.22, 1, 0.36, 1] }}
                         />
