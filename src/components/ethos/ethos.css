@@ -6,6 +6,16 @@
   flex-direction: column;
   background: #fff;
   font-family: 'Manrope', sans-serif;
+  /* Slide-in animations start at x: ±40px — on phones that momentarily widens the
+     page (layout looks zoomed/shifted). clip, unlike hidden, doesn't create a
+     scroll container, so the desktop scroll-pin is unaffected. */
+  overflow-x: clip;
+}
+
+@supports not (overflow-x: clip) {
+  @media (max-width: 768px) {
+    .ethos-page { overflow-x: hidden; }
+  }
 }
 
 /* ── Hero ── */
@@ -695,10 +705,24 @@
 
 @media (max-width: 768px) {
   .ig-grid { grid-template-columns: repeat(2, 1fr); gap: 40px 32px; }
+
+  /* Why Institutions Choose Us */
+  .wic-section { padding: 70px 5% 80px; }
+  .wic-heading { margin-bottom: 40px; } /* was 80px (desktop) — the big gap above the first image */
   .wic-row,
-  .wic-row.wic-row-reverse { grid-template-columns: 1fr; gap: 36px; margin-bottom: 60px; }
+  .wic-row.wic-row-reverse { grid-template-columns: minmax(0, 1fr); gap: 24px; margin-bottom: 56px; }
   .wic-row.wic-row-reverse .wic-img { order: -1; }
-  .wic-img { height: 260px; }
+  .wic-img { height: 240px; max-width: 100%; }
+  .wic-text { gap: 12px; min-width: 0; }
+  .wic-title { font-size: 1.3rem; }
+}
+
+/* Touch screens have no real hover: framer-motion's whileHover scale(1.04) sticks after a
+   tap and pushes the image past the page edge. */
+@media (hover: none) {
+  .wic-img,
+  .cv-card,
+  .ethos-mv-card { transform: none !important; }
 }
 
 @media (max-width: 480px) {
@@ -1024,39 +1048,29 @@
 
 /* Technique C: frosted glass base — blurry background tints through */
 .cv-card-glass {
-  background: rgba(255, 255, 255, 0.68) !important;
-  border: 1.5px solid rgba(76, 94, 199, 0.18) !important;
+  /* Was a distinct glass/glow treatment that made the "Trust" card look
+     highlighted compared to the plain white cards around it. */
   position: relative;
   overflow: hidden;
 }
 
-/* Technique C: border glow ring that fades in */
+/* Technique C border-glow ring — removed per the above; kept empty (rather than
+   deleting the div in the JSX) so .cv-c-glow has no visible effect. */
 .cv-c-glow {
-  position: absolute;
-  inset: -1px;
-  border-radius: 20px;
-  border: 1.5px solid rgba(76, 94, 199, 0.60);
-  box-shadow: 0 0 18px rgba(76, 94, 199, 0.18) inset;
-  pointer-events: none;
-  z-index: 1;
+  display: none;
 }
 
-/* Signature: spotlight div — covers whole section */
+/* Signature: spotlight div — covers whole section. Removed the scroll-linked
+   purple/blue background tint (visible on the right side of the section). */
 .cv-spotlight {
-  position: absolute;
-  inset: 0;
-  pointer-events: none;
-  z-index: 0;
+  display: none;
 }
 
 /* Signature: orb track — positioned top-right */
+/* Blurred purple/blue orb, top-right of the section — removed per the same
+   "no blue glow" request as .cv-spotlight above. */
 .cv-orb-track {
-  position: absolute;
-  top: -100px;
-  right: 2%;
-  pointer-events: none;
-  z-index: 0;
-  will-change: transform;
+  display: none;
 }
 
 /* Signature: orb itself — blurred gradient sphere */
@@ -1127,6 +1141,15 @@
   .cv-counter-wrap  { display: none; }
   .cv-card-glass    { backdrop-filter: none !important; }
   .cv-b-accent      { display: none; }
+
+  /* Stack at ≤768px (was only ≤480px, so big phones got 3 cramped columns and the
+     staggered center-column offset left an odd gap) */
+  .cv-section       { padding: 70px 5% 80px; }
+  .cv-section-head  { margin-bottom: 36px; }
+  .cv-grid          { flex-direction: column; gap: 16px; perspective: none; }
+  .cv-col           { width: 100%; gap: 16px; }
+  .cv-col-center    { padding-top: 0; }
+  .cv-card          { padding: 28px 24px; }
 }
 
 /* ═══════════════════════════════════════════════════════
@@ -1267,6 +1290,10 @@
 /* ── RIGHT horizontal track ── */
 .htl-right {
   position: relative;
+  /* Tried native overflow-x:auto to also allow finger-swipe here, but GSAP's
+     scroll-linked transform on .htl-track kept overriding it, so swipes never
+     actually moved anything on a real phone. Vertical-scroll-drives-progress
+     (via the pin below) is the only interaction now — back to overflow:hidden. */
   overflow: hidden;
   display: flex;
   align-items: center;
@@ -1360,13 +1387,18 @@
   letter-spacing: -0.01em;
 }
 
-/* ── Mobile ── */
+/* .htl-mobile (plain stacked timeline) is unused now — the pinned scroll
+   runs at every width, fixed via ScrollTrigger.config({ ignoreMobileResize })
+   in ethos.jsx instead of swapping to a fallback layout on phones. */
+.htl-mobile { display: none; }
+
+/* Below 768px the pinned layout still runs, just with a narrower single-column
+   grid instead of desktop's fixed 34%/66% split (which is too tight for the
+   text panel at phone widths — every word was wrapping onto its own line). */
 @media (max-width: 768px) {
-  /* htl-driver keeps 600vh so GSAP has scroll room */
-  /* htl-stage keeps height:100vh so GSAP pin works — only grid layout changes */
   .htl-stage {
     grid-template-columns: 1fr;
-    grid-template-rows: 1fr 45vh; /* info panel fills top, cards get 45vh */
+    grid-template-rows: 1fr 45vh;
   }
   .htl-left {
     padding: 80px 20px 10px;
@@ -1374,10 +1406,9 @@
     overflow: hidden;
   }
   .htl-left::before { display: none; }
-  /* compact info text so it fits the reduced top panel */
   .htl-heading       { font-size: clamp(1.7rem, 6vw, 2.2rem); margin-bottom: 14px; }
   .htl-entry-title   { font-size: clamp(1rem, 4.5vw, 1.3rem); }
-  .htl-entry-body    {
+  .htl-entry-body {
     font-size: 0.78rem;
     line-height: 1.55;
     display: -webkit-box;
@@ -1386,13 +1417,99 @@
     -webkit-box-orient: vertical;
     overflow: hidden;
   }
-  .htl-entry-info    { gap: 6px; }
-  .htl-progress      { margin-top: 10px; }
-  /* cards area */
+  .htl-entry-info { gap: 6px; }
+  .htl-progress   { margin-top: 10px; }
   .htl-right {
     overflow: hidden;
     padding: 0 0 10px 14px;
   }
   .htl-card { width: 68vw; }
+
+  .htl-mobile {
+    display: none;
+    padding: 64px 6% 56px;
+    background: #fff;
+  }
+
+  .htl-m-eyebrow {
+    display: block;
+    font-family: 'Manrope', sans-serif;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: #4c5ec7;
+    margin-bottom: 10px;
+  }
+
+  .htl-m-heading {
+    font-family: 'Manrope', sans-serif;
+    font-size: clamp(1.9rem, 8vw, 2.4rem);
+    font-weight: 800;
+    letter-spacing: -0.03em;
+    line-height: 1.1;
+    color: #0a0a0a;
+    margin: 0 0 32px;
+  }
+
+  .htl-m-list {
+    display: flex;
+    flex-direction: column;
+    gap: 22px;
+  }
+
+  .htl-m-card {
+    background: #fff;
+    border-radius: 20px;
+    overflow: hidden;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.05), 0 12px 32px rgba(10,10,26,0.10);
+  }
+
+  .htl-m-media {
+    position: relative;
+    aspect-ratio: 4 / 3;
+    background: #eef1fd;
+  }
+
+  .htl-m-media img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+  }
+
+  .htl-m-year {
+    position: absolute;
+    top: 14px;
+    left: 14px;
+    padding: 5px 12px;
+    border-radius: 999px;
+    background: rgba(255,255,255,0.92);
+    font-family: 'Manrope', sans-serif;
+    font-size: 12px;
+    font-weight: 800;
+    letter-spacing: 0.04em;
+    color: #4c5ec7;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.12);
+  }
+
+  .htl-m-body { padding: 20px 20px 24px; }
+
+  .htl-m-title {
+    font-family: 'Manrope', sans-serif;
+    font-size: 1.2rem;
+    font-weight: 800;
+    letter-spacing: -0.02em;
+    color: #0a0a0a;
+    margin: 0 0 8px;
+  }
+
+  .htl-m-text {
+    font-family: 'Manrope', sans-serif;
+    font-size: 0.9rem;
+    line-height: 1.7;
+    color: #6b7280;
+    margin: 0;
+  }
 }
 

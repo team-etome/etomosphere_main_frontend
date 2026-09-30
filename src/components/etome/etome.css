@@ -675,19 +675,66 @@
 
 /* Responsive */
 @media (max-width: 900px) {
-  .etome-vision { flex-direction: column; gap: 40px; padding: 64px 6%; }
+  .etome-vision { flex-direction: column; gap: 24px; padding: 64px 6%; }
   .vision-image { flex: none; width: 100%; }
   .vision-image img { height: 320px; }
-  .praxam-card { flex-direction: column; max-height: none; }
-  .praxam-text { flex: none; padding: 36px 28px; }
-  .praxam-image { height: 240px; }
+
+  /* Heading first, then image, then the 4 value cards — .vision-content
+     normally wraps the title+cards as one block after the image; making
+     it `contents` lets the title and grid reorder independently on mobile. */
+  .vision-content { display: contents; }
+  .vision-title {
+    order: 1;
+    margin-bottom: 20px;
+    /* .etome-vision has align-items:center — without this the title, as an
+       auto-width flex item, shrinks to its own text width and centers as a
+       block, making the (left-aligned) text look centered on the page. */
+    align-self: stretch;
+    width: 100%;
+    text-align: left;
+  }
+  .vision-image    { order: 2; }
+  .vision-grid     { order: 3; }
+
+  /* Desktop's 96px bottom padding was untouched on mobile, stacking with
+     .etome-innovations' own top padding right after it — that's the big gap
+     under the Praxam card. */
+  .etome-praxam { padding-bottom: 20px; }
+
+  /* .praxam-card had a fixed height:610px for the desktop side-by-side layout —
+     mobile only reset max-height, so the stacked card was still pinned to that
+     height and quietly clipping/cramping its own content. */
+  .praxam-card { flex-direction: column; height: auto; max-height: none; }
+
+  /* .praxam-text normally wraps heading+sub+desc+buttons as one block ahead of
+     the image; `contents` lets each piece reorder independently. Image now
+     leads as a full-width banner — .praxam-card's own border-radius + overflow
+     clip it to rounded top corners for free, then the content follows below. */
+  .praxam-text { display: contents; }
+  .praxam-image    { order: 1; height: 220px; }
+  .praxam-text h2  { order: 2; padding: 28px 28px 0; }
+  .praxam-sub      { order: 3; padding: 0 28px; }
+  .praxam-desc     { order: 4; padding: 0 28px; }
+  .praxam-btns     { order: 5; padding: 4px 28px 32px; }
 }
 
 @media (max-width: 600px) {
   .vision-grid { grid-template-columns: 1fr; }
-  .praxam-text { padding: 28px 20px; }
+  .praxam-text h2  { padding: 28px 20px 0; }
+  .praxam-sub,
+  .praxam-desc     { padding: 0 20px; }
+  .praxam-btns     { padding: 4px 20px 28px; }
   .vision-title { font-size: 1.6rem; }
-  .praxam-text h2 { font-size: 1.2rem; }
+
+  /* Was font-size only, with the 48px desktop line-height and 260px max-width
+     left in place — that's why "Praxam — Intelligent" / "Examination
+     Experience." looked like two separate paragraphs with a big gap between. */
+  .praxam-text h2 {
+    font-size: 1.7rem;
+    line-height: 1.2;
+    letter-spacing: -0.02em;
+    max-width: none;
+  }
 }
 
 /* ══════════════════════════════════════
@@ -818,13 +865,18 @@
 .showcase-card {
   display: flex;
   align-items: stretch;
+  /* Card and section were both plain white with no border of its own, so the
+     rounded corners/shadow had nothing to read against — it looked like flat,
+     edge-to-edge content instead of a distinct card. */
+  background: #fff;
+  border: 1px solid #e2e8f0;
   border-radius: 20px;
   overflow: hidden;
   min-height: 300px;
   will-change: transform;
   backdrop-filter: blur(12px);
   -webkit-backdrop-filter: blur(12px);
-  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.04);
+  box-shadow: 0 4px 24px rgba(0, 0, 0, 0.06);
 }
 
 .showcase-card--reverse {
@@ -883,10 +935,17 @@
 }
 
 @media (max-width: 768px) {
-  .showcase-card,
-  .showcase-card--reverse { flex-direction: column; }
+  .etome-showcase { padding: 48px 6%; gap: 20px; }
+  .showcase-card { flex-direction: column; }
+  /* Reverse card's DOM order is image-then-text (so desktop's row layout can
+     show image-left without row-reverse); column-reverse flips that back to
+     text-first on mobile so both cards stack the same way. */
+  .showcase-card--reverse { flex-direction: column-reverse; }
   .showcase-img { flex: none; height: 220px; }
   .showcase-text { padding: 28px 24px; }
+  .showcase-tag { font-size: 2.2rem; line-height: 1.2; }
+  .showcase-heading { font-size: 1.5rem; }
+  .showcase-desc { font-size: 1rem; line-height: 1.6; }
 }
 
 /* ══════════════════════════════════════
@@ -1202,6 +1261,7 @@
 @media (max-width: 900px) {
   .innovations-grid { grid-template-columns: repeat(2, 1fr); }
   .etome-innovations { padding: 56px 6%; }
+  .innovations-title { text-align: left; margin-bottom: 24px; }
 }
 
 @media (max-width: 560px) {

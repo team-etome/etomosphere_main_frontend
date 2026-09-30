@@ -4,6 +4,11 @@ import { motion, useMotionValue, useSpring, useTransform, useScroll, AnimatePres
 import gsap from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 gsap.registerPlugin(ScrollTrigger);
+// Mobile browsers fire a resize event when the address bar collapses/expands
+// on scroll — without this, that resize triggers a pin-distance refresh mid-
+// scroll and the "Our Evolution" pinned track would go stale (a big blank gap).
+// This is GSAP's documented fix for exactly that.
+ScrollTrigger.config({ ignoreMobileResize: true });
 import Header from '../header/header.jsx';
 import Footer from '../footer/footer.jsx';
 import ContactModal from '../enquiry/ContactModal.jsx';
@@ -292,10 +297,16 @@ function HorizontalTimeline({ entries }) {
   const driverRef  = useRef(null);
   const stageRef   = useRef(null);
   const trackRef   = useRef(null);
+  const rightRef   = useRef(null);
   const travelRef  = useRef(0);
+  const stRef      = useRef(null);
+  const activeIdxRef = useRef(0);
   const count      = entries.length;
   const [activeIdx, setActiveIdx] = useState(0);
   const prevRef    = useRef(0);
+
+  useEffect(() => { activeIdxRef.current = activeIdx; }, [activeIdx]);
+
   useEffect(() => {
     const driver = driverRef.current;
     const stage  = stageRef.current;
@@ -308,6 +319,9 @@ function HorizontalTimeline({ entries }) {
       travelRef.current = cards[cards.length - 1].offsetLeft;
     };
 
+    // Runs at every width now — ScrollTrigger.config({ ignoreMobileResize: true })
+    // (set once, module scope) stops the mobile address-bar collapse from
+    // triggering a stale pin-distance refresh mid-scroll.
     const st = ScrollTrigger.create({
       trigger:       driver,
       start:         'top top',
@@ -325,16 +339,80 @@ function HorizontalTimeline({ entries }) {
         }
       },
     });
+    stRef.current = st;
 
     calcTravel();
-    return () => st.kill();
+    return () => { st.kill(); stRef.current = null; };
+  }, [count]);
+
+  // Swipe support: a left/right drag on the card strip moves to the next/previous
+  // card by scrolling the page to that card's equivalent scroll position — so it
+  // drives the exact same scroll-linked system above instead of fighting it with
+  // a second, independent position (which is why plain overflow-x:auto never
+  // actually worked — GSAP's onUpdate kept overwriting it every scroll tick).
+  useEffect(() => {
+    const el = rightRef.current;
+    if (!el) return;
+    let startX = 0, startY = 0, tracking = false;
+
+    const onStart = (e) => {
+      const t = e.touches ? e.touches[0] : e;
+      startX = t.clientX;
+      startY = t.clientY;
+      tracking = true;
+    };
+
+    const onEnd = (e) => {
+      if (!tracking) return;
+      tracking = false;
+      const t = e.changedTouches ? e.changedTouches[0] : e;
+      const dx = t.clientX - startX;
+      const dy = t.clientY - startY;
+      // Require a real, mostly-horizontal drag so vertical page scrolling is unaffected.
+      if (Math.abs(dx) < 40 || Math.abs(dx) < Math.abs(dy)) return;
+
+      const st = stRef.current;
+      if (!st || count <= 1) return;
+      const dir    = dx < 0 ? 1 : -1; // swipe left → next card
+      const target = Math.max(0, Math.min(count - 1, activeIdxRef.current + dir));
+      const progress = target / (count - 1);
+      window.scrollTo({ top: st.start + progress * (st.end - st.start), behavior: 'smooth' });
+    };
+
+    el.addEventListener('touchstart', onStart, { passive: true });
+    el.addEventListener('touchend', onEnd, { passive: true });
+    return () => {
+      el.removeEventListener('touchstart', onStart);
+      el.removeEventListener('touchend', onEnd);
+    };
   }, [count]);
 
   const e = entries[activeIdx];
 
   return (
     <div className="htl-section">
-      <div ref={driverRef} className="htl-driver">
+      {/* ── Phones: plain stacked timeline (no pinning / scroll-jacking) ── */}
+      <div className="htl-mobile">
+        <span className="htl-m-eyebrow">Since 2013</span>
+        <h2 className="htl-m-heading">Our Evolution</h2>
+        <div className="htl-m-list">
+          {entries.map((card, i) => (
+            <article key={i} className="htl-m-card">
+              <div className="htl-m-media">
+                <img src={card.img} alt={card.title} loading="lazy" />
+                <span className="htl-m-year">{card.year}</span>
+              </div>
+              <div className="htl-m-body">
+                <h3 className="htl-m-title">{card.title}</h3>
+                <p className="htl-m-text">{card.body}</p>
+              </div>
+            </article>
+          ))}
+        </div>
+      </div>
+
+      {/* ── Desktop: pinned horizontal scroll ── */}
+      <div ref={driverRef} className="htl-driver htl-desktop">
         <div ref={stageRef} className="htl-stage">
 
           {/* ── LEFT: fixed info panel ── */}
@@ -380,7 +458,7 @@ function HorizontalTimeline({ entries }) {
           </div>
 
           {/* ── RIGHT: horizontal card track ── */}
-          <div className="htl-right">
+          <div className="htl-right" ref={rightRef}>
             <div ref={trackRef} className="htl-track">
               {entries.map((card, i) => (
                 <div key={i} data-idx={i} className={`htl-card${i === activeIdx ? ' htl-card--active' : ''}`}>
