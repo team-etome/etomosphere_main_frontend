@@ -44,9 +44,12 @@
 }
 
 @keyframes skyDrift {
-  0%   { transform: scale(1.06) translateX(0); }
-  50%  { transform: scale(1.06) translateX(-1%); }
-  100% { transform: scale(1.06) translateX(0); }
+  /* Was a constant 6% zoom on top of the cover-stretch, on a source image
+     that's already below the viewport's native pixel size — extra
+     unnecessary magnification, extra blur. Panning without the scale. */
+  0%   { transform: scale(1) translateX(0); }
+  50%  { transform: scale(1) translateX(-1%); }
+  100% { transform: scale(1) translateX(0); }
 }
 
 .etomos-hero-img {
@@ -58,14 +61,18 @@
   animation: skyDrift 28s ease-in-out infinite;
 }
 
-/* ── Base overlay: darken for readability ── */
+/* ── Base overlay: darken for readability ──
+   Three stacked darkening layers (this + haze + fg below) were compounding
+   across most of the frame — including the right side with the product
+   displays, which never needed darkening for text contrast at all. Scaled
+   each one down to roughly a third of its original strength. */
 .etomos-hero-overlay {
   position: absolute;
   inset: 0;
   z-index: 1;
   background:
-    linear-gradient(to right, rgba(0,0,0,0.75) 0%, rgba(0,0,0,0.25) 60%, transparent 100%),
-    linear-gradient(to top,   rgba(0,0,0,0.60) 0%, transparent 50%);
+    linear-gradient(to right, rgba(0,0,0,0.42) 0%, rgba(0,0,0,0.12) 55%, transparent 90%),
+    linear-gradient(to top,   rgba(0,0,0,0.30) 0%, transparent 45%);
   pointer-events: none;
 }
 
@@ -77,9 +84,9 @@
   will-change: transform;
   background: radial-gradient(
     ellipse 80% 60% at 75% 40%,
-    transparent 20%,
-    rgba(10, 18, 40, 0.22) 60%,
-    rgba(5, 10, 28, 0.45) 100%
+    transparent 30%,
+    rgba(10, 18, 40, 0.08) 65%,
+    rgba(5, 10, 28, 0.16) 100%
   );
   pointer-events: none;
 }
@@ -92,11 +99,11 @@
   will-change: transform;
   background:
     /* hard bottom-left corner shadow — "ground" depth */
-    radial-gradient(ellipse 55% 45% at -5% 110%, rgba(0,0,0,0.55) 0%, transparent 65%),
+    radial-gradient(ellipse 55% 45% at -5% 110%, rgba(0,0,0,0.26) 0%, transparent 65%),
     /* right-edge depth falloff */
-    radial-gradient(ellipse 35% 80% at 105% 50%, rgba(0,0,0,0.38) 0%, transparent 60%),
+    radial-gradient(ellipse 35% 80% at 105% 50%, rgba(0,0,0,0.14) 0%, transparent 60%),
     /* top-right ambient shadow */
-    radial-gradient(ellipse 50% 40% at 100% -10%, rgba(0,0,0,0.28) 0%, transparent 55%);
+    radial-gradient(ellipse 50% 40% at 100% -10%, rgba(0,0,0,0.10) 0%, transparent 55%);
   pointer-events: none;
 }
 

@@ -7,7 +7,7 @@
   import { useCart } from '../../context/CartContext.jsx';
   import heroMainImg  from '../../assets/main1.png';
   import pic4 from '../../assets/eco1-new.png';
-  import pic5 from '../../assets/praxam.png';
+  import pic5 from '../../assets/EE.png';
   import pic6 from '../../assets/etome11.png';
   import pic7 from '../../assets/eco-23.png';
   import frame1 from '../../assets/Frame1.png';
