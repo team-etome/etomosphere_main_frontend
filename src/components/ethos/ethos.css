@@ -6,10 +6,16 @@
   flex-direction: column;
   background: #fff;
   font-family: 'Manrope', sans-serif;
-  /* Slide-in animations start at x: ±40px — on phones that momentarily widens the
-     page (layout looks zoomed/shifted). clip, unlike hidden, doesn't create a
-     scroll container, so the desktop scroll-pin is unaffected. */
-  overflow-x: clip;
+}
+
+/* Slide-in animations start at x: ±40px — on phones that momentarily widens the
+   page (layout looks zoomed/shifted). Scoped to mobile only: setting overflow-x
+   without overflow-y makes the browser silently force overflow-y to 'auto' too,
+   which turns this into a clipping container and cuts off any desktop transform
+   overflow (e.g. the partnership card's hover zoom) — so this must not run on
+   desktop where no slide-in-widening bug exists anyway. */
+@media (max-width: 768px) {
+  .ethos-page { overflow-x: clip; }
 }
 
 @supports not (overflow-x: clip) {
@@ -24,7 +30,7 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: 100px 8% 80px;
+  padding: 100px 8% 56px;
   min-height: calc(100vh - 180px);
   position: relative;
   overflow: hidden;
@@ -77,7 +83,7 @@
 
 /* ── Content block ── */
 .ethos-content {
-  max-width: 960px;
+  max-width: 1100px;
   width: 100%;
   position: relative;
   z-index: 2;
@@ -99,24 +105,29 @@
 }
 
 .ethos-title {
-  font-size: clamp(1.9rem, 3.4vw, 3rem);
-  font-weight: 800;
-  line-height: 1.12;
-  letter-spacing: -0.025em;
-  color: #0a0a0a;
-  margin: 0 0 28px;
+  font-size: clamp(1.9rem, 3.4vw, 4.5rem);
+  font-weight: 700;
+  line-height: 1.125;
+  letter-spacing: -0.02em;
+  color: #222222;
+  margin: 0 0 16px;
   text-align: center;
 }
 
 /* ── Subtitle ── */
 .ethos-subtitle {
-  font-size: clamp(0.95rem, 1.6vw, 1.08rem);
+  font-size: clamp(0.95rem, 1.6vw, 1.125rem);
   font-weight: 400;
-  color: #4b5563;
-  line-height: 1.72;
-  margin: 0 0 44px;
-  max-width: 580px;
+  color: #4D5062;
+  line-height: 1.556;
+  letter-spacing: 0;
+  margin: 0 0 32px;
+  max-width: 1060px;
   text-align: center;
+}
+
+@media (max-width: 768px) {
+  .ethos-subtitle-break { display: none; }
 }
 
 /* ── Buttons ── */
@@ -131,32 +142,38 @@
   display: inline-flex;
   align-items: center;
   justify-content: center;
+  width: 213px;
+  height: 60px;
+  box-sizing: border-box;
   padding: 13px 28px;
   border-radius: 10px;
   font-family: 'Manrope', sans-serif;
-  font-size: 15px;
-  font-weight: 700;
+  font-size: 14px;
+  line-height: 1.43;
+  letter-spacing: 0;
   cursor: pointer;
   white-space: nowrap;
   transition: background 0.2s ease, box-shadow 0.2s ease, color 0.2s ease;
 }
 
 .ethos-btn-primary {
-  background: #1d3fa5;
+  background: #0249AB;
   color: #fff;
   border: none;
   box-shadow: none;
+  font-weight: 600;
 }
 
 .ethos-btn-primary:hover {
-  background: #163082;
+  background: #023a86;
 }
 
 .ethos-btn-outline {
   background: transparent;
   color: #1d3fa5;
-  border: 2px solid #1d3fa5;
+  border: 1.5px solid #1d3fa5;
   box-shadow: none;
+  font-weight: 700;
 }
 
 .ethos-btn-outline:hover {
@@ -167,10 +184,10 @@
    Mission & Vision section
 ══════════════════════════════ */
 .ethos-mv-section {
-  padding: 0 6% 110px;
+  padding: 0 6% 70px;
   display: flex;
   justify-content: center;
-  margin-top: 30px;
+  margin-top: 0;
 }
 
 .ethos-mv-grid {
@@ -189,17 +206,26 @@
   flex-direction: column;
   gap: 22px;
   min-height: 320px;
+  transition: box-shadow 0.35s ease, border-color 0.3s ease;
 }
 
 .ethos-mv-dark {
-  background: #4c5ec7;
-  color: #fff;
+  background: #E9EBFF;
+  color: #1d2a6b;
+}
+
+.ethos-mv-dark:hover {
+  box-shadow: 0 20px 40px rgba(76, 94, 199, 0.18);
 }
 
 .ethos-mv-light {
   background: #fff;
-  border: 1.5px solid #e2e6f3;
+  border: 1.5px solid #E2E2E2;
   color: #0a0a0a;
+}
+
+.ethos-mv-light:hover {
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.08);
 }
 
 .ethos-mv-icon {
@@ -212,13 +238,13 @@
 }
 
 .ethos-mv-dark .ethos-mv-icon {
-  background: rgba(255, 255, 255, 0.15);
-  color: #fff;
+  background: rgba(2, 73, 171, 0.08);
+  color: #0249AB;
 }
 
 .ethos-mv-light .ethos-mv-icon {
-  background: #eef0fb;
-  color: #4c5ec7;
+  background: rgba(2, 73, 171, 0.08);
+  color: #0249AB;
 }
 
 .ethos-mv-title {
@@ -227,18 +253,14 @@
   line-height: 1.2;
   margin: 0;
   letter-spacing: -0.02em;
+  color: #222222;
 }
 
 .ethos-mv-body {
   font-size: 1.02rem;
   line-height: 1.75;
   margin: 0;
-  opacity: 0.88;
-}
-
-.ethos-mv-light .ethos-mv-body {
-  color: #4b5563;
-  opacity: 1;
+  color: #4D5062;
 }
 
 /* ══════════════════════════════
@@ -433,12 +455,12 @@
    Partnership banner
 ══════════════════════════════ */
 .partner-section {
-  padding: 0 6% 110px;
+  padding: 0 6% 70px;
+  overflow: visible;
 }
 
-.partner-section { perspective: 1200px; }
-
 .partner-card {
+  position: relative;
   max-width: 1060px;
   margin: 0 auto;
   border: 2px solid #4c5ec7;
@@ -448,7 +470,12 @@
   align-items: center;
   justify-content: space-between;
   gap: 48px;
-  will-change: transform;
+  background: #fff;
+  transition: border-color 0.3s ease;
+}
+
+.partner-card:hover {
+  border-color: #0249AB;
 }
 
 .partner-text {
@@ -456,17 +483,18 @@
 }
 
 .partner-title {
-  font-size: clamp(1.8rem, 3.2vw, 2.6rem);
-  font-weight: 800;
-  color: #4c5ec7;
-  line-height: 1.18;
-  letter-spacing: -0.025em;
+  font-size: clamp(1.8rem, 3.2vw, 4.5rem);
+  font-weight: 700;
+  color: #0249AB;
+  line-height: 1.1;
+  letter-spacing: -0.04em;
   margin: 0 0 20px;
 }
 
 .partner-body {
-  font-size: 1rem;
-  line-height: 1.75;
+  font-size: 1.125rem;
+  line-height: 1.6;
+  letter-spacing: 0;
   color: #4b5563;
   margin: 0;
   max-width: 400px;
@@ -497,31 +525,46 @@
 .cv-heading {
   text-align: center;
   font-size: clamp(2rem, 4vw, 3rem);
-  font-weight: 800;
-  color: #0a0a0a;
+  font-weight: 700;
+  color: #222222;
   letter-spacing: -0.025em;
   margin: 0 0 64px;
 }
 
+/* Real grid with explicit rows: row 2 always aligns across all 3 columns,
+   independent of how much row 1 is staggered (unlike the old per-column
+   flex stack, where the center column's offset pushed its row-2 card down
+   along with it, breaking row-2 alignment). */
 .cv-grid {
-  display: flex;
-  gap: 24px;
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  row-gap: 64px;
+  column-gap: 24px;
   max-width: 1060px;
   margin: 0 auto;
-  align-items: flex-start;
+  align-items: stretch;
   perspective: 1200px;
 }
 
-.cv-col {
-  flex: 1;
+/* Wrapped techniques (A/D) need their inner .cv-card to actually fill the
+   stretched grid-item height — otherwise the card's white background
+   wouldn't reach the row's bottom even though its wrapper does. */
+.cv-tech-outer {
   display: flex;
-  flex-direction: column;
-  gap: 24px;
 }
 
-/* Center column offset — creates the staggered Figma look */
-.cv-col-center {
-  padding-top: 48px;
+.cv-tech-outer > .cv-card {
+  flex: 1;
+}
+
+/* Center card of each row (Excellence in row 1, Collaboration in row 2) —
+   a fixed margin-top offset, not content height, so both get the same gap
+   regardless of how much body text they have. Since .cv-grid still stretches
+   by default, the card fills the rest of the row's height after that margin,
+   so its bottom always stays flush with the other two cards either way. */
+.cv-grid > *:nth-child(2),
+.cv-grid > *:nth-child(5) {
+  margin-top: 48px;
 }
 
 .cv-card {
@@ -533,7 +576,7 @@
 
 .cv-card-title {
   font-size: 1.5rem;
-  font-weight: 800;
+  font-weight: 700;
   color: #0a0a0a;
   letter-spacing: -0.02em;
   margin: 0 0 12px;
@@ -542,7 +585,7 @@
 .cv-card-body {
   font-size: 0.95rem;
   line-height: 1.75;
-  color: #6b7280;
+  color: #4D5062;
   margin: 0;
 }
 
@@ -551,15 +594,16 @@
 ══════════════════════════════ */
 .ig-section {
   background: #fff;
-  padding: 100px 6% 110px;
+  padding: 70px 6% 70px;
 }
 
 .ig-heading {
   text-align: center;
-  font-size: clamp(2.2rem, 4.5vw, 3.4rem);
-  font-weight: 800;
-  color: #0a0a0a;
-  letter-spacing: -0.025em;
+  font-size: clamp(2.2rem, 4.5vw, 3rem);
+  font-weight: 700;
+  line-height: 1.167;
+  color: #222222;
+  letter-spacing: -0.02em;
   margin: 0 0 80px;
 }
 
@@ -592,7 +636,7 @@
 .ig-item-title {
   font-size: 1.08rem;
   font-weight: 700;
-  color: #0a0a0a;
+  color: #222222;
   line-height: 1.3;
   margin: 0;
   letter-spacing: -0.01em;
@@ -601,7 +645,7 @@
 .ig-item-body {
   font-size: 0.95rem;
   line-height: 1.75;
-  color: #6b7280;
+  color: #4D5062;
   margin: 0;
 }
 
@@ -609,15 +653,15 @@
    Why Institutions Choose Us
 ══════════════════════════════ */
 .wic-section {
-  background: #f3f4f6;
-  padding: 100px 6% 110px;
+  background: #fff;
+  padding: 70px 6% 110px;
 }
 
 .wic-heading {
   text-align: center;
-  font-size: clamp(2.2rem, 4.5vw, 3.2rem);
-  font-weight: 800;
-  color: #0a0a0a;
+  font-size: clamp(2.2rem, 4.5vw, 3rem);
+  font-weight: 700;
+  color: #222222;
   letter-spacing: -0.025em;
   margin: 0 0 80px;
 }
@@ -642,12 +686,6 @@
   border-radius: 24px;
   display: block;
   cursor: default;
-  will-change: transform;
-  transition: box-shadow 0.4s ease;
-}
-
-.wic-img:hover {
-  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.18);
 }
 
 .wic-text {
@@ -657,18 +695,20 @@
 }
 
 .wic-title {
-  font-size: 1.55rem;
-  font-weight: 800;
+  font-size: 1.5rem;
+  font-weight: 700;
   color: #0a0a0a;
-  line-height: 1.25;
-  letter-spacing: -0.02em;
+  line-height: 1.3;
+  letter-spacing: 0;
   margin: 0;
 }
 
 .wic-body {
-  font-size: 0.97rem;
-  line-height: 1.78;
-  color: #6b7280;
+  font-size: 1rem;
+  font-weight: 400;
+  line-height: 1.6;
+  letter-spacing: 0;
+  color: #4D5062;
   margin: 0;
 }
 
@@ -736,8 +776,9 @@
   .partner-body      { max-width: 100%; }
   .partner-logo img  { max-width: 160px; }
   .cv-section        { padding: 70px 5% 80px; }
-  .cv-grid           { flex-direction: column; }
-  .cv-col-center     { padding-top: 0; }
+  .cv-grid           { grid-template-columns: 1fr; }
+  .cv-grid > *:nth-child(2),
+  .cv-grid > *:nth-child(5) { margin-top: 0; }
   .ig-section        { padding: 70px 5% 80px; }
   .ig-grid           { grid-template-columns: 1fr; gap: 36px; }
   .wic-section       { padding: 70px 5% 80px; }
@@ -1016,7 +1057,7 @@
 /* ══════════════════════════════════════════════════
    Core Values — Premium 5-Technique Scroll System
    New classes only — existing .cv-section, .cv-card,
-   .cv-grid, .cv-col, .cv-col-center unchanged.
+   .cv-grid unchanged.
 ══════════════════════════════════════════════════ */
 
 /* Make cv-section a stacking context for absolute children */
@@ -1038,12 +1079,7 @@
 
 /* Technique B: top accent bar — fastest parallax layer */
 .cv-b-accent {
-  width: 44px;
-  height: 4px;
-  border-radius: 2px;
-  background: linear-gradient(90deg, #4c5ec7 0%, #8a6fe0 100%);
-  margin-bottom: 18px;
-  flex-shrink: 0;
+  display: none;
 }
 
 /* Technique C: frosted glass base — blurry background tints through */
@@ -1146,9 +1182,9 @@
      staggered center-column offset left an odd gap) */
   .cv-section       { padding: 70px 5% 80px; }
   .cv-section-head  { margin-bottom: 36px; }
-  .cv-grid          { flex-direction: column; gap: 16px; perspective: none; }
-  .cv-col           { width: 100%; gap: 16px; }
-  .cv-col-center    { padding-top: 0; }
+  .cv-grid          { grid-template-columns: 1fr; gap: 16px; perspective: none; }
+  .cv-grid > *:nth-child(2),
+  .cv-grid > *:nth-child(5) { margin-top: 0; }
   .cv-card          { padding: 28px 24px; }
 }
 
@@ -1156,7 +1192,7 @@
    OUR EVOLUTION — TRIONN-STYLE HORIZONTAL SCROLL
 ═══════════════════════════════════════════════════════ */
 
-.htl-section { background: #fff; }
+.htl-section { background: #fff; display: none; }
 
 /* Tall driver — GSAP pins stage while this scrolls */
 .htl-driver {

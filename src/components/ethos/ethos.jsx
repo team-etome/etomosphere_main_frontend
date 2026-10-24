@@ -206,27 +206,14 @@ function CvCardC({ card, delay = 0 }) {
 }
 
 function CvCardD({ card, delay = 0 }) {
-  const px   = useMotionValue(0.5);
-  const py   = useMotionValue(0.5);
-  const rotX = useSpring(useTransform(py, [0, 1], [ 6, -6]), { stiffness: 80, damping: 20 });
-  const rotY = useSpring(useTransform(px, [0, 1], [-6,  6]), { stiffness: 80, damping: 20 });
-  const sc   = useSpring(1, { stiffness: 80, damping: 20 });
   return (
     <div className="cv-tech-outer">
       <motion.div
         className="cv-card"
-        style={{ rotateX: rotX, rotateY: rotY, scale: sc, transformStyle: 'preserve-3d', willChange: 'transform' }}
         initial={{ opacity: 0, y: 28 }}
         whileInView={{ opacity: 1, y: 0 }}
         viewport={{ once: true, margin: '-40px' }}
         transition={{ duration: 0.65, ease: EASE, delay }}
-        onMouseMove={e => {
-          const r = e.currentTarget.getBoundingClientRect();
-          px.set((e.clientX - r.left) / r.width);
-          py.set((e.clientY - r.top)  / r.height);
-          sc.set(1.04);
-        }}
-        onMouseLeave={() => { px.set(0.5); py.set(0.5); sc.set(1); }}
       >
         <h3 className="cv-card-title">{card.title}</h3>
         <p className="cv-card-body">{card.body}</p>
@@ -558,8 +545,9 @@ function Ethos() {
             transition={{ duration: 0.7, ease: EASE, delay: 0.55 }}
           >
             We are committed to creating meaningful learning experiences through
-            technology, sustainability, and forward-thinking solutions that
-            empower institutions, educators, and learners.
+            technology, sustainability, and forward-thinking
+            <br className="ethos-subtitle-break" />
+            solutions that empower institutions, educators, and learners.
           </motion.p>
 
           <motion.div
@@ -587,11 +575,11 @@ function Ethos() {
 
       {/* ── Partnership banner ── */}
       <section className="partner-section">
-        <TiltCard
+        <motion.div
           className="partner-card"
-          tiltStrength={5}
           initial={{ opacity: 0, y: 40 }}
           whileInView={{ opacity: 1, y: 0 }}
+          whileHover={{ scale: 1.025 }}
           viewport={{ once: true, margin: '-60px' }}
           transition={{ duration: 0.72, ease: EASE }}
         >
@@ -608,16 +596,17 @@ function Ethos() {
           <div className="partner-logo">
             <img src={tce} alt="TATA ClassEdge" />
           </div>
-        </TiltCard>
+        </motion.div>
       </section>
 
       {/* ── Mission & Vision ── */}
       <section className="ethos-mv-section">
         <div className="ethos-mv-grid">
-          <TiltCard
+          <motion.div
             className="ethos-mv-card ethos-mv-dark"
             initial={{ opacity: 0, y: 40 }}
             whileInView={{ opacity: 1, y: 0 }}
+            whileHover={{ y: -8 }}
             viewport={{ once: true, margin: '-80px' }}
             transition={{ duration: 0.72, ease: EASE }}
           >
@@ -634,12 +623,13 @@ function Ethos() {
               connected learning experiences, and sustainable solutions that
               create meaningful impact for learners and educators.
             </p>
-          </TiltCard>
+          </motion.div>
 
-          <TiltCard
+          <motion.div
             className="ethos-mv-card ethos-mv-light"
             initial={{ opacity: 0, y: 40 }}
             whileInView={{ opacity: 1, y: 0 }}
+            whileHover={{ y: -8 }}
             viewport={{ once: true, margin: '-80px' }}
             transition={{ duration: 0.72, ease: EASE, delay: 0.14 }}
           >
@@ -655,7 +645,7 @@ function Ethos() {
               accessible, and future-ready ecosystems that inspire learning,
               innovation, and growth.
             </p>
-          </TiltCard>
+          </motion.div>
         </div>
       </section>
 
@@ -687,18 +677,9 @@ function Ethos() {
         </div>
 
         <div className="cv-grid">
-          <div className="cv-col">
-            <CvCardWrapper card={CV_CARDS[0]} index={0} cvProgress={cvProgress} />
-            <CvCardWrapper card={CV_CARDS[3]} index={3} cvProgress={cvProgress} />
-          </div>
-          <div className="cv-col cv-col-center">
-            <CvCardWrapper card={CV_CARDS[1]} index={1} cvProgress={cvProgress} />
-            <CvCardWrapper card={CV_CARDS[4]} index={4} cvProgress={cvProgress} />
-          </div>
-          <div className="cv-col">
-            <CvCardWrapper card={CV_CARDS[2]} index={2} cvProgress={cvProgress} />
-            <CvCardWrapper card={CV_CARDS[5]} index={5} cvProgress={cvProgress} />
-          </div>
+          {CV_CARDS.map((card, i) => (
+            <CvCardWrapper key={card.title} card={card} index={i} cvProgress={cvProgress} />
+          ))}
         </div>
       </section>
 
@@ -721,7 +702,6 @@ function Ethos() {
               className="ig-item"
               initial={{ opacity: 0, y: 32 }}
               whileInView={{ opacity: 1, y: 0 }}
-              whileHover={{ y: -10, scale: 1.03 }}
               viewport={{ once: true, margin: '-40px' }}
               transition={{ duration: 0.65, ease: EASE, delay: i * 0.1 }}
             >
