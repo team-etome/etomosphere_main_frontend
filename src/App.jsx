@@ -21,6 +21,7 @@ import TermsConditions from './components/terms/TermsConditions.jsx'
 import ShippingPolicy from './components/shipping/ShippingPolicy.jsx'
 import Reviews from './components/reviews/reviews.jsx'
 import Programmes from './components/programmes/programmes.jsx'
+import SellerRegistrationPage from './pages/SellerRegistrationPage.jsx'
 import './App.css'
 
 
@@ -55,6 +56,7 @@ function AppContent() {
         <Route path="/shipping-policy" element={<ShippingPolicy />} />
         <Route path="/reviews" element={<Reviews />} />
         <Route path="/programmes" element={<Programmes />} />
+        <Route path="/sell" element={<SellerRegistrationPage />} />
       </Routes>
     </div>
   )
