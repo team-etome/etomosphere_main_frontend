@@ -1,0 +1,16 @@
+export const ROUTES = {
+  HOME: '/',
+  LOGIN: '/login',
+  CONTACT: '/contact',
+  CONTACT_SALES: '/contact-sales',
+  SELL_WITH_US: '/sell',
+  WISHLIST: '/wishlist',
+  CART: '/cart',
+  SEARCH: '/search',
+  PRIVACY_POLICY: '/privacy-policy',
+  TERMS_CONDITIONS: '/terms-and-conditions',
+  REFUND_POLICY: '/return-cancellation-refund-policy',
+  SHIPPING_POLICY: '/shipping-and-delivery-policy',
+  FORGOT_PASSWORD: '/forgot-password',
+  REGISTER: '/register',
+} as const;
